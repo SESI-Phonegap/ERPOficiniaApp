@@ -4,14 +4,16 @@ public class ModelPagoEmpleado {
     private int id_pago;
     private int id_empleado;
     private String status;
+    private String fecha;
     private String mes;
     private String semana;
     private double cantidad;
 
-    public ModelPagoEmpleado(int id_pago, int id_empleado, String status, String mes, String semana, double cantidad){
+    public ModelPagoEmpleado(int id_pago, int id_empleado, String status,String fecha, String mes, String semana, double cantidad){
         this.id_pago = id_pago;
         this.id_empleado = id_empleado;
         this.status = status;
+        this.fecha = fecha;
         this.mes = mes;
         this.semana = semana;
         this.cantidad = cantidad;
@@ -35,6 +37,10 @@ public class ModelPagoEmpleado {
 
     public String getSemana() {
         return semana;
+    }
+
+    public String getFecha() {
+        return fecha;
     }
 
     public double getCantidad() {

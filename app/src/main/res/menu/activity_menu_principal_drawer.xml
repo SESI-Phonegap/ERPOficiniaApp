@@ -2,34 +2,51 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
+
         <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:id="@+id/_nav_ruta"
+            android:title="@string/rutas"/>
+
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="@string/empleados">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:id="@+id/_nav_empleados"
+                android:title="@string/empleados"/>
+
             <item
-                android:id="@+id/nav_send"
+                android:id="@+id/_nav_pago_nomina"
+                android:title="@string/pagoNomina"/>
+        </menu>
+    </item>
+
+    <item android:title="@string/vehiculos">
+        <menu>
+            <item
+                android:id="@+id/_nav_registro_vehiculo"
+                android:title="@string/vehiculos"/>
+            <item
+                android:id="@+id/_nav_registro_mantenimiento"
+                android:title="@string/mantenimiento"/>
+
+            <item
+                android:id="@+id/_nav_gasto_gasolina"
+                android:title="@string/gasolina"/>
+
+        </menu>
+    </item>
+
+    <item android:title="@string/despacho">
+        <menu>
+            <item
+                android:id="@+id/_nav_clientes"
+                android:icon="@drawable/ic_menu_share"
+                android:title="@string/clientes" />
+            <item
+                android:id="@+id/_nav_honorarios"
                 android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:title="@string/honorarios" />
         </menu>
     </item>
 
