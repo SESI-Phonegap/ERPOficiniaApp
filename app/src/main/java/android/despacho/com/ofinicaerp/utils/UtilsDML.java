@@ -2,7 +2,9 @@ package android.despacho.com.ofinicaerp.utils;
 
 
 import android.app.Application;
+import android.database.sqlite.SQLiteDatabase;
 import android.despacho.com.ofinicaerp.R;
+import android.despacho.com.ofinicaerp.models.ModelEmpleado;
 import android.despacho.com.ofinicaerp.models.ModelUser;
 import android.util.Log;
 
@@ -88,21 +90,22 @@ public class UtilsDML {
                         try {
 
                             JSONObject jsonObject = jsonArray.getJSONObject(i);
-                            if (jsonObject.length() > 1) {
+
                                 String tipo = jsonObject.getString("tipo");
                                 int id = Integer.parseInt(jsonObject.getString("idempleado"));
                                 ModelUser user = new ModelUser(tipo,id);
                                 resultUser.add(user);
 
-                            }else {
-                                result = jsonObject.getString("error");
-                            }
+
                         } catch (JSONException e) {
                             Log.e("JSON---", e.toString());
                         }
                     }
 
 
+                } else {
+
+                    result = context.getString(R.string.msg_usiarioIncorrecto);
                 }
         } catch (JSONException e) {
             Log.e("JSON", e.toString());
@@ -111,5 +114,10 @@ public class UtilsDML {
 
 
         return result;
+    }
+
+    public static boolean loadDataUser(Application context, ModelEmpleado empleado){
+        boolean bIsOk = false;
+        return bIsOk;
     }
 }

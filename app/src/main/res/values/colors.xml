@@ -6,4 +6,5 @@
     <color name="colorTeal">#009688</color>
     <color name="colorTeal200">#80cbc4</color>
     <color name="colorTeal800">#00695c</color>
+    <color name="button_grey">#757575</color>
 </resources>

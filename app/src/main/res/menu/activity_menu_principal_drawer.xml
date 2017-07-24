@@ -4,6 +4,9 @@
     <group android:checkableBehavior="single">
 
         <item
+            android:id="@+id/_nav_home"
+            android:title="@string/inicio"/>
+        <item
             android:id="@+id/_nav_ruta"
             android:title="@string/rutas"/>
 

@@ -12,4 +12,5 @@ public class Constants {
     public static String PUTEXTRA_ID_EMPLEADO = "id_empleado";
     public static String PUTEXTRA_TIPO_USER = "tipo_user";
     public static String ERROR_1001 = "1001";
+    public static String ADMIN = "ADMIN";
 }

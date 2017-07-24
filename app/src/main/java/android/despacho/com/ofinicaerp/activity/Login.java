@@ -40,6 +40,8 @@ public class Login extends AppCompatActivity {
         Button btn_entrar = (Button) findViewById(R.id.btn_login_entrar);
         modelUser = new ArrayList<>();
 
+        et_email.setText("marco.gonzalez.cp@gmail.com");
+        et_pass.setText("100Marco100");
         btn_entrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,7 +81,7 @@ public class Login extends AppCompatActivity {
             Log.w(APP_TAG,"Resultado obtenido " + result);
 
             String msg = UtilsDML.loginResultJson(getApplication(),result,modelUser);
-           if (!msg.equals(ERROR_1001)){
+           if (msg.equals("")){
                if (modelUser != null){
                    Intent intent = new Intent(getApplication(),MenuPrincipal.class);
                    intent.putExtra(PUTEXTRA_ID_EMPLEADO,modelUser.get(0).getId_empleado());
@@ -87,7 +89,7 @@ public class Login extends AppCompatActivity {
                    startActivity(intent);
                }
            } else {
-               Toast.makeText(getApplication(),getString(R.string.msg_usiarioIncorrecto),Toast.LENGTH_LONG).show();
+               Toast.makeText(getApplication(),msg,Toast.LENGTH_LONG).show();
            }
 
 
