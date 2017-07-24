@@ -13,17 +13,24 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import cz.msebera.android.httpclient.HttpResponse;
+import cz.msebera.android.httpclient.NameValuePair;
 import cz.msebera.android.httpclient.client.HttpClient;
+import cz.msebera.android.httpclient.client.entity.UrlEncodedFormEntity;
 import cz.msebera.android.httpclient.client.methods.HttpPost;
 import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
+import cz.msebera.android.httpclient.message.BasicNameValuePair;
+
+import static android.despacho.com.ofinicaerp.utils.Constants.ERROR_1001;
 
 public class UtilsDML {
 
     public static String APP_TAG = "ERP--";
 
-    public static String login(String baseUrl, String jsonData){
+    public static String login(String baseUrl, String jsonData) {
         BufferedReader in = null;
 
 
@@ -34,10 +41,10 @@ public class UtilsDML {
             HttpPost post = new HttpPost(baseUrl);
 
             //Configuramos los parametos que vaos a enviar con la peticion HTTP POST
-            //    List<NameValuePair> nvp = new ArrayList<NameValuePair>(2);
-            //    nvp.add(new BasicNameValuePair("article", jsonData));
-            //post.setHeader("Content-type", "application/json");
-            //      post.setEntity(new UrlEncodedFormEntity(nvp));
+            List<NameValuePair> nvp = new ArrayList<NameValuePair>(2);
+            nvp.add(new BasicNameValuePair("login", jsonData));
+           // post.setHeader("Content-type", "application/json");
+            post.setEntity(new UrlEncodedFormEntity(nvp));
 
 
             //Se ejecuta el envio de la peticion y se espera la respuesta de la misma.
@@ -69,34 +76,39 @@ public class UtilsDML {
         }
     }
 
-    public static String loginResultJson(Application context, String resultTask,ModelUser resultUser){
+    public static String loginResultJson(Application context, String resultTask, List<ModelUser> resultUser) {
         JSONArray jsonArray = null;
         String result = "";
 
         try {
             jsonArray = new JSONArray(resultTask);
+                if (jsonArray.length() > 0) {
+
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        try {
+
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            if (jsonObject.length() > 1) {
+                                String tipo = jsonObject.getString("tipo");
+                                int id = Integer.parseInt(jsonObject.getString("idempleado"));
+                                ModelUser user = new ModelUser(tipo,id);
+                                resultUser.add(user);
+
+                            }else {
+                                result = jsonObject.getString("error");
+                            }
+                        } catch (JSONException e) {
+                            Log.e("JSON---", e.toString());
+                        }
+                    }
+
+
+                }
         } catch (JSONException e) {
             Log.e("JSON", e.toString());
         }
-        if (jsonArray.length() > 0) {
-
-            for (int i = 0; i < jsonArray.length(); i++) {
-                try {
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    resultUser = new ModelUser(
-                            jsonObject.getString("tipousuario"),
-                            Integer.parseInt(jsonObject.getString("idempleado")));
-
-                    //adapter.add("Clave : "+clave+" Nombre : "+ nombre);
-                } catch (JSONException e) {
-                    Log.e("JSON", e.toString());
-                }
-            }
 
 
-        } else {
-            result = context.getString(R.string.msg_usiarioIncorrecto);
-        }
 
         return result;
     }
