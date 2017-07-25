@@ -23,6 +23,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -35,6 +37,7 @@ public class MenuPrincipal extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
 
     private FloatingActionButton fab;
+    private AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,50 +182,58 @@ public class MenuPrincipal extends AppCompatActivity
         final View view = inflater.inflate(R.layout.dialog_add_vehiculo, null);
 
         builder.setView(view);
-/*
-        photoCatalogo = (CircleImageView) view.findViewById(R.id.photoCatalogo);
-        photoCatalogo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openGallery();
-            }
-        });*/
-        Button agregarProducto = (Button) view.findViewById(R.id.btn_dialog_agregar_producto);
-        Button cancelar = (Button) view.findViewById(R.id.btn_dialog_cancelar_producto);
-        final TextInputEditText producto = (TextInputEditText) view.findViewById(R.id.item_producto);
-        final AlertDialog dialog = builder.create();
 
-        agregarProducto.setOnClickListener(new View.OnClickListener() {
+
+        CircleImageView photoCar = (CircleImageView) view.findViewById(R.id.vehiculo_photo);
+        Button btn_guardar = (Button) view.findViewById(R.id.btn_vehiculo_guardar);
+        Button btn_cancelar = (Button) view.findViewById(R.id.btn_vehiculo_cancelar);
+        final EditText et_nombre = (EditText) view.findViewById(R.id.vehiculo_nombre);
+        final EditText et_modelo = (EditText) view.findViewById(R.id.vehiculo_ano);
+        final EditText et_marca = (EditText) view.findViewById(R.id.vehiculo_marca);
+        final EditText et_serie = (EditText) view.findViewById(R.id.vehiculo_serie);
+        final EditText et_placas = (EditText) view.findViewById(R.id.vehiculo_placas);
+        final EditText et_color = (EditText) view.findViewById(R.id.vehiculo_color);
+        final Spinner spinnerEmpleado = (Spinner) view.findViewById(R.id.vehiculo_spinner);
+        dialog = builder.create();
+
+        photoCar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String product = producto.getText().toString();
-                if (product.equals("")) {
-                    Snackbar.make(v, getResources().getString(R.string.Campovacio), Snackbar.LENGTH_LONG).show();
+
+            }
+        });
+
+        btn_cancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        btn_guardar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String nombre = et_nombre.getText().toString();
+                String modelo = et_modelo.getText().toString();
+                String marca = et_marca.getText().toString();
+                String serie = et_serie.getText().toString();
+                String placas = et_placas.getText().toString();
+                String color = et_color.getText().toString();
+               // String empleado = spinnerEmpleado.
+                if (nombre.equals("") && modelo.equals("") && marca.equals("") && serie.equals("") &&
+                        placas.equals("") && color.equals("")) {
+                    Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
 
                 } else {
-                    if (selectedImagePath == null) {
-                        selectedImagePath = "";
-                    }
-                    UtilsDml.insertProduct(getApplication(), product, selectedImagePath);
-                    items.add(product);
-                    UtilsDml.consultaCatalogo(getApplication(), items, itemsID, itemsPhoto);
-                    setUpRecyclerView();
-                    uriPhotoResult = null;
-                    dialog.cancel();
+
                 }
 
 
             }
         });
 
-        cancelar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.cancel();
-
-            }
-        });
-
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(false);
         dialog.show();
 
     }

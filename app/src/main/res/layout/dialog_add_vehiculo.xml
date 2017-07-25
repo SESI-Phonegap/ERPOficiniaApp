@@ -9,16 +9,15 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginRight="24dp"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginLeft="24dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="32dp"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="32dp"
-        android:background="@drawable/custom_background_alert">
+        android:background="@drawable/custom_background_alert"
+        app:layout_constraintHorizontal_bias="0.0">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/vehiculo_photo"
@@ -41,24 +40,93 @@
             app:layout_constraintRight_toRightOf="parent"
             android:layout_marginLeft="16dp"
             app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="24dp"
             app:layout_constraintTop_toBottomOf="@+id/vehiculo_photo" />
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="2015"
-            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
             app:layout_constraintLeft_toLeftOf="parent"
             android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@+id/vehiculo_nombre"
-            android:id="@+id/editText" />
+            android:id="@+id/vehiculo_ano" />
         <EditText
+            android:id="@+id/vehiculo_marca"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="volkswagen"
-            app:layout_constraintLeft_toRightOf="@+id/editText"
+            app:layout_constraintLeft_toRightOf="@+id/vehiculo_ano"
             android:layout_marginStart="0dp"
-            app:layout_constraintBaseline_toBaselineOf="@+id/editText" />
+            app:layout_constraintBaseline_toBaselineOf="@+id/vehiculo_ano"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintHorizontal_bias="0.3" />
+
+        <EditText
+            android:id="@+id/vehiculo_placas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="HKG-45-98"
+            android:layout_marginStart="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/vehiculo_ano" />
+
+        <EditText
+            android:id="@+id/vehiculo_serie"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Numero serie"
+            app:layout_constraintLeft_toRightOf="@+id/vehiculo_placas"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/vehiculo_placas"
+            android:layout_marginRight="8dp"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <EditText
+            android:id="@+id/vehiculo_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Color del auto"
+            android:layout_marginStart="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/vehiculo_placas" />
+
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/vehiculo_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:layout_editor_absoluteY="276dp"
+            app:layout_constraintLeft_toRightOf="@+id/vehiculo_color"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintHorizontal_bias="0.9" />
+
+        <Button
+            android:id="@+id/btn_vehiculo_guardar"
+            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_guardar"
+            app:layout_constraintRight_toLeftOf="@+id/btn_vehiculo_cancelar"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/btn_vehiculo_cancelar" />
+
+        <Button
+            android:id="@+id/btn_vehiculo_cancelar"
+            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_cancelar"
+            android:layout_marginEnd="7dp"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginTop="24dp"
+            app:layout_constraintTop_toBottomOf="@+id/vehiculo_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="8dp" />
 
     </android.support.constraint.ConstraintLayout>
 </android.support.constraint.ConstraintLayout>
