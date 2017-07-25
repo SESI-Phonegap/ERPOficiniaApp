@@ -2,16 +2,26 @@ package android.despacho.com.ofinicaerp.activity;
 
 import android.content.Intent;
 import android.despacho.com.ofinicaerp.R;
+import android.despacho.com.ofinicaerp.fragments.EmpleadoFragment;
 import android.despacho.com.ofinicaerp.fragments.HomeFragment;
 import android.despacho.com.ofinicaerp.fragments.RutasFragment;
+import android.despacho.com.ofinicaerp.fragments.VehiculoFragment;
+import android.despacho.com.ofinicaerp.models.ModelEmpleado;
+import android.despacho.com.ofinicaerp.models.ModelVehiculo;
+import android.despacho.com.ofinicaerp.utils.UtilsDML;
+import android.graphics.Bitmap;
+import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -22,22 +32,33 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import java.io.ByteArrayOutputStream;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.despacho.com.ofinicaerp.utils.Constants.ADMIN;
 import static android.despacho.com.ofinicaerp.utils.Constants.PUTEXTRA_ID_EMPLEADO;
 import static android.despacho.com.ofinicaerp.utils.Constants.PUTEXTRA_TIPO_USER;
+import static android.despacho.com.ofinicaerp.utils.Constants.TAKE_PICTURE_EMPLEADO;
+import static android.despacho.com.ofinicaerp.utils.Constants.TAKE_PICTURE_VEHICULO;
+import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_EMPLEADO;
+import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_VEHICULO;
 
 public class MenuPrincipal extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener{
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private FloatingActionButton fab;
     private AlertDialog dialog;
+    private String imageBase64;
+    private CircleImageView photoCar;
+    private CircleImageView photoEmpleado;
+    private String id_empleado;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +71,7 @@ public class MenuPrincipal extends AppCompatActivity
     }
 
     public void init() {
+        imageBase64 = "";
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -109,12 +131,16 @@ public class MenuPrincipal extends AppCompatActivity
                 break;
 
             case R.id._nav_empleados:
+                changeFragment(EmpleadoFragment.newInstance(), R.id.mainFrame, false, false);
+                fab.setOnClickListener(onClickEmpleado);
                 break;
 
             case R.id._nav_pago_nomina:
                 break;
 
             case R.id._nav_registro_vehiculo:
+                changeFragment(VehiculoFragment.newInstance(), R.id.mainFrame, false, false);
+                fab.setOnClickListener(onClickVehiculo);
                 break;
 
             case R.id._nav_registro_mantenimiento:
@@ -158,25 +184,32 @@ public class MenuPrincipal extends AppCompatActivity
     View.OnClickListener onClickHome = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Snackbar.make(v,"HomeFragment", BaseTransientBottomBar.LENGTH_LONG).show();
+            Snackbar.make(v, "HomeFragment", BaseTransientBottomBar.LENGTH_LONG).show();
         }
     };
 
     View.OnClickListener onClickRutas = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Snackbar.make(v,"RutasFragment", BaseTransientBottomBar.LENGTH_LONG).show();
+            Snackbar.make(v, "RutasFragment", BaseTransientBottomBar.LENGTH_LONG).show();
         }
     };
 
     View.OnClickListener onClickVehiculo = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
+            createDialogNewVehiculo();
         }
     };
 
-    public void createNewProductDialog() {
+    View.OnClickListener onClickEmpleado = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            createDialogNewEmpleado();
+        }
+    };
+
+    public void createDialogNewVehiculo() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
         LayoutInflater inflater = MenuPrincipal.this.getLayoutInflater();
         final View view = inflater.inflate(R.layout.dialog_add_vehiculo, null);
@@ -184,7 +217,7 @@ public class MenuPrincipal extends AppCompatActivity
         builder.setView(view);
 
 
-        CircleImageView photoCar = (CircleImageView) view.findViewById(R.id.vehiculo_photo);
+        photoCar = (CircleImageView) view.findViewById(R.id.vehiculo_photo);
         Button btn_guardar = (Button) view.findViewById(R.id.btn_vehiculo_guardar);
         Button btn_cancelar = (Button) view.findViewById(R.id.btn_vehiculo_cancelar);
         final EditText et_nombre = (EditText) view.findViewById(R.id.vehiculo_nombre);
@@ -194,12 +227,26 @@ public class MenuPrincipal extends AppCompatActivity
         final EditText et_placas = (EditText) view.findViewById(R.id.vehiculo_placas);
         final EditText et_color = (EditText) view.findViewById(R.id.vehiculo_color);
         final Spinner spinnerEmpleado = (Spinner) view.findViewById(R.id.vehiculo_spinner);
+        id_empleado = "";
+        imageBase64 = "";
         dialog = builder.create();
+
+        spinnerEmpleado.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                id_empleado = parent.getItemAtPosition(position).toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         photoCar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                tomaFoto(TAKE_PICTURE_VEHICULO);
             }
         });
 
@@ -219,23 +266,183 @@ public class MenuPrincipal extends AppCompatActivity
                 String serie = et_serie.getText().toString();
                 String placas = et_placas.getText().toString();
                 String color = et_color.getText().toString();
-               // String empleado = spinnerEmpleado.
+                // String empleado = spinnerEmpleado.
                 if (nombre.equals("") && modelo.equals("") && marca.equals("") && serie.equals("") &&
-                        placas.equals("") && color.equals("")) {
+                        placas.equals("") && color.equals("") && id_empleado.equals("")) {
                     Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
-
                 } else {
-
+                    ModelVehiculo modelVehiculo = new ModelVehiculo(nombre, modelo, marca, serie, Integer.parseInt(id_empleado), imageBase64);
+                    String strJson = modelVehiculo.toJsonAddVehiculo();
+                    new AddVehiculoTask().execute(URL_ADD_VEHICULO, strJson);
                 }
-
 
             }
         });
 
         dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(false);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         dialog.show();
 
     }
 
+    public void createDialogNewEmpleado() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
+        LayoutInflater inflater = MenuPrincipal.this.getLayoutInflater();
+        final View view = inflater.inflate(R.layout.dialog_add_empleado, null);
+
+        builder.setView(view);
+
+
+        photoEmpleado = (CircleImageView) view.findViewById(R.id.empleado_photo);
+        Button btn_guardar = (Button) view.findViewById(R.id.btn_empleado_guardar);
+        Button btn_cancelar = (Button) view.findViewById(R.id.btn_empleado_cancelar);
+        final EditText et_nombre = (EditText) view.findViewById(R.id.empleado_nombre);
+        final EditText et_puesto = (EditText) view.findViewById(R.id.empleado_puesto);
+        final EditText et_sueldo = (EditText) view.findViewById(R.id.empleado_sueldo);
+        final EditText et_empresa = (EditText) view.findViewById(R.id.empleado_empresa);
+        final EditText et_telefono = (EditText) view.findViewById(R.id.empleado_telefono);
+
+        imageBase64 = "";
+        dialog = builder.create();
+
+        photoEmpleado.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tomaFoto(TAKE_PICTURE_EMPLEADO);
+            }
+        });
+
+        btn_cancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        btn_guardar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String nombre = et_nombre.getText().toString();
+                String puesto = et_puesto.getText().toString();
+                String sueldo = et_sueldo.getText().toString();
+                String empresa = et_empresa.getText().toString();
+                String telefono = et_telefono.getText().toString();
+
+                // String empleado = spinnerEmpleado.
+                if (nombre.equals("") && puesto.equals("") && sueldo.equals("") && empresa.equals("") &&
+                        telefono.equals("")) {
+                    Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
+                } else {
+                    ModelEmpleado modelEmpleado = new ModelEmpleado(nombre,puesto,Double.parseDouble(sueldo),empresa,imageBase64,telefono);
+                    String strJson = modelEmpleado.toJsonAddEmpleado();
+                    new AddEmpleadoTask().execute(URL_ADD_EMPLEADO, strJson);
+                }
+
+            }
+        });
+
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(false);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialog.show();
+    }
+
+    public void tomaFoto(int action) {
+        Intent intentCamera;
+        switch (action) {
+            case TAKE_PICTURE_VEHICULO:
+                intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intentCamera, TAKE_PICTURE_VEHICULO);
+                break;
+
+            case TAKE_PICTURE_EMPLEADO:
+                intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intentCamera, TAKE_PICTURE_EMPLEADO);
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            Bitmap bMap = (Bitmap) data.getExtras().get("data");
+            bMap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+            byte[] byteImage = baos.toByteArray();
+            imageBase64 = Base64.encodeToString(byteImage, Base64.DEFAULT);
+
+            if (requestCode == TAKE_PICTURE_VEHICULO) {
+                photoCar.setImageBitmap(bMap);
+            } else if (requestCode == TAKE_PICTURE_EMPLEADO) {
+                photoEmpleado.setImageBitmap(bMap);
+            }
+
+        }
+
+    }
+
+    private class AddVehiculoTask extends AsyncTask<String, Integer, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String baseUrl = params[0];
+            String jsonData = params[1];
+            return UtilsDML.addVehiculo(baseUrl, jsonData);
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            proccessResult(result);
+        }
+
+    }
+
+    private class AddEmpleadoTask extends AsyncTask<String, Integer, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String baseUrl = params[0];
+            String jsonData = params[1];
+            return UtilsDML.addEmpleado(baseUrl,jsonData);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            proccessResult(result);
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+        }
+    }
+    public void proccessResult(String result){
+        if (result.contains("OK")) {
+            Toast.makeText(getApplicationContext(), getString(R.string.msg_success), Toast.LENGTH_LONG).show();
+            dialog.dismiss();
+        } else {
+            Toast.makeText(getApplicationContext(), getString(R.string.msg_error) + result, Toast.LENGTH_LONG).show();
+        }
+    }
 }

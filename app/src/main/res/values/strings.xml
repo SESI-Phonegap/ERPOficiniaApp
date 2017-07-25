@@ -13,7 +13,10 @@
 
 
     <string name="msg_campos_vacios">No debe dejar campos vacios</string>
+    <string name="msg_foto">Debes de ingresar una foto</string>
     <string name="msg_usiarioIncorrecto">Usuario o contraseña incorrectos.</string>
+    <string name="msg_success">Registro exitoso</string>
+    <string name="msg_error">Ocurrio un error intentelo de nuevo</string>
     <!-- Menu  -->
 
     <string name="inicio">Inicio</string>
@@ -33,13 +36,20 @@
 
     <string name="HomeFragment">Hello Home Fragment</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!-- Dialog Vehiculo -->
     <string name="btn_guardar">Guardar</string>
     <string name="btn_cancelar">Cancelar</string>
 
+    <!-- Dialog Empleado -->
+    <string name="nombre">Nombre</string>
+    <string name="puesto">Puesto</string>
+    <string name="sueldo">Sueldo</string>
+    <string name="empresa">Empresa</string>
+    <string name="telefono">Telefono</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>
