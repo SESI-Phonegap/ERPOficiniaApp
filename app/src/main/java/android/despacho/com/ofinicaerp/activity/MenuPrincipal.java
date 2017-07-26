@@ -85,8 +85,9 @@ public class MenuPrincipal extends AppCompatActivity
         fab = (FloatingActionButton) findViewById(R.id.fab);
 
         String typeUser = getIntent().getStringExtra(PUTEXTRA_TIPO_USER);
-        String idUser = getIntent().getStringExtra(PUTEXTRA_ID_EMPLEADO);
+        int idUser = getIntent().getIntExtra(PUTEXTRA_ID_EMPLEADO,0);
 
+        Log.i("USER-MENUP--",typeUser + " - " + idUser);
         Menu menu = navigationView.getMenu();
         MenuItem mClientes = menu.findItem(R.id._nav_clientes);
         MenuItem mHonorarios = menu.findItem(R.id._nav_honorarios);

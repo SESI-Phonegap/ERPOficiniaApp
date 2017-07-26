@@ -180,6 +180,7 @@ public class UtilsDML {
 
             //Se ejecuta el envio de la peticion y se espera la respuesta de la misma.
             HttpResponse response = httpClient.execute(post);
+            Log.i("JSON-EMPLEADO--",jsonData);
             Log.w("RESULT--", response.getStatusLine().toString());
 
             //Obtengo el contenido de la respuesta en formato InputStream Buffer y la paso a formato String
