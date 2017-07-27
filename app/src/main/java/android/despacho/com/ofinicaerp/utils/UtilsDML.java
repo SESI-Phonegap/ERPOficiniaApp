@@ -4,6 +4,7 @@ package android.despacho.com.ofinicaerp.utils;
 import android.app.Application;
 import android.database.sqlite.SQLiteDatabase;
 import android.despacho.com.ofinicaerp.R;
+import android.despacho.com.ofinicaerp.models.ModelDespacho_Clientes;
 import android.despacho.com.ofinicaerp.models.ModelEmpleado;
 import android.despacho.com.ofinicaerp.models.ModelUser;
 import android.despacho.com.ofinicaerp.models.ModelVehiculo;
@@ -248,7 +249,7 @@ public class UtilsDML {
         }
     }
 
-    public static String queryEmpleado(String baseUrl){
+    public static String queryAllData(String baseUrl){
         BufferedReader in = null;
 
         try {
@@ -323,4 +324,38 @@ public class UtilsDML {
         }
 
     }
+
+    public static void resultQueryCliente(String result, List<ModelDespacho_Clientes> listClientes){
+        //Se obtiene el resultado de la peticion Asincrona
+        Log.w(APP_TAG,"Resultado obtenido " + result);
+        //    data.setText(result);
+        JSONArray jsonArray = null;
+
+        try {
+            jsonArray = new JSONArray(result);
+        } catch (JSONException e) {
+            Log.e("JSON", e.toString());
+        }
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            try {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                listClientes.add(new ModelDespacho_Clientes(
+                        Integer.parseInt(jsonObject.getString("idcliente")),
+                        jsonObject.getString("nombre"),
+                        jsonObject.getString("rfc"),
+                        jsonObject.getString("curp"),
+                        jsonObject.getString("passSat"),
+                        jsonObject.getString("passFiel"),
+                        jsonObject.getString("passCert"),
+                        Double.parseDouble(jsonObject.getString("honorarios"))));
+
+                //adapter.add("Clave : "+clave+" Nombre : "+ nombre);
+            } catch (JSONException e) {
+                Log.e("JSON", e.toString());
+            }
+        }
+
+    }
+
 }

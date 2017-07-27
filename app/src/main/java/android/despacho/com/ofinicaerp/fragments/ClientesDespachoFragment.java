@@ -1,20 +1,25 @@
 package android.despacho.com.ofinicaerp.fragments;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.despacho.com.ofinicaerp.activity.MenuPrincipal;
 import android.despacho.com.ofinicaerp.models.ModelDespacho_Clientes;
 import android.despacho.com.ofinicaerp.models.ModelEmpleado;
+import android.despacho.com.ofinicaerp.utils.UtilsDML;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.view.LayoutInflater;
@@ -29,12 +34,15 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_CLIENTE;
+
 
 public class ClientesDespachoFragment extends Fragment {
 
     public RecyclerView recyclerView;
     private ClienteAdapter testAdapter;
     private List<ModelDespacho_Clientes> listClientes;
+    private ProgressDialog progressBar;
 
 
     public ClientesDespachoFragment() {
@@ -67,8 +75,23 @@ public class ClientesDespachoFragment extends Fragment {
     }
 
     public void init(){
+
+        progressBar = new ProgressDialog(getActivity());
+        progressBar.setMessage("Cargando...");
+        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressBar.setCancelable(false);
+        progressBar.setCanceledOnTouchOutside(false);
+        progressBar.setIndeterminate(true);
         listClientes = new ArrayList<>();
         recyclerView = (RecyclerView) getActivity().findViewById(R.id.recycler_view_clientes);
+        new QueryClienteTask().execute(URL_QUERY_CLIENTE);
+    }
+
+    public void setUpRecyclerView() {
+        testAdapter = new ClienteAdapter(listClientes,getActivity());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(testAdapter);
+        recyclerView.setHasFixedSize(true);
     }
     @Override
     public void onAttach(Context context) {
@@ -112,6 +135,7 @@ public class ClientesDespachoFragment extends Fragment {
             TestViewHolder viewHolder = (TestViewHolder) holder;
             final ModelDespacho_Clientes item = items.get(position);
             viewHolder.et_nombre.setText(item.getNombre());
+            viewHolder.et_rfc.setText(item.getRfc());
 
         }
 
@@ -148,17 +172,42 @@ public class ClientesDespachoFragment extends Fragment {
     }
 
     private static class TestViewHolder extends RecyclerView.ViewHolder {
-        CircleImageView photoEmpleado;
+
         TextView et_nombre;
+        TextView et_rfc;
         View mView;
 
         TestViewHolder(ViewGroup parent) {
-            super(LayoutInflater.from(parent.getContext()).inflate(R.layout.row_empleado, parent, false));
-            photoEmpleado = (CircleImageView) itemView.findViewById(R.id.circleImageViewEmpleado);
-            et_nombre = (TextView) itemView.findViewById(R.id.row_empleado_nombre);
+            super(LayoutInflater.from(parent.getContext()).inflate(R.layout.row_cliente, parent, false));
+            et_nombre = (TextView) itemView.findViewById(R.id.row_cliente_nombre);
+            et_rfc = (TextView) itemView.findViewById(R.id.row_cliente_rfc);
             mView = itemView;
         }
     }
 
+    private class QueryClienteTask extends AsyncTask<String, Integer, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.show();
+        }
 
+        @Override
+        protected String doInBackground(String... params) {
+            return UtilsDML.queryAllData(params[0]);
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            UtilsDML.resultQueryCliente(result,listClientes);
+            setUpRecyclerView();
+            progressBar.cancel();
+        }
+    }
 }

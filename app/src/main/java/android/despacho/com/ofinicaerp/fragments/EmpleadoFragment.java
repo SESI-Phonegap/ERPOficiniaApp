@@ -1,6 +1,7 @@
 package android.despacho.com.ofinicaerp.fragments;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -41,6 +42,7 @@ public class EmpleadoFragment extends Fragment {
     public RecyclerView recyclerView;
     private EmpleadoAdapter testAdapter;
     private List<ModelEmpleado> listEmpleados;
+    private ProgressDialog progressBar;
 
     public EmpleadoFragment() {
         // Required empty public constructor
@@ -70,6 +72,12 @@ public class EmpleadoFragment extends Fragment {
     }
 
     public void init() {
+        progressBar = new ProgressDialog(getActivity());
+        progressBar.setMessage("Cargando...");
+        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressBar.setCancelable(false);
+        progressBar.setCanceledOnTouchOutside(false);
+        progressBar.setIndeterminate(true);
         listEmpleados = new ArrayList<>();
         recyclerView = (RecyclerView) getActivity().findViewById(R.id.recycler_view_empleado);
         //UtilsDML.consultaEmpleado(getActivity().getApplication(), listEmpleados);
@@ -226,11 +234,12 @@ public class EmpleadoFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            progressBar.show();
         }
 
         @Override
         protected String doInBackground(String... params) {
-            return UtilsDML.queryEmpleado(params[0]);
+            return UtilsDML.queryAllData(params[0]);
         }
 
         @Override
@@ -243,6 +252,7 @@ public class EmpleadoFragment extends Fragment {
             super.onPostExecute(result);
             UtilsDML.resultQueryEmpleado(result,listEmpleados);
             setUpRecyclerView();
+            progressBar.cancel();
         }
     }
 }

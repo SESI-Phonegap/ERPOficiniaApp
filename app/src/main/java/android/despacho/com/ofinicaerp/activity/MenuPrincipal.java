@@ -36,12 +36,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -53,6 +56,7 @@ import static android.despacho.com.ofinicaerp.utils.Constants.TAKE_PICTURE_VEHIC
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_CLIENTE;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_EMPLEADO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_VEHICULO;
+import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_EMPLEADO;
 
 public class MenuPrincipal extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -64,6 +68,7 @@ public class MenuPrincipal extends AppCompatActivity
     private CircleImageView photoEmpleado;
     private String id_empleado;
     private ProgressDialog progressBar;
+    private List<ModelEmpleado> listEmpleados;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +88,7 @@ public class MenuPrincipal extends AppCompatActivity
         progressBar.setCancelable(false);
         progressBar.setCanceledOnTouchOutside(false);
         progressBar.setIndeterminate(true);
+        listEmpleados = new ArrayList<>();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -234,6 +240,11 @@ public class MenuPrincipal extends AppCompatActivity
         LayoutInflater inflater = MenuPrincipal.this.getLayoutInflater();
         final View view = inflater.inflate(R.layout.dialog_add_vehiculo, null);
 
+        new QueryEmpleadoTask().execute(URL_QUERY_EMPLEADO);
+        String[] idNomEmpleado = new String[listEmpleados.size()];
+        for (int i = 0; i < listEmpleados.size() ; i++){
+            idNomEmpleado[i] = listEmpleados.get(i).getId_empleado() + " " + listEmpleados.get(i).getNombre();
+        }
         builder.setView(view);
 
 
@@ -250,7 +261,7 @@ public class MenuPrincipal extends AppCompatActivity
         id_empleado = "";
         imageBase64 = "";
         dialog = builder.create();
-
+        spinnerEmpleado.setAdapter(new ArrayAdapter<>(getApplication(),android.R.layout.simple_spinner_item,listEmpleados));
         spinnerEmpleado.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -548,6 +559,32 @@ public class MenuPrincipal extends AppCompatActivity
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
+        }
+    }
+
+    private class QueryEmpleadoTask extends AsyncTask<String, Integer, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            return UtilsDML.queryAllData(params[0]);
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            UtilsDML.resultQueryEmpleado(result,listEmpleados);
+           // setUpRecyclerView();
+            progressBar.cancel();
         }
     }
 
