@@ -1,5 +1,6 @@
 package android.despacho.com.ofinicaerp.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.despacho.com.ofinicaerp.R;
 import android.despacho.com.ofinicaerp.models.ModelUser;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ import static android.despacho.com.ofinicaerp.utils.UtilsDML.APP_TAG;
 public class Login extends AppCompatActivity {
 
     private List<ModelUser> modelUser;
+    private ProgressDialog progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +38,12 @@ public class Login extends AppCompatActivity {
     }
 
     public void init(){
+        progressBar = new ProgressDialog(Login.this);
+        progressBar.setMessage("Cargando...");
+        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressBar.setCancelable(false);
+        progressBar.setCanceledOnTouchOutside(false);
+        progressBar.setIndeterminate(true);
         final EditText et_email = (EditText) findViewById(R.id.et_login_email);
         final EditText et_pass = (EditText) findViewById(R.id.et_login_pass);
         Button btn_entrar = (Button) findViewById(R.id.btn_login_entrar);
@@ -63,6 +72,12 @@ public class Login extends AppCompatActivity {
     private class LoginTask extends AsyncTask<String, Integer, String>{
 
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.show();
+        }
+
+        @Override
         protected String doInBackground(String... params) {
           return  UtilsDML.login(params[0],params[1]);
         }
@@ -82,7 +97,7 @@ public class Login extends AppCompatActivity {
 
             String msg = UtilsDML.loginResultJson(getApplication(),result,modelUser);
            if (msg.equals("")){
-               if (modelUser != null){
+               if (modelUser != null && modelUser.size() > 0){
                    Intent intent = new Intent(getApplication(),MenuPrincipal.class);
                    intent.putExtra(PUTEXTRA_ID_EMPLEADO,modelUser.get(0).getId_empleado());
                    intent.putExtra(PUTEXTRA_TIPO_USER,modelUser.get(0).getTipo());
@@ -91,8 +106,9 @@ public class Login extends AppCompatActivity {
            } else {
                Toast.makeText(getApplication(),msg,Toast.LENGTH_LONG).show();
            }
-
-
+           progressBar.cancel();
         }
+
+
     }
 }

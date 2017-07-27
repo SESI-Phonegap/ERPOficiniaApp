@@ -1,35 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="90dp"
-        android:layout_height="90dp"
-        android:src="@drawable/ni_image"
+        android:id="@+id/imgCliente"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@mipmap/ic_account_circle_black_24dp"
         android:layout_marginLeft="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="8dp"
-        android:id="@+id/circleImageViewEmpleado" />
-
-    <TextView
-        android:id="@+id/row_empleado_nombre"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/article_subheading"
-        android:textStyle="bold"
-        android:textAppearance="?attr/textAppearanceListItem"
-        android:text="Marco Antonio Gonzalez Mendez"
-        app:layout_constraintLeft_toRightOf="@+id/circleImageViewEmpleado"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/row_cliente_nombre"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:textSize="@dimen/article_subheading"
+        android:textStyle="bold"
+        android:text="Marco Antonio Gonzalez Mendez"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/imgCliente"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:id="@+id/row_cliente_rfc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="GOSC900131DN6"
+        app:layout_constraintLeft_toRightOf="@+id/imgCliente"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/row_cliente_nombre" />
 
     <View
         android:layout_width="0dp"
@@ -41,5 +53,4 @@
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginLeft="0dp"
         app:layout_constraintLeft_toLeftOf="parent" />
-
 </android.support.constraint.ConstraintLayout>

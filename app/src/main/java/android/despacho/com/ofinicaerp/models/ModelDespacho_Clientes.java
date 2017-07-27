@@ -1,5 +1,8 @@
 package android.despacho.com.ofinicaerp.models;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class ModelDespacho_Clientes {
     private int id_cliente;
     private String nombre;
@@ -14,6 +17,19 @@ public class ModelDespacho_Clientes {
                                   String curp, String pass_sat, String pass_fiel,
                                   String pass_certificado, double monto_mensualidad){
         this.id_cliente = id_cliente;
+        this.nombre = nombre;
+        this.rfc = rfc;
+        this.curp = curp;
+        this.pass_sat = pass_sat;
+        this.pass_fiel = pass_fiel;
+        this.pass_certificado = pass_certificado;
+        this.monto_mensualidad = monto_mensualidad;
+    }
+
+    public ModelDespacho_Clientes(String nombre, String rfc,
+                                  String curp, String pass_sat, String pass_fiel,
+                                  String pass_certificado, double monto_mensualidad){
+
         this.nombre = nombre;
         this.rfc = rfc;
         this.curp = curp;
@@ -53,5 +69,24 @@ public class ModelDespacho_Clientes {
 
     public double getMonto_mensualidad() {
         return monto_mensualidad;
+    }
+
+    public String toJsonAddCliente() {
+        JSONObject jsonObject= new JSONObject();
+        try {
+            jsonObject.put("nombre", getNombre());
+            jsonObject.put("rfc", getRfc());
+            jsonObject.put("curp", getCurp());
+            jsonObject.put("honorario", getMonto_mensualidad());
+            jsonObject.put("passSat", getPass_sat());
+            jsonObject.put("passFiel", getPass_fiel());
+            jsonObject.put("passCert", getPass_certificado());
+
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
     }
 }

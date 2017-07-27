@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.v4.widget.NestedScrollView
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="0dp">
+
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/custom_background_alert">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/sizeTextTitle"
+            android:textStyle="bold"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+            android:text="@string/addCliente"
+            android:maxLines="1"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginRight="8dp"
+            app:layout_constraintRight_toRightOf="parent"
+            android:id="@+id/textView2" />
+        <EditText
+            android:id="@+id/cliente_nombre"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:hint="@string/nombre"
+            android:layout_marginRight="16dp"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginLeft="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+        <EditText
+            android:id="@+id/cliente_rfc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/rfc"
+            android:maxLines="1"
+            android:layout_marginRight="16dp"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/cliente_nombre"
+            android:layout_marginLeft="16dp"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+        <EditText
+            android:id="@+id/cliente_curp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/curp"
+            android:maxLines="1"
+            android:layout_marginRight="16dp"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginLeft="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/cliente_rfc" />
+
+        <EditText
+            android:id="@+id/cliente_honorario"
+            android:inputType="numberDecimal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:hint="@string/mensulidad"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/cliente_curp"
+            android:layout_marginRight="16dp"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginLeft="16dp"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+        <EditText
+            android:id="@+id/cliente_passSat"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/passSat"
+            android:layout_marginLeft="16dp"
+            android:maxLines="1"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginRight="16dp"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/cliente_honorario" />
+
+        <EditText
+            android:id="@+id/cliente_passFiel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/passFiel"
+            android:maxLines="1"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/cliente_passSat"
+            android:layout_marginLeft="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginRight="16dp"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <EditText
+            android:id="@+id/cliente_passCertificado"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:hint="@string/passCertificado"
+            android:layout_marginRight="16dp"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginLeft="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/cliente_passFiel" />
+
+        <Button
+            android:id="@+id/btn_cliente_guardar"
+            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_guardar"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintRight_toLeftOf="@+id/btn_cliente_cancelar"
+            app:layout_constraintBaseline_toBaselineOf="@+id/btn_cliente_cancelar"
+            android:layout_marginRight="7dp" />
+
+        <Button
+            android:id="@+id/btn_cliente_cancelar"
+            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_cancelar"
+            android:layout_marginEnd="7dp"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginTop="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintVertical_bias="1.0"
+            app:layout_constraintTop_toBottomOf="@+id/cliente_passCertificado"
+            android:layout_marginRight="7dp" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+</android.support.constraint.ConstraintLayout>

@@ -6,14 +6,20 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.despacho.com.ofinicaerp.models.ModelEmpleado;
 import android.despacho.com.ofinicaerp.utils.UtilsDML;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,24 +27,19 @@ import android.view.ViewGroup;
 import android.despacho.com.ofinicaerp.R;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.SupportMapFragment;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link EmpleadoFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link EmpleadoFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_EMPLEADO;
+
+
 public class EmpleadoFragment extends Fragment {
     public RecyclerView recyclerView;
-    private TestAdapter testAdapter;
+    private EmpleadoAdapter testAdapter;
     private List<ModelEmpleado> listEmpleados;
 
     public EmpleadoFragment() {
@@ -58,9 +59,9 @@ public class EmpleadoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_empleado,container,false);
+        View view = inflater.inflate(R.layout.fragment_empleado, container, false);
         return view;
-       }
+    }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -68,20 +69,21 @@ public class EmpleadoFragment extends Fragment {
         init();
     }
 
-    public void init(){
+    public void init() {
+        listEmpleados = new ArrayList<>();
         recyclerView = (RecyclerView) getActivity().findViewById(R.id.recycler_view_empleado);
-        UtilsDML.consultaEmpleado(getActivity().getApplication(),listEmpleados);
-        setUpRecyclerView();
+        //UtilsDML.consultaEmpleado(getActivity().getApplication(), listEmpleados);
+        new QueryEmpleadoTask().execute(URL_QUERY_EMPLEADO);
     }
 
     public void setUpRecyclerView() {
-        testAdapter = new TestAdapter(listEmpleados, this);
+        testAdapter = new EmpleadoAdapter(listEmpleados, getActivity());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(testAdapter);
         recyclerView.setHasFixedSize(true);
-      //  ((TestAdapter) recyclerView.getAdapter()).setUndoOn(true);
-      //  Utils.setUpItemTouchHelperLlamar(getActivity(),recyclerView,CONSULTORAS);
-      //  Utils.setUpAnimationDecoratorHelperLlamar(getActivity(),recyclerView);
+        //  ((TestAdapter) recyclerView.getAdapter()).setUndoOn(true);
+        //  Utils.setUpItemTouchHelperLlamar(getActivity(),recyclerView,CONSULTORAS);
+        //  Utils.setUpAnimationDecoratorHelperLlamar(getActivity(),recyclerView);
     }
 
     @Override
@@ -95,7 +97,7 @@ public class EmpleadoFragment extends Fragment {
         super.onDetach();
     }
 
-    public class TestAdapter extends RecyclerView.Adapter{
+    public class EmpleadoAdapter extends RecyclerView.Adapter {
         private static final int PENDING_REMOVAL_TIMEOUT = 3000; // 3sec
         List<ModelEmpleado> items;
         Context mContext;
@@ -105,7 +107,7 @@ public class EmpleadoFragment extends Fragment {
 
         private Handler handler = new Handler(); // hanlder for running delayed runnables
 
-        private TestAdapter(List<ModelEmpleado> item, Context context) {
+        private EmpleadoAdapter(List<ModelEmpleado> item, Context context) {
 
             items = item;
             mContext = context;
@@ -124,14 +126,36 @@ public class EmpleadoFragment extends Fragment {
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             TestViewHolder viewHolder = (TestViewHolder) holder;
             final ModelEmpleado item = items.get(position);
+            viewHolder.et_nombre.setText(item.getNombre());
+            if (Build.VERSION.SDK_INT >= 23) {
+                if (item.getPhotoBase64().equals("")) {
+                    viewHolder.photoEmpleado.setImageResource(R.drawable.ni_image);
+                } else {
+                    byte[] imageBytes = Base64.decode(item.getPhotoBase64(), Base64.DEFAULT);
+                    Bitmap decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                    viewHolder.photoEmpleado.setImageBitmap(decodedImage);
+                }
+            } else {
 
+                if (item.getPhotoBase64().equals("")) {
+                    viewHolder.photoEmpleado.setImageResource(R.drawable.ni_image);
+                } else {
+                        byte[] imageBytes = Base64.decode(item.getPhotoBase64(), Base64.DEFAULT);
+                        Bitmap decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                        viewHolder.photoEmpleado.setImageBitmap(decodedImage);
 
+                       // Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), Uri.parse(item.getPhotoBase64()));
+                       // viewHolder.photoEmpleado.setImageBitmap(bitmap);
+                        // viewHolder.icon.setImageURI(Uri.parse(item_photo));
+                }
+            }
         }
 
         @Override
         public int getItemCount() {
             return items.size();
         }
+
         private void setUndoOn(boolean undoOn) {
             this.undoOn = undoOn;
         }
@@ -145,7 +169,7 @@ public class EmpleadoFragment extends Fragment {
 
             try {
                 if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                  //  explicarUsoPermiso();
+                    //  explicarUsoPermiso();
                     // Pedir permiso para realizar llamada
                     ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CALL_PHONE}, 1);
 
@@ -185,15 +209,40 @@ public class EmpleadoFragment extends Fragment {
         }
     }
 
-    private static class TestViewHolder extends RecyclerView.ViewHolder{
+    private static class TestViewHolder extends RecyclerView.ViewHolder {
         CircleImageView photoEmpleado;
         TextView et_nombre;
         View mView;
-        TestViewHolder(ViewGroup parent){
-            super(LayoutInflater.from(parent.getContext()).inflate(R.layout.row_empleado,parent,false));
+
+        TestViewHolder(ViewGroup parent) {
+            super(LayoutInflater.from(parent.getContext()).inflate(R.layout.row_empleado, parent, false));
             photoEmpleado = (CircleImageView) itemView.findViewById(R.id.circleImageViewEmpleado);
             et_nombre = (TextView) itemView.findViewById(R.id.row_empleado_nombre);
             mView = itemView;
+        }
+    }
+
+    private class QueryEmpleadoTask extends AsyncTask<String, Integer, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            return UtilsDML.queryEmpleado(params[0]);
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            UtilsDML.resultQueryEmpleado(result,listEmpleados);
+            setUpRecyclerView();
         }
     }
 }

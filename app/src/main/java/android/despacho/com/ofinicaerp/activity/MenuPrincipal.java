@@ -1,11 +1,14 @@
 package android.despacho.com.ofinicaerp.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.despacho.com.ofinicaerp.R;
+import android.despacho.com.ofinicaerp.fragments.ClientesDespachoFragment;
 import android.despacho.com.ofinicaerp.fragments.EmpleadoFragment;
 import android.despacho.com.ofinicaerp.fragments.HomeFragment;
 import android.despacho.com.ofinicaerp.fragments.RutasFragment;
 import android.despacho.com.ofinicaerp.fragments.VehiculoFragment;
+import android.despacho.com.ofinicaerp.models.ModelDespacho_Clientes;
 import android.despacho.com.ofinicaerp.models.ModelEmpleado;
 import android.despacho.com.ofinicaerp.models.ModelVehiculo;
 import android.despacho.com.ofinicaerp.utils.UtilsDML;
@@ -47,6 +50,7 @@ import static android.despacho.com.ofinicaerp.utils.Constants.PUTEXTRA_ID_EMPLEA
 import static android.despacho.com.ofinicaerp.utils.Constants.PUTEXTRA_TIPO_USER;
 import static android.despacho.com.ofinicaerp.utils.Constants.TAKE_PICTURE_EMPLEADO;
 import static android.despacho.com.ofinicaerp.utils.Constants.TAKE_PICTURE_VEHICULO;
+import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_CLIENTE;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_EMPLEADO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_VEHICULO;
 
@@ -59,6 +63,7 @@ public class MenuPrincipal extends AppCompatActivity
     private CircleImageView photoCar;
     private CircleImageView photoEmpleado;
     private String id_empleado;
+    private ProgressDialog progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +77,12 @@ public class MenuPrincipal extends AppCompatActivity
 
     public void init() {
         imageBase64 = "";
+        progressBar = new ProgressDialog(MenuPrincipal.this);
+        progressBar.setMessage("Cargando...");
+        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressBar.setCancelable(false);
+        progressBar.setCanceledOnTouchOutside(false);
+        progressBar.setIndeterminate(true);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -151,7 +162,8 @@ public class MenuPrincipal extends AppCompatActivity
                 break;
 
             case R.id._nav_clientes:
-                Toast.makeText(this, "Clientes", Toast.LENGTH_LONG).show();
+                changeFragment(ClientesDespachoFragment.newInstance(), R.id.mainFrame, false, false);
+                fab.setOnClickListener(onClickClientes);
                 break;
 
             case R.id._nav_honorarios:
@@ -207,6 +219,13 @@ public class MenuPrincipal extends AppCompatActivity
         @Override
         public void onClick(View v) {
             createDialogNewEmpleado();
+        }
+    };
+
+    View.OnClickListener onClickClientes = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            createDialogNewCliente();
         }
     };
 
@@ -349,6 +368,67 @@ public class MenuPrincipal extends AppCompatActivity
         dialog.show();
     }
 
+    public void createDialogNewCliente() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
+        LayoutInflater inflater = MenuPrincipal.this.getLayoutInflater();
+        final View view = inflater.inflate(R.layout.dialog_add_cliente, null);
+
+        builder.setView(view);
+
+        Button btn_guardar = (Button) view.findViewById(R.id.btn_cliente_guardar);
+        Button btn_cancelar = (Button) view.findViewById(R.id.btn_cliente_cancelar);
+        final EditText et_nombre = (EditText) view.findViewById(R.id.cliente_nombre);
+        final EditText et_rfc = (EditText) view.findViewById(R.id.cliente_rfc);
+        final EditText et_curp = (EditText) view.findViewById(R.id.cliente_curp);
+        final EditText et_honorario = (EditText) view.findViewById(R.id.cliente_honorario);
+        final EditText et_passSat = (EditText) view.findViewById(R.id.cliente_passSat);
+        final EditText et_passFiel = (EditText) view.findViewById(R.id.cliente_passFiel);
+        final EditText et_passCertificado = (EditText) view.findViewById(R.id.cliente_passCertificado);
+
+        imageBase64 = "";
+        dialog = builder.create();
+
+        btn_cancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        btn_guardar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String nombre = et_nombre.getText().toString();
+                String rfc = et_rfc.getText().toString();
+                String curp = et_curp.getText().toString();
+                String honorario = et_honorario.getText().toString();
+
+                // String empleado = spinnerEmpleado.
+                if (nombre.equals("") && rfc.equals("") && curp.equals("") && honorario.equals("")) {
+                    Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
+                } else {
+                    ModelDespacho_Clientes cliente = new ModelDespacho_Clientes(
+                            nombre,
+                            rfc,
+                            curp,
+                            et_passSat.getText().toString(),
+                            et_passFiel.getText().toString(),
+                            et_passCertificado.getText().toString(),
+                            Double.parseDouble(honorario));
+
+                    String strJson = cliente.toJsonAddCliente();
+                    new AddClienteTask().execute(URL_ADD_CLIENTE,strJson);
+                }
+
+            }
+        });
+
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(false);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialog.show();
+    }
+
     public void tomaFoto(int action) {
         Intent intentCamera;
         switch (action) {
@@ -390,6 +470,7 @@ public class MenuPrincipal extends AppCompatActivity
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            progressBar.show();
         }
 
         @Override
@@ -409,6 +490,7 @@ public class MenuPrincipal extends AppCompatActivity
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             proccessResult(result);
+            progressBar.cancel();
         }
 
     }
@@ -418,6 +500,7 @@ public class MenuPrincipal extends AppCompatActivity
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            progressBar.show();
         }
 
         @Override
@@ -436,8 +519,38 @@ public class MenuPrincipal extends AppCompatActivity
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
+            progressBar.cancel();
         }
     }
+
+    private class AddClienteTask extends AsyncTask<String, Integer, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String baseUrl = params[0];
+            String jsonData = params[1];
+            return UtilsDML.addCliente(baseUrl,jsonData);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            proccessResult(result);
+            progressBar.cancel();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+        }
+    }
+
     public void proccessResult(String result){
         if (result.contains("OK")) {
             Toast.makeText(getApplicationContext(), getString(R.string.msg_success), Toast.LENGTH_LONG).show();
