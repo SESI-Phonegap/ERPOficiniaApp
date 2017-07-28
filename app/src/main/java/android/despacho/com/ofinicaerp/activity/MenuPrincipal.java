@@ -1,16 +1,22 @@
 package android.despacho.com.ofinicaerp.activity;
 
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.despacho.com.ofinicaerp.ActivityBase;
 import android.despacho.com.ofinicaerp.R;
 import android.despacho.com.ofinicaerp.fragments.ClientesDespachoFragment;
 import android.despacho.com.ofinicaerp.fragments.EmpleadoFragment;
+import android.despacho.com.ofinicaerp.fragments.GastoGasolinaFragment;
 import android.despacho.com.ofinicaerp.fragments.HomeFragment;
 import android.despacho.com.ofinicaerp.fragments.RutasFragment;
 import android.despacho.com.ofinicaerp.fragments.VehiculoFragment;
 import android.despacho.com.ofinicaerp.models.ModelDespacho_Clientes;
 import android.despacho.com.ofinicaerp.models.ModelEmpleado;
+import android.despacho.com.ofinicaerp.models.ModelGastosGasolina;
 import android.despacho.com.ofinicaerp.models.ModelVehiculo;
+import android.despacho.com.ofinicaerp.utils.Constants;
 import android.despacho.com.ofinicaerp.utils.UtilsDML;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
@@ -39,14 +45,19 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -57,21 +68,26 @@ import static android.despacho.com.ofinicaerp.utils.Constants.TAKE_PICTURE_EMPLE
 import static android.despacho.com.ofinicaerp.utils.Constants.TAKE_PICTURE_VEHICULO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_CLIENTE;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_EMPLEADO;
+import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_GASTO_GASOLINA;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_VEHICULO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_EMPLEADO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_VEHICULO;
 
-public class MenuPrincipal extends AppCompatActivity
+public class MenuPrincipal extends ActivityBase
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private FloatingActionButton fab;
     private AlertDialog dialog;
     private String imageBase64;
-    private ImageView photoCar;
+    private CircleImageView photoCar;
     private CircleImageView photoEmpleado;
     private String id_empleado;
     private ProgressDialog progressBar;
     private List<ModelEmpleado> listEmpleados;
+    private List<ModelVehiculo> listVehiculos;
+    private String idVehiculo;
+    private EditText et_fecha;
+    private SimpleDateFormat dateFormatter;;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +100,7 @@ public class MenuPrincipal extends AppCompatActivity
     }
 
     public void init() {
+        dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         imageBase64 = "";
         progressBar = new ProgressDialog(MenuPrincipal.this);
         progressBar.setMessage("Cargando...");
@@ -92,7 +109,9 @@ public class MenuPrincipal extends AppCompatActivity
         progressBar.setCanceledOnTouchOutside(false);
         progressBar.setIndeterminate(true);
         listEmpleados = new ArrayList<>();
+        listVehiculos = new ArrayList<>();
         new QueryEmpleadoTask().execute(URL_QUERY_EMPLEADO);
+        new QueryVehiculoTask().execute(URL_QUERY_VEHICULO);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -169,6 +188,8 @@ public class MenuPrincipal extends AppCompatActivity
                 break;
 
             case R.id._nav_gasto_gasolina:
+                changeFragment(GastoGasolinaFragment.newInstance(), R.id.mainFrame, false, false);
+                fab.setOnClickListener(onClickGastoGasolina);
                 break;
 
             case R.id._nav_clientes:
@@ -185,22 +206,7 @@ public class MenuPrincipal extends AppCompatActivity
         return true;
     }
 
-    public void changeFragment(Fragment fragment, int resource, boolean isRoot, boolean backStack) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-        if (isRoot) {
-            transaction.add(resource, fragment);
-        } else {
-            transaction.replace(resource, fragment);
-        }
-
-        if (backStack) {
-            transaction.addToBackStack(null);
-        }
-        transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.enter_from_left);
-        //transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        transaction.commit();
-    }
 
     // Eventos para el FloatingActionButton
 
@@ -239,6 +245,13 @@ public class MenuPrincipal extends AppCompatActivity
         }
     };
 
+    View.OnClickListener onClickGastoGasolina = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            createDialogNewGastoGasolina();
+        }
+    };
+
     public void createDialogNewVehiculo() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
         LayoutInflater inflater = MenuPrincipal.this.getLayoutInflater();
@@ -252,7 +265,7 @@ public class MenuPrincipal extends AppCompatActivity
         builder.setView(view);
 
 
-        photoCar = (ImageView) view.findViewById(R.id.vehiculo_photo);
+        photoCar = (CircleImageView) view.findViewById(R.id.vehiculo_photo);
         Button btn_guardar = (Button) view.findViewById(R.id.btn_vehiculo_guardar);
         Button btn_cancelar = (Button) view.findViewById(R.id.btn_vehiculo_cancelar);
         final EditText et_nombre = (EditText) view.findViewById(R.id.vehiculo_nombre);
@@ -370,7 +383,7 @@ public class MenuPrincipal extends AppCompatActivity
                 String telefono = et_telefono.getText().toString();
 
                 // String empleado = spinnerEmpleado.
-                if (nombre.equals("") && puesto.equals("") && sueldo.equals("") && empresa.equals("") &&
+                if (nombre.equals("") || puesto.equals("") || sueldo.equals("") || empresa.equals("") ||
                         telefono.equals("")) {
                     Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
                 } else {
@@ -426,7 +439,7 @@ public class MenuPrincipal extends AppCompatActivity
                 String honorario = et_honorario.getText().toString();
 
                 // String empleado = spinnerEmpleado.
-                if (nombre.equals("") && rfc.equals("") && curp.equals("") && honorario.equals("")) {
+                if (nombre.equals("") || rfc.equals("") || curp.equals("") || honorario.equals("")) {
                     Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
                 } else {
                     ModelDespacho_Clientes cliente = new ModelDespacho_Clientes(
@@ -451,6 +464,104 @@ public class MenuPrincipal extends AppCompatActivity
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
         dialog.show();
+    }
+
+    public void createDialogNewGastoGasolina() {
+
+        idVehiculo = "";
+        final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
+        LayoutInflater inflater = MenuPrincipal.this.getLayoutInflater();
+        final View view = inflater.inflate(R.layout.dialog_add_gasto_gasolina, null);
+
+        builder.setView(view);
+
+        final String[] idNomVehiculo = new String[listVehiculos.size()];
+        for (int i = 0; i < listVehiculos.size() ; i++){
+            idNomVehiculo[i] = listVehiculos.get(i).getId_vehiculo() + " " + listVehiculos.get(i).getNombre();
+        }
+        Button btn_guardar = (Button) view.findViewById(R.id.btn_gasolina_guardar);
+        Button btn_cancelar = (Button) view.findViewById(R.id.btn_gasolina_cancelar);
+        final Spinner spinner_idVehiculo = (Spinner) view.findViewById(R.id.gasolina_spinner_idvehiculo);
+        et_fecha = (EditText) view.findViewById(R.id.gasolina_et_fecha);
+        final EditText et_gas = (EditText) view.findViewById(R.id.gasolina_et_tipoGas);
+        final EditText et_litros = (EditText) view.findViewById(R.id.gasolina_et_litros);
+        final EditText et_monto = (EditText) view.findViewById(R.id.gasolina_et_monto);
+
+        dialog = builder.create();
+
+        et_fecha.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDialogDate();
+            }
+        });
+        spinner_idVehiculo.setAdapter(new ArrayAdapter<>(getApplication(),R.layout.row_spinner_item,idNomVehiculo));
+        spinner_idVehiculo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                idVehiculo = parent.getItemAtPosition(position).toString().substring(0,1);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        btn_cancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        btn_guardar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String fecha = et_fecha.getText().toString();
+                String gas = et_gas.getText().toString();
+                String litros = et_litros.getText().toString();
+                String monto = et_monto.getText().toString();
+
+                // String empleado = spinnerEmpleado.
+                if (fecha.equals("") || gas.equals("") || litros.equals("") || monto.equals("") || idNomVehiculo.equals("")) {
+                    Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
+                } else {
+                    ModelGastosGasolina gastoGas = new ModelGastosGasolina(
+                            Integer.parseInt(idVehiculo),
+                            fecha,
+                            gas,
+                            Double.parseDouble(litros),
+                            Double.parseDouble(monto));
+
+                    String strJson = gastoGas.toJsonAddGasolina();
+                    new AddGastoGasolinaTask().execute(URL_ADD_GASTO_GASOLINA,strJson);
+                }
+
+            }
+        });
+
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(false);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+        dialog.show();
+    }
+
+    public void showDialogDate() {
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int month = calendar.get(Calendar.MONTH);
+        int year = calendar.get(Calendar.YEAR);
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                Calendar newDate = Calendar.getInstance();
+                newDate.set(year, month, dayOfMonth);
+                et_fecha.setText(dateFormatter.format(newDate.getTime()));
+            }
+        },year,month,day);
+        datePickerDialog.show();
     }
 
     public void tomaFoto(int action) {
@@ -501,7 +612,7 @@ public class MenuPrincipal extends AppCompatActivity
         protected String doInBackground(String... params) {
             String baseUrl = params[0];
             String jsonData = params[1];
-            return UtilsDML.addVehiculo(baseUrl, jsonData);
+            return UtilsDML.addData(Constants.POST_VEHICULO,baseUrl,jsonData);
 
         }
 
@@ -531,7 +642,7 @@ public class MenuPrincipal extends AppCompatActivity
         protected String doInBackground(String... params) {
             String baseUrl = params[0];
             String jsonData = params[1];
-            return UtilsDML.addEmpleado(baseUrl,jsonData);
+            return UtilsDML.addData(Constants.POST_EMPLEADO,baseUrl,jsonData);
         }
 
         @Override
@@ -559,7 +670,35 @@ public class MenuPrincipal extends AppCompatActivity
         protected String doInBackground(String... params) {
             String baseUrl = params[0];
             String jsonData = params[1];
-            return UtilsDML.addCliente(baseUrl,jsonData);
+            return UtilsDML.addData(Constants.POST_CLIENTE,baseUrl,jsonData);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            proccessResult(result);
+            progressBar.cancel();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+        }
+    }
+
+    private class AddGastoGasolinaTask extends AsyncTask<String, Integer, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String baseUrl = params[0];
+            String jsonData = params[1];
+            return UtilsDML.addData(Constants.POST_GASOLINA,baseUrl,jsonData);
         }
 
         @Override
@@ -597,6 +736,32 @@ public class MenuPrincipal extends AppCompatActivity
             super.onPostExecute(result);
             UtilsDML.resultQueryEmpleado(result,listEmpleados);
            // setUpRecyclerView();
+            progressBar.cancel();
+        }
+    }
+
+    private class QueryVehiculoTask extends AsyncTask<String, Integer, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            return UtilsDML.queryAllData(params[0]);
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            UtilsDML.resultQueryVehiculo(result,listVehiculos);
+            // setUpRecyclerView();
             progressBar.cancel();
         }
     }

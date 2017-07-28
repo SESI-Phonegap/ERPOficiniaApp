@@ -1,6 +1,7 @@
 <TextView
     android:id="@+id/row_spinner_item"
     android:text="xxxxxx"
+    android:textSize="18sp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.TextView.SpinnerItem"

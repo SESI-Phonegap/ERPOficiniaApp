@@ -58,6 +58,16 @@
     <string name="passCertificado">Contraseña Certificado</string>
 
 
+    <!-- Fragment Gastos Gasolido-->
+    <string name="gasolinaTitle">Gastos en Gasolina</string>
+    <string name="busquedaFecha">Busqueda por fecha</string>
+    <string name="fechaIni">Fecha inicial</string>
+    <string name="fechaFin">Fecha Final</string>
+    <string name="monto">$ %d</string>
+    <string name="total">Total: $ %d</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

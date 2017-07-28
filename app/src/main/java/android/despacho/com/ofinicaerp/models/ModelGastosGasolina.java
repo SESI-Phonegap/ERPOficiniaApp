@@ -1,6 +1,9 @@
 package android.despacho.com.ofinicaerp.models;
 
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class ModelGastosGasolina {
     private int id_gasto_gas;
     private int id_vehiculo;
@@ -12,6 +15,16 @@ public class ModelGastosGasolina {
     public ModelGastosGasolina(int id_gasto_gas, int id_vehiculo, String fecha,
                                String tipo_gas, double cantidad_litros, double costo){
         this.id_gasto_gas = id_gasto_gas;
+        this.id_vehiculo = id_vehiculo;
+        this.fecha = fecha;
+        this.tipo_gas = tipo_gas;
+        this.cantidad_litros = cantidad_litros;
+        this.costo = costo;
+    }
+
+    public ModelGastosGasolina(int id_vehiculo, String fecha,
+                               String tipo_gas, double cantidad_litros, double costo){
+
         this.id_vehiculo = id_vehiculo;
         this.fecha = fecha;
         this.tipo_gas = tipo_gas;
@@ -40,5 +53,22 @@ public class ModelGastosGasolina {
 
     public double getCosto() {
         return costo;
+    }
+
+    public String toJsonAddGasolina() {
+        JSONObject jsonObject= new JSONObject();
+        try {
+            jsonObject.put("idvehiculo", getId_vehiculo());
+            jsonObject.put("fecha", getFecha());
+            jsonObject.put("gas", getTipo_gas());
+            jsonObject.put("litros", getCantidad_litros());
+            jsonObject.put("costo", getCosto());
+
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
     }
 }
