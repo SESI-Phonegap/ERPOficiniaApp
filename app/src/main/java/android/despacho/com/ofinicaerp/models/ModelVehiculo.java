@@ -15,7 +15,7 @@ public class ModelVehiculo {
     private String color;
 
     public ModelVehiculo(int id_vehiculo, String nombre, String modelo, String marca,
-                         String serie, int id_empleado, String photoBase64){
+                         String serie, int id_empleado, String photoBase64, String placas, String color){
         this.id_vehiculo = id_vehiculo;
         this.nombre = nombre;
         this.modelo = modelo;
@@ -23,16 +23,20 @@ public class ModelVehiculo {
         this.serie = serie;
         this.id_empleado = id_empleado;
         this.photoBase64 = photoBase64;
+        this.placas = placas;
+        this.color = color;
     }
 
     public ModelVehiculo(String nombre, String modelo, String marca,
-                         String serie, int id_empleado, String photoBase64){
+                         String serie, int id_empleado, String photoBase64, String placas, String color){
         this.nombre = nombre;
         this.modelo = modelo;
         this.marca = marca;
         this.serie = serie;
         this.id_empleado = id_empleado;
         this.photoBase64 = photoBase64;
+        this.placas = placas;
+        this.color = color;
 
     }
 

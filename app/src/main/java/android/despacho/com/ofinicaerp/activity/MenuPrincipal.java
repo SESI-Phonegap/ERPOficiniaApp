@@ -35,6 +35,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -89,6 +90,7 @@ public class MenuPrincipal extends AppCompatActivity
         progressBar.setCanceledOnTouchOutside(false);
         progressBar.setIndeterminate(true);
         listEmpleados = new ArrayList<>();
+        new QueryEmpleadoTask().execute(URL_QUERY_EMPLEADO);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -240,7 +242,7 @@ public class MenuPrincipal extends AppCompatActivity
         LayoutInflater inflater = MenuPrincipal.this.getLayoutInflater();
         final View view = inflater.inflate(R.layout.dialog_add_vehiculo, null);
 
-        new QueryEmpleadoTask().execute(URL_QUERY_EMPLEADO);
+
         String[] idNomEmpleado = new String[listEmpleados.size()];
         for (int i = 0; i < listEmpleados.size() ; i++){
             idNomEmpleado[i] = listEmpleados.get(i).getId_empleado() + " " + listEmpleados.get(i).getNombre();
@@ -261,11 +263,11 @@ public class MenuPrincipal extends AppCompatActivity
         id_empleado = "";
         imageBase64 = "";
         dialog = builder.create();
-        spinnerEmpleado.setAdapter(new ArrayAdapter<>(getApplication(),android.R.layout.simple_spinner_item,listEmpleados));
+        spinnerEmpleado.setAdapter(new ArrayAdapter<>(getApplication(),R.layout.row_spinner_item,idNomEmpleado));
         spinnerEmpleado.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                id_empleado = parent.getItemAtPosition(position).toString();
+                id_empleado = parent.getItemAtPosition(position).toString().substring(0,1);
             }
 
             @Override
@@ -298,11 +300,12 @@ public class MenuPrincipal extends AppCompatActivity
                 String placas = et_placas.getText().toString();
                 String color = et_color.getText().toString();
                 // String empleado = spinnerEmpleado.
-                if (nombre.equals("") && modelo.equals("") && marca.equals("") && serie.equals("") &&
-                        placas.equals("") && color.equals("") && id_empleado.equals("")) {
+                if (nombre.equals("") || modelo.equals("") || marca.equals("") || serie.equals("") ||
+                        placas.equals("") || color.equals("") || id_empleado.equals("")) {
                     Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
                 } else {
-                    ModelVehiculo modelVehiculo = new ModelVehiculo(nombre, modelo, marca, serie, Integer.parseInt(id_empleado), imageBase64);
+
+                    ModelVehiculo modelVehiculo = new ModelVehiculo(nombre, modelo, marca, serie, Integer.parseInt(id_empleado), imageBase64,placas,color);
                     String strJson = modelVehiculo.toJsonAddVehiculo();
                     new AddVehiculoTask().execute(URL_ADD_VEHICULO, strJson);
                 }
@@ -313,6 +316,8 @@ public class MenuPrincipal extends AppCompatActivity
         dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(false);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
         dialog.show();
 
     }
@@ -376,6 +381,8 @@ public class MenuPrincipal extends AppCompatActivity
         dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(false);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
         dialog.show();
     }
 
@@ -437,6 +444,8 @@ public class MenuPrincipal extends AppCompatActivity
         dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(false);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
         dialog.show();
     }
 
