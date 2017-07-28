@@ -40,6 +40,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -58,6 +59,7 @@ import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_CLIENTE;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_EMPLEADO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_VEHICULO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_EMPLEADO;
+import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_VEHICULO;
 
 public class MenuPrincipal extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -65,7 +67,7 @@ public class MenuPrincipal extends AppCompatActivity
     private FloatingActionButton fab;
     private AlertDialog dialog;
     private String imageBase64;
-    private CircleImageView photoCar;
+    private ImageView photoCar;
     private CircleImageView photoEmpleado;
     private String id_empleado;
     private ProgressDialog progressBar;
@@ -250,7 +252,7 @@ public class MenuPrincipal extends AppCompatActivity
         builder.setView(view);
 
 
-        photoCar = (CircleImageView) view.findViewById(R.id.vehiculo_photo);
+        photoCar = (ImageView) view.findViewById(R.id.vehiculo_photo);
         Button btn_guardar = (Button) view.findViewById(R.id.btn_vehiculo_guardar);
         Button btn_cancelar = (Button) view.findViewById(R.id.btn_vehiculo_cancelar);
         final EditText et_nombre = (EditText) view.findViewById(R.id.vehiculo_nombre);
@@ -309,6 +311,8 @@ public class MenuPrincipal extends AppCompatActivity
                     String strJson = modelVehiculo.toJsonAddVehiculo();
                     new AddVehiculoTask().execute(URL_ADD_VEHICULO, strJson);
                 }
+
+                changeFragment(VehiculoFragment.newInstance(), R.id.mainFrame, false, false);
 
             }
         });
@@ -471,7 +475,7 @@ public class MenuPrincipal extends AppCompatActivity
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             Bitmap bMap = (Bitmap) data.getExtras().get("data");
-            bMap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+            bMap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
             byte[] byteImage = baos.toByteArray();
             imageBase64 = Base64.encodeToString(byteImage, Base64.DEFAULT);
 

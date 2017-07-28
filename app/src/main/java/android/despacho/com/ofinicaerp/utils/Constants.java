@@ -9,6 +9,7 @@ public class Constants {
     public static String URL_ADD_CLIENTE = "http://despachogonzalez.com.mx/erpoficina/newcliente.php";
     public static String URL_QUERY_EMPLEADO = "http://despachogonzalez.com.mx/erpoficina/queryempleado.php";
     public static String URL_QUERY_CLIENTE = "http://despachogonzalez.com.mx/erpoficina/querycliente.php";
+    public static String URL_QUERY_VEHICULO = "http://despachogonzalez.com.mx/erpoficina/queryvehiculo.php";
 
     public static String PUTEXTRA_ID_EMPLEADO = "id_empleado";
     public static String PUTEXTRA_TIPO_USER = "tipo_user";

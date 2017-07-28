@@ -230,7 +230,7 @@ public class EmpleadoFragment extends Fragment {
         }
     }
 
-    private class QueryEmpleadoTask extends AsyncTask<String, Integer, String> {
+    public class QueryEmpleadoTask extends AsyncTask<String, Integer, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();

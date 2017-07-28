@@ -7,9 +7,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.despacho.com.ofinicaerp.models.ModelEmpleado;
 import android.despacho.com.ofinicaerp.models.ModelVehiculo;
+import android.despacho.com.ofinicaerp.utils.Constants;
+import android.despacho.com.ofinicaerp.utils.UtilsDML;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -76,6 +79,7 @@ public class VehiculoFragment extends Fragment {
         progressBar.setIndeterminate(true);
         listVehiculos = new ArrayList<>();
         recyclerView = (RecyclerView) getActivity().findViewById(R.id.recycler_view_vehiculo);
+        new QueryVehiculoTask().execute(Constants.URL_QUERY_VEHICULO);
     }
 
     public void setUpRecyclerView() {
@@ -185,6 +189,7 @@ public class VehiculoFragment extends Fragment {
             return itemsPendingRemoval.contains(item);
         }
     }
+
     private static class TestViewHolder extends RecyclerView.ViewHolder {
         CircleImageView photoVehiculo;
         TextView et_nombre;
@@ -201,6 +206,32 @@ public class VehiculoFragment extends Fragment {
             et_color = (TextView) itemView.findViewById(R.id.row_color);
             et_modelo = (TextView) itemView.findViewById(R.id.row_model_car);
             mView = itemView;
+        }
+    }
+
+    private class QueryVehiculoTask extends AsyncTask<String, Integer, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            return UtilsDML.queryAllData(params[0]);
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            UtilsDML.resultQueryVehiculo(result,listVehiculos);
+            setUpRecyclerView();
+            progressBar.cancel();
         }
     }
 
