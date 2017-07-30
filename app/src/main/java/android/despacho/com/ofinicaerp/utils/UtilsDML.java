@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.despacho.com.ofinicaerp.R;
 import android.despacho.com.ofinicaerp.models.ModelDespacho_Clientes;
 import android.despacho.com.ofinicaerp.models.ModelEmpleado;
+import android.despacho.com.ofinicaerp.models.ModelGastosGasolina;
 import android.despacho.com.ofinicaerp.models.ModelUser;
 import android.despacho.com.ofinicaerp.models.ModelVehiculo;
 import android.util.Log;
@@ -308,4 +309,49 @@ public class UtilsDML {
 
     }
 
+    public static String resultQueryGasolina(Application context, String resultTask, List<ModelGastosGasolina> resultGastoGasolina) {
+        JSONArray jsonArray = null;
+        String result = "";
+
+        try {
+            jsonArray = new JSONArray(resultTask);
+            if (jsonArray.length() > 0) {
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    try {
+
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                        String fecha = jsonObject.getString("fecha");
+                        String carro = jsonObject.getString("carro");
+                        String litros = jsonObject.getString("litros");
+                        String costo = jsonObject.getString("costo");
+
+                        ModelGastosGasolina gastosGasolina = new ModelGastosGasolina(
+                                fecha,
+                                carro,
+                                Double.parseDouble(litros),
+                                Double.parseDouble(costo));
+                        resultGastoGasolina.add(gastosGasolina);
+
+
+                    } catch (JSONException e) {
+                        Log.e("JSON---", e.toString());
+                    }
+                }
+
+
+            } else {
+
+                result = context.getString(R.string.msg_usiarioIncorrecto);
+            }
+        } catch (JSONException e) {
+            return result = "Ocurrio un error al conectarse al servidor, intentelo de nuevo.";
+            //  Log.e("JSON", e.toString());
+        }
+
+
+
+        return result;
+    }
 }

@@ -12,6 +12,8 @@ public class ModelGastosGasolina {
     private double cantidad_litros;
     private double costo;
 
+    private String carro;
+
     public ModelGastosGasolina(int id_gasto_gas, int id_vehiculo, String fecha,
                                String tipo_gas, double cantidad_litros, double costo){
         this.id_gasto_gas = id_gasto_gas;
@@ -28,6 +30,14 @@ public class ModelGastosGasolina {
         this.id_vehiculo = id_vehiculo;
         this.fecha = fecha;
         this.tipo_gas = tipo_gas;
+        this.cantidad_litros = cantidad_litros;
+        this.costo = costo;
+    }
+
+    public ModelGastosGasolina(String fecha, String carro, double cantidad_litros, double costo){
+
+        this.fecha = fecha;
+        this.carro = carro;
         this.cantidad_litros = cantidad_litros;
         this.costo = costo;
     }
@@ -53,6 +63,10 @@ public class ModelGastosGasolina {
 
     public double getCosto() {
         return costo;
+    }
+
+    public String getCarro() {
+        return carro;
     }
 
     public String toJsonAddGasolina() {
