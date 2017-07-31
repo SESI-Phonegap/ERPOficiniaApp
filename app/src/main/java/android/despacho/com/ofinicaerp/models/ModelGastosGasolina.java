@@ -11,7 +11,6 @@ public class ModelGastosGasolina {
     private String tipo_gas;
     private double cantidad_litros;
     private double costo;
-
     private String carro;
 
     public ModelGastosGasolina(int id_gasto_gas, int id_vehiculo, String fecha,
@@ -41,6 +40,8 @@ public class ModelGastosGasolina {
         this.cantidad_litros = cantidad_litros;
         this.costo = costo;
     }
+
+
     public int getId_gasto_gas() {
         return id_gasto_gas;
     }

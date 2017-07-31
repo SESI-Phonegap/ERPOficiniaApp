@@ -16,6 +16,7 @@ import android.despacho.com.ofinicaerp.models.ModelEmpleado;
 import android.despacho.com.ofinicaerp.models.ModelGastosGasolina;
 import android.despacho.com.ofinicaerp.models.ModelVehiculo;
 import android.despacho.com.ofinicaerp.utils.Constants;
+import android.despacho.com.ofinicaerp.utils.Utils;
 import android.despacho.com.ofinicaerp.utils.UtilsDML;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
@@ -81,7 +82,7 @@ public class MenuPrincipal extends ActivityBase
     private List<ModelVehiculo> listVehiculos;
     private String idVehiculo;
     private EditText et_fecha;
-    private SimpleDateFormat dateFormatter;;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +95,7 @@ public class MenuPrincipal extends ActivityBase
     }
 
     public void init() {
-        dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+
         imageBase64 = "";
         progressBar = new ProgressDialog(MenuPrincipal.this);
         progressBar.setMessage("Cargando...");
@@ -486,7 +487,7 @@ public class MenuPrincipal extends ActivityBase
         et_fecha.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDialogDate();
+                Utils.showDialogDate(MenuPrincipal.this,et_fecha);
             }
         });
         spinner_idVehiculo.setAdapter(new ArrayAdapter<>(getApplication(),R.layout.row_spinner_item,idNomVehiculo));
@@ -540,22 +541,6 @@ public class MenuPrincipal extends ActivityBase
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
         dialog.show();
-    }
-
-    public void showDialogDate() {
-        Calendar calendar = Calendar.getInstance();
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        int month = calendar.get(Calendar.MONTH);
-        int year = calendar.get(Calendar.YEAR);
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                Calendar newDate = Calendar.getInstance();
-                newDate.set(year, month, dayOfMonth);
-                et_fecha.setText(dateFormatter.format(newDate.getTime()));
-            }
-        },year,month,day);
-        datePickerDialog.show();
     }
 
     public void tomaFoto(int action) {

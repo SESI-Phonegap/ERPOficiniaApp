@@ -2,11 +2,15 @@ package android.despacho.com.ofinicaerp.fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.despacho.com.ofinicaerp.activity.MenuPrincipal;
 import android.despacho.com.ofinicaerp.models.ModelGastosGasolina;
 import android.despacho.com.ofinicaerp.models.ModelVehiculo;
+import android.despacho.com.ofinicaerp.utils.Utils;
+import android.despacho.com.ofinicaerp.utils.UtilsDML;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,18 +19,24 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import android.despacho.com.ofinicaerp.R;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static android.despacho.com.ofinicaerp.utils.Constants.POST_FECHA;
+import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_GASTO_GASOLINA;
 
 
 public class GastoGasolinaFragment extends Fragment {
@@ -37,6 +47,9 @@ public class GastoGasolinaFragment extends Fragment {
     private GasolinaAdapter testAdapter;
     private List<ModelGastosGasolina> listGasolina;
     private ProgressDialog progressBar;
+    private Button btn_buscar;
+    private TextView tv_total;
+    private double total;
 
     public GastoGasolinaFragment() {
         // Required empty public constructor
@@ -66,16 +79,57 @@ public class GastoGasolinaFragment extends Fragment {
     }
 
     public void init(){
+        tv_total = (TextView) getActivity().findViewById(R.id.labelTotal);
+        total = 0.0;
         progressBar = new ProgressDialog(getActivity());
         progressBar.setMessage("Cargando...");
         progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressBar.setCancelable(false);
         progressBar.setCanceledOnTouchOutside(false);
         progressBar.setIndeterminate(true);
+        btn_buscar = (Button) getActivity().findViewById(R.id.btn_buscar);
         et_fechaFin = (EditText) getActivity().findViewById(R.id.frag_gasolina_fechaFin);
         et_fechaIni = (EditText) getActivity().findViewById(R.id.frag_gasolina_fechaIni);
         recyclerView = (RecyclerView) getActivity().findViewById(R.id.frag_gasolina_recyclerView);
         listGasolina = new ArrayList<>();
+
+        et_fechaIni.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utils.showDialogDate(getContext(),et_fechaIni);
+                if (!et_fechaIni.getText().toString().equals("") || !et_fechaFin.getText().toString().equals("")){
+                    btn_buscar.setEnabled(true);
+                    btn_buscar.setAlpha(1.0f);
+                }
+            }
+        });
+
+        et_fechaFin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utils.showDialogDate(getContext(),et_fechaFin);
+                if (!et_fechaIni.getText().toString().equals("") || !et_fechaFin.getText().toString().equals("")){
+                    btn_buscar.setEnabled(true);
+                    btn_buscar.setAlpha(1.0f);
+                }
+            }
+        });
+
+        btn_buscar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (et_fechaIni.getText().toString().equals("") || et_fechaFin.getText().toString().equals("")){
+                    Toast.makeText(getActivity(),getString(R.string.msg_fecha),Toast.LENGTH_LONG).show();
+                } else {
+                    String fInicial = et_fechaIni.getText().toString();
+                    String fFinal = et_fechaFin.getText().toString();
+                    String strJSON = Utils.toJsonRangoFecha(fInicial,fFinal);
+                   // Log.i("JSSON--",strJSON);
+                    new QueryGatoGasolinaTask().execute(POST_FECHA,URL_QUERY_GASTO_GASOLINA,strJSON);
+
+                }
+            }
+        });
     }
 
     public void setUpRecyclerView() {
@@ -126,6 +180,8 @@ public class GastoGasolinaFragment extends Fragment {
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             TestViewHolder viewHolder = (TestViewHolder) holder;
             final ModelGastosGasolina item = items.get(position);
+            total += item.getCosto();
+            tv_total.setText(getString(R.string.total,total));
             viewHolder.et_fecha.setText(item.getFecha());
             viewHolder.et_carro.setText(item.getCarro());
             viewHolder.et_litros.setText(String.valueOf(item.getCantidad_litros()));
@@ -183,4 +239,29 @@ public class GastoGasolinaFragment extends Fragment {
     }
 
 
+    private class QueryGatoGasolinaTask extends AsyncTask<String, Integer, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            return UtilsDML.addData(params[0],params[1],params[2]);
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            UtilsDML.resultQueryGasolina(getActivity().getApplication(),result,listGasolina);
+            setUpRecyclerView();
+            progressBar.cancel();
+        }
+    }
 }

@@ -309,7 +309,7 @@ public class UtilsDML {
 
     }
 
-    public static String resultQueryGasolina(Application context, String resultTask, List<ModelGastosGasolina> resultGastoGasolina) {
+    public static String resultQueryGasolina(Application context,String resultTask, List<ModelGastosGasolina> resultGastoGasolina) {
         JSONArray jsonArray = null;
         String result = "";
 

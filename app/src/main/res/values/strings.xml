@@ -13,6 +13,7 @@
 
 
     <string name="msg_campos_vacios">No debe dejar campos vacios (*)obligatorios</string>
+    <string name="msg_fecha">Seleccione la fecha</string>
     <string name="msg_foto">Debes de ingresar una foto</string>
     <string name="msg_usiarioIncorrecto">Usuario o contraseña incorrectos.</string>
     <string name="msg_success">Registro exitoso</string>
@@ -40,6 +41,7 @@
     <!-- Dialog Vehiculo -->
     <string name="btn_guardar">Guardar</string>
     <string name="btn_cancelar">Cancelar</string>
+    <string name="btn_buscar">Buscar</string>
 
     <!-- Dialog Empleado -->
     <string name="nombre">* Nombre</string>
