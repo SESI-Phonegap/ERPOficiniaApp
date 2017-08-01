@@ -96,7 +96,7 @@
             android:textColor="@android:color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Fecha"/>
+            android:text="@string/fecha"/>
 
         <TextView
             android:id="@+id/carro"
@@ -108,7 +108,7 @@
             android:layout_marginStart="30dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Vehiculo"/>
+            android:text="@string/vehiculo"/>
 
         <TextView
             android:id="@+id/litros"
@@ -120,7 +120,7 @@
             android:layout_marginStart="30dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Litros"/>
+            android:text="@string/litros"/>
 
         <TextView
             android:id="@+id/gas"
@@ -132,7 +132,7 @@
             android:layout_marginStart="30dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Monto"/>
+            android:text="@string/labelmonto"/>
     </RelativeLayout>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/frag_gasolina_recyclerView"

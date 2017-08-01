@@ -2,6 +2,8 @@ package android.despacho.com.ofinicaerp.fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.despacho.com.ofinicaerp.activity.GasolinaDetails;
 import android.despacho.com.ofinicaerp.activity.MenuPrincipal;
 import android.despacho.com.ofinicaerp.models.ModelGastosGasolina;
 import android.despacho.com.ofinicaerp.models.ModelVehiculo;
@@ -45,12 +47,12 @@ public class GastoGasolinaFragment extends Fragment {
     private EditText et_fechaFin;
     public RecyclerView recyclerView;
     private GasolinaAdapter testAdapter;
-    private List<ModelGastosGasolina> listGasolina;
+    public static List<ModelGastosGasolina> listGasolina;
     private ProgressDialog progressBar;
     private Button btn_buscar;
     private TextView tv_total;
     private double total;
-
+    private String sIndex;
     public GastoGasolinaFragment() {
         // Required empty public constructor
     }
@@ -79,6 +81,7 @@ public class GastoGasolinaFragment extends Fragment {
     }
 
     public void init(){
+        sIndex = "0";
         tv_total = (TextView) getActivity().findViewById(R.id.labelTotal);
         total = 0.0;
         progressBar = new ProgressDialog(getActivity());
@@ -177,15 +180,25 @@ public class GastoGasolinaFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
             TestViewHolder viewHolder = (TestViewHolder) holder;
             final ModelGastosGasolina item = items.get(position);
             total += item.getCosto();
-            tv_total.setText(getString(R.string.total,total));
+            tv_total.setText(getString(R.string.total,String.valueOf(total)));
             viewHolder.et_fecha.setText(item.getFecha());
             viewHolder.et_carro.setText(item.getCarro());
             viewHolder.et_litros.setText(String.valueOf(item.getCantidad_litros()));
-            viewHolder.et_monto.setText(String.valueOf(item.getCosto()));
+            viewHolder.et_monto.setText(getString(R.string.monto,String.valueOf(item.getCosto())));
+            viewHolder.mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    sIndex = String.valueOf(holder.getLayoutPosition());
+                    Intent intent = new Intent(getActivity(),GasolinaDetails.class);
+                    intent.putExtra("INDEX",sIndex);
+                    intent.putExtra("MAX_INDEX",String.valueOf(listGasolina.size()));
+                    startActivity(intent);
+                }
+            });
 
         }
 

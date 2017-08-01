@@ -323,14 +323,22 @@ public class UtilsDML {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
 
                         String fecha = jsonObject.getString("fecha");
+                        String photobase64 = jsonObject.getString("photobase64");
                         String carro = jsonObject.getString("carro");
+                        String marca = jsonObject.getString("marca");
+                        String modelo = jsonObject.getString("modelo");
+                        String tipo_gas = jsonObject.getString("tipogas");
                         String litros = jsonObject.getString("litros");
                         String costo = jsonObject.getString("costo");
 
                         ModelGastosGasolina gastosGasolina = new ModelGastosGasolina(
                                 fecha,
+                                photobase64,
                                 carro,
+                                marca,
+                                modelo,
                                 Double.parseDouble(litros),
+                                tipo_gas,
                                 Double.parseDouble(costo));
                         resultGastoGasolina.add(gastosGasolina);
 

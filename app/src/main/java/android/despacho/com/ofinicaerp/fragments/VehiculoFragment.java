@@ -80,6 +80,7 @@ public class VehiculoFragment extends Fragment {
         listVehiculos = new ArrayList<>();
         recyclerView = (RecyclerView) getActivity().findViewById(R.id.recycler_view_vehiculo);
         new QueryVehiculoTask().execute(Constants.URL_QUERY_VEHICULO);
+
     }
 
     public void setUpRecyclerView() {
@@ -136,15 +137,6 @@ public class VehiculoFragment extends Fragment {
             viewHolder.et_modelo.setText(item.getModelo());
             viewHolder.et_color.setText(item.getColor());
             viewHolder.et_placa.setText(item.getPlacas());
-            if (Build.VERSION.SDK_INT >= 23) {
-                if (item.getPhotoBase64().equals("")) {
-                    viewHolder.photoVehiculo.setImageResource(R.drawable.ni_image);
-                } else {
-                    byte[] imageBytes = Base64.decode(item.getPhotoBase64(), Base64.DEFAULT);
-                    Bitmap decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                    viewHolder.photoVehiculo.setImageBitmap(decodedImage);
-                }
-            } else {
 
                 if (item.getPhotoBase64().equals("")) {
                     viewHolder.photoVehiculo.setImageResource(R.drawable.ni_image);
@@ -152,12 +144,8 @@ public class VehiculoFragment extends Fragment {
                     byte[] imageBytes = Base64.decode(item.getPhotoBase64(), Base64.DEFAULT);
                     Bitmap decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
                     viewHolder.photoVehiculo.setImageBitmap(decodedImage);
-
-                    // Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), Uri.parse(item.getPhotoBase64()));
-                    // viewHolder.photoEmpleado.setImageBitmap(bitmap);
-                    // viewHolder.icon.setImageURI(Uri.parse(item_photo));
                 }
-            }
+
         }
 
         @Override
