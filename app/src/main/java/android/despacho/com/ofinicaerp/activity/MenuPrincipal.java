@@ -1,8 +1,11 @@
 package android.despacho.com.ofinicaerp.activity;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.despacho.com.ofinicaerp.ActivityBase;
 import android.despacho.com.ofinicaerp.R;
 import android.despacho.com.ofinicaerp.fragments.ClientesDespachoFragment;
@@ -15,17 +18,27 @@ import android.despacho.com.ofinicaerp.models.ModelDespacho_Clientes;
 import android.despacho.com.ofinicaerp.models.ModelEmpleado;
 import android.despacho.com.ofinicaerp.models.ModelGastosGasolina;
 import android.despacho.com.ofinicaerp.models.ModelVehiculo;
+import android.despacho.com.ofinicaerp.utils.CameraPhoto;
 import android.despacho.com.ofinicaerp.utils.Constants;
+import android.despacho.com.ofinicaerp.utils.GalleryPhoto;
+import android.despacho.com.ofinicaerp.utils.ImageFilePath;
+import android.despacho.com.ofinicaerp.utils.ImageLoader;
 import android.despacho.com.ofinicaerp.utils.Utils;
 import android.despacho.com.ofinicaerp.utils.UtilsDML;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Base64;
 import android.util.Log;
@@ -44,10 +57,16 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -57,6 +76,9 @@ import java.util.Locale;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.despacho.com.ofinicaerp.utils.Constants.ADMIN;
+import static android.despacho.com.ofinicaerp.utils.Constants.EMPLEADO;
+import static android.despacho.com.ofinicaerp.utils.Constants.PICK_IMAGE_EMPLEADO;
+import static android.despacho.com.ofinicaerp.utils.Constants.PICK_IMAGE_VEHICULO;
 import static android.despacho.com.ofinicaerp.utils.Constants.PUTEXTRA_ID_EMPLEADO;
 import static android.despacho.com.ofinicaerp.utils.Constants.PUTEXTRA_TIPO_USER;
 import static android.despacho.com.ofinicaerp.utils.Constants.TAKE_PICTURE_EMPLEADO;
@@ -67,6 +89,7 @@ import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_GASTO_GASO
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_VEHICULO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_EMPLEADO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_VEHICULO;
+import static android.despacho.com.ofinicaerp.utils.Constants.VEHICULO;
 
 public class MenuPrincipal extends ActivityBase
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -82,6 +105,9 @@ public class MenuPrincipal extends ActivityBase
     private List<ModelVehiculo> listVehiculos;
     private String idVehiculo;
     private EditText et_fecha;
+    private String photoPathSelected;
+    private CameraPhoto cameraPhoto;
+    private GalleryPhoto galleryPhoto;
 
 
     @Override
@@ -95,8 +121,10 @@ public class MenuPrincipal extends ActivityBase
     }
 
     public void init() {
-
+        cameraPhoto = new CameraPhoto(getApplicationContext());
+        galleryPhoto = new GalleryPhoto(getApplicationContext());
         imageBase64 = "";
+        photoPathSelected = "";
         progressBar = new ProgressDialog(MenuPrincipal.this);
         progressBar.setMessage("Cargando...");
         progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -105,7 +133,7 @@ public class MenuPrincipal extends ActivityBase
         progressBar.setIndeterminate(true);
         listEmpleados = new ArrayList<>();
         listVehiculos = new ArrayList<>();
-        new QueryEmpleadoTask().execute(URL_QUERY_EMPLEADO);
+
         new QueryVehiculoTask().execute(URL_QUERY_VEHICULO);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -120,9 +148,9 @@ public class MenuPrincipal extends ActivityBase
         fab = (FloatingActionButton) findViewById(R.id.fab);
 
         String typeUser = getIntent().getStringExtra(PUTEXTRA_TIPO_USER);
-        int idUser = getIntent().getIntExtra(PUTEXTRA_ID_EMPLEADO,0);
+        int idUser = getIntent().getIntExtra(PUTEXTRA_ID_EMPLEADO, 0);
 
-        Log.i("USER-MENUP--",typeUser + " - " + idUser);
+        Log.i("USER-MENUP--", typeUser + " - " + idUser);
         Menu menu = navigationView.getMenu();
         MenuItem mClientes = menu.findItem(R.id._nav_clientes);
         MenuItem mHonorarios = menu.findItem(R.id._nav_honorarios);
@@ -202,7 +230,6 @@ public class MenuPrincipal extends ActivityBase
     }
 
 
-
     // Eventos para el FloatingActionButton
 
     View.OnClickListener onClickHome = new View.OnClickListener() {
@@ -222,7 +249,8 @@ public class MenuPrincipal extends ActivityBase
     View.OnClickListener onClickVehiculo = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            createDialogNewVehiculo();
+            Intent intent = new Intent(MenuPrincipal.this,FormVehiculo.class);
+            startActivity(intent);
         }
     };
 
@@ -247,92 +275,47 @@ public class MenuPrincipal extends ActivityBase
         }
     };
 
-    public void createDialogNewVehiculo() {
+    public void dialogSelectPhoto(final String from) {
+        final AlertDialog dialogPhoto;
         final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
         LayoutInflater inflater = MenuPrincipal.this.getLayoutInflater();
-        final View view = inflater.inflate(R.layout.dialog_add_vehiculo, null);
-
-
-        String[] idNomEmpleado = new String[listEmpleados.size()];
-        for (int i = 0; i < listEmpleados.size() ; i++){
-            idNomEmpleado[i] = listEmpleados.get(i).getId_empleado() + " " + listEmpleados.get(i).getNombre();
-        }
+        final View view = inflater.inflate(R.layout.dialog_select_photo, null);
         builder.setView(view);
+        dialogPhoto = builder.create();
 
+        ImageView btn_camera = (ImageView) view.findViewById(R.id.btn_camera);
+        ImageView btn_gallery = (ImageView) view.findViewById(R.id.btn_gallery);
 
-        photoCar = (CircleImageView) view.findViewById(R.id.vehiculo_photo);
-        Button btn_guardar = (Button) view.findViewById(R.id.btn_vehiculo_guardar);
-        Button btn_cancelar = (Button) view.findViewById(R.id.btn_vehiculo_cancelar);
-        final EditText et_nombre = (EditText) view.findViewById(R.id.vehiculo_nombre);
-        final EditText et_modelo = (EditText) view.findViewById(R.id.vehiculo_ano);
-        final EditText et_marca = (EditText) view.findViewById(R.id.vehiculo_marca);
-        final EditText et_serie = (EditText) view.findViewById(R.id.vehiculo_serie);
-        final EditText et_placas = (EditText) view.findViewById(R.id.vehiculo_placas);
-        final EditText et_color = (EditText) view.findViewById(R.id.vehiculo_color);
-        final Spinner spinnerEmpleado = (Spinner) view.findViewById(R.id.vehiculo_spinner);
-        id_empleado = "";
-        imageBase64 = "";
-        dialog = builder.create();
-        spinnerEmpleado.setAdapter(new ArrayAdapter<>(getApplication(),R.layout.row_spinner_item,idNomEmpleado));
-        spinnerEmpleado.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                id_empleado = parent.getItemAtPosition(position).toString().substring(0,1);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        photoCar.setOnClickListener(new View.OnClickListener() {
+        btn_camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tomaFoto(TAKE_PICTURE_VEHICULO);
-            }
-        });
 
-        btn_cancelar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        btn_guardar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String nombre = et_nombre.getText().toString();
-                String modelo = et_modelo.getText().toString();
-                String marca = et_marca.getText().toString();
-                String serie = et_serie.getText().toString();
-                String placas = et_placas.getText().toString();
-                String color = et_color.getText().toString();
-                // String empleado = spinnerEmpleado.
-                if (nombre.equals("") || modelo.equals("") || marca.equals("") || serie.equals("") ||
-                        placas.equals("") || color.equals("") || id_empleado.equals("")) {
-                    Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
-                } else {
-
-                    ModelVehiculo modelVehiculo = new ModelVehiculo(nombre, modelo, marca, serie, Integer.parseInt(id_empleado), imageBase64,placas,color);
-                    String strJson = modelVehiculo.toJsonAddVehiculo();
-                    new AddVehiculoTask().execute(URL_ADD_VEHICULO, strJson);
+                if (from.equals(VEHICULO)) {
+                    tomaFoto(TAKE_PICTURE_VEHICULO);
+                } else if (from.equals(EMPLEADO)) {
+                    tomaFoto(TAKE_PICTURE_EMPLEADO);
                 }
-
-                changeFragment(VehiculoFragment.newInstance(), R.id.mainFrame, false, false);
-
+                dialogPhoto.dismiss();
             }
         });
 
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setCancelable(false);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        btn_gallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-        dialog.show();
+                if (from.equals(VEHICULO)) {
+                    openGallery(PICK_IMAGE_VEHICULO);
+                } else if (from.equals(EMPLEADO)) {
+                    openGallery(PICK_IMAGE_EMPLEADO);
+                }
+                dialogPhoto.dismiss();
+            }
+        });
 
+        dialogPhoto.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialogPhoto.show();
     }
+
 
     public void createDialogNewEmpleado() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
@@ -357,7 +340,7 @@ public class MenuPrincipal extends ActivityBase
         photoEmpleado.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tomaFoto(TAKE_PICTURE_EMPLEADO);
+                dialogSelectPhoto(EMPLEADO);
             }
         });
 
@@ -382,7 +365,7 @@ public class MenuPrincipal extends ActivityBase
                         telefono.equals("")) {
                     Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
                 } else {
-                    ModelEmpleado modelEmpleado = new ModelEmpleado(nombre,puesto,Double.parseDouble(sueldo),empresa,imageBase64,telefono);
+                    ModelEmpleado modelEmpleado = new ModelEmpleado(nombre, puesto, Double.parseDouble(sueldo), empresa, imageBase64, telefono);
                     String strJson = modelEmpleado.toJsonAddEmpleado();
                     new AddEmpleadoTask().execute(URL_ADD_EMPLEADO, strJson);
                 }
@@ -447,7 +430,7 @@ public class MenuPrincipal extends ActivityBase
                             Double.parseDouble(honorario));
 
                     String strJson = cliente.toJsonAddCliente();
-                    new AddClienteTask().execute(URL_ADD_CLIENTE,strJson);
+                    new AddClienteTask().execute(URL_ADD_CLIENTE, strJson);
                 }
 
             }
@@ -471,7 +454,7 @@ public class MenuPrincipal extends ActivityBase
         builder.setView(view);
 
         final String[] idNomVehiculo = new String[listVehiculos.size()];
-        for (int i = 0; i < listVehiculos.size() ; i++){
+        for (int i = 0; i < listVehiculos.size(); i++) {
             idNomVehiculo[i] = listVehiculos.get(i).getId_vehiculo() + " " + listVehiculos.get(i).getNombre();
         }
         Button btn_guardar = (Button) view.findViewById(R.id.btn_gasolina_guardar);
@@ -487,14 +470,14 @@ public class MenuPrincipal extends ActivityBase
         et_fecha.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.showDialogDate(MenuPrincipal.this,et_fecha);
+                Utils.showDialogDate(MenuPrincipal.this, et_fecha);
             }
         });
-        spinner_idVehiculo.setAdapter(new ArrayAdapter<>(getApplication(),R.layout.row_spinner_item,idNomVehiculo));
+        spinner_idVehiculo.setAdapter(new ArrayAdapter<>(getApplication(), R.layout.row_spinner_item, idNomVehiculo));
         spinner_idVehiculo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                idVehiculo = parent.getItemAtPosition(position).toString().substring(0,1);
+                idVehiculo = parent.getItemAtPosition(position).toString().substring(0, 1);
             }
 
             @Override
@@ -529,7 +512,7 @@ public class MenuPrincipal extends ActivityBase
                             Double.parseDouble(monto));
 
                     String strJson = gastoGas.toJsonAddGasolina();
-                    new AddGastoGasolinaTask().execute(URL_ADD_GASTO_GASOLINA,strJson);
+                    new AddGastoGasolinaTask().execute(URL_ADD_GASTO_GASOLINA, strJson);
                 }
 
             }
@@ -544,16 +527,47 @@ public class MenuPrincipal extends ActivityBase
     }
 
     public void tomaFoto(int action) {
-        Intent intentCamera;
+
+        try {
+
+            switch (action) {
+                case TAKE_PICTURE_VEHICULO:
+                    startActivityForResult(cameraPhoto.takePhotoIntent(), TAKE_PICTURE_VEHICULO);
+                    break;
+
+                case TAKE_PICTURE_EMPLEADO:
+                    startActivityForResult(cameraPhoto.takePhotoIntent(), TAKE_PICTURE_EMPLEADO);
+                    break;
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void openGallery(int action) {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ActivityCompat.checkSelfPermission(MenuPrincipal.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(MenuPrincipal.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 999);
+
+            } else {
+                switchGallery(action);
+            }
+        } else {
+            switchGallery(action);
+        }
+
+    }
+
+    public void switchGallery(int action) {
+      //  Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
         switch (action) {
-            case TAKE_PICTURE_VEHICULO:
-                intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(intentCamera, TAKE_PICTURE_VEHICULO);
+            case PICK_IMAGE_EMPLEADO:
+                startActivityForResult(galleryPhoto.openGalleryIntent(), PICK_IMAGE_EMPLEADO);
                 break;
 
-            case TAKE_PICTURE_EMPLEADO:
-                intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(intentCamera, TAKE_PICTURE_EMPLEADO);
+            case PICK_IMAGE_VEHICULO:
+                startActivityForResult(galleryPhoto.openGalleryIntent(), PICK_IMAGE_VEHICULO);
                 break;
         }
     }
@@ -563,21 +577,75 @@ public class MenuPrincipal extends ActivityBase
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
 
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            Bitmap bMap = (Bitmap) data.getExtras().get("data");
-            bMap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            byte[] byteImage = baos.toByteArray();
-            imageBase64 = Base64.encodeToString(byteImage, Base64.DEFAULT);
+            if (data != null) {
 
-            if (requestCode == TAKE_PICTURE_VEHICULO) {
-                photoCar.setImageBitmap(bMap);
-            } else if (requestCode == TAKE_PICTURE_EMPLEADO) {
-                photoEmpleado.setImageBitmap(bMap);
+                    if (requestCode == PICK_IMAGE_VEHICULO) {
+                        Uri uri = data.getData();
+                        galleryPhoto.setPhotoUri(uri);
+                        String photoPath = galleryPhoto.getPath();
+                        try {
+                            Bitmap bitmap = ImageLoader.
+                                    init().
+                                    from(photoPath).
+                                    requestSize(1024, 800).
+                                    getBitmap();
+                            photoCar.setImageBitmap(bitmap);
+                   //         imageBase64 = Utils.encodeImageBase64(bitmap);
+                        }catch (FileNotFoundException e){
+                            e.printStackTrace();
+                        }
+
+                    } else if (requestCode == PICK_IMAGE_EMPLEADO) {
+                        Uri uri = data.getData();
+                        galleryPhoto.setPhotoUri(uri);
+                        String photoPath = galleryPhoto.getPath();
+                        try {
+                            Bitmap bitmap = ImageLoader.
+                                    init().
+                                    from(photoPath).
+                                    requestSize(1024, 800).
+                                    getBitmap();
+                            photoEmpleado.setImageBitmap(bitmap);
+                    //        imageBase64 = Utils.encodeImageBase64(bitmap);
+                        }catch (FileNotFoundException e){
+                            e.printStackTrace();
+                        }
+
+                    } /*else if (requestCode == TAKE_PICTURE_EMPLEADO) {
+                        String photoPath = cameraPhoto.getPhotoPath();
+                        try {
+                            Bitmap bitmap = ImageLoader.
+                                    init().
+                                    from(photoPath).
+                                    requestSize(1024, 800).
+                                    getBitmap();
+                            photoEmpleado.setImageBitmap(rotateBitmap(bitmap, 90));
+                   //         imageBase64 = Utils.encodeImageBase64(rotateBitmap(bitmap, 90));
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    } else if (requestCode == TAKE_PICTURE_VEHICULO) {
+                        String photoPath = cameraPhoto.getPhotoPath();
+                        try {
+                            Bitmap bitmap = ImageLoader.
+                                    init().
+                                    from(photoPath).
+                                    requestSize(1024, 800).
+                                    getBitmap();
+                            photoCar.setImageBitmap(rotateBitmap(bitmap, 90));
+                    //        imageBase64 = Utils.encodeImageBase64(rotateBitmap(bitmap, 90));
+                        } catch (FileNotFoundException e){
+                            e.printStackTrace();
+                        }
+                    }*/
+
+
+
             }
-
         }
-
     }
+
+
 
     private class AddVehiculoTask extends AsyncTask<String, Integer, String> {
 
@@ -591,7 +659,7 @@ public class MenuPrincipal extends ActivityBase
         protected String doInBackground(String... params) {
             String baseUrl = params[0];
             String jsonData = params[1];
-            return UtilsDML.addData(Constants.POST_VEHICULO,baseUrl,jsonData);
+            return UtilsDML.addData(Constants.POST_VEHICULO, baseUrl, jsonData);
 
         }
 
@@ -621,7 +689,7 @@ public class MenuPrincipal extends ActivityBase
         protected String doInBackground(String... params) {
             String baseUrl = params[0];
             String jsonData = params[1];
-            return UtilsDML.addData(Constants.POST_EMPLEADO,baseUrl,jsonData);
+            return UtilsDML.addData(Constants.POST_EMPLEADO, baseUrl, jsonData);
         }
 
         @Override
@@ -649,7 +717,7 @@ public class MenuPrincipal extends ActivityBase
         protected String doInBackground(String... params) {
             String baseUrl = params[0];
             String jsonData = params[1];
-            return UtilsDML.addData(Constants.POST_CLIENTE,baseUrl,jsonData);
+            return UtilsDML.addData(Constants.POST_CLIENTE, baseUrl, jsonData);
         }
 
         @Override
@@ -677,7 +745,7 @@ public class MenuPrincipal extends ActivityBase
         protected String doInBackground(String... params) {
             String baseUrl = params[0];
             String jsonData = params[1];
-            return UtilsDML.addData(Constants.POST_GASOLINA,baseUrl,jsonData);
+            return UtilsDML.addData(Constants.POST_GASOLINA, baseUrl, jsonData);
         }
 
         @Override
@@ -693,31 +761,6 @@ public class MenuPrincipal extends ActivityBase
         }
     }
 
-    private class QueryEmpleadoTask extends AsyncTask<String, Integer, String> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressBar.show();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            return UtilsDML.queryAllData(params[0]);
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            UtilsDML.resultQueryEmpleado(result,listEmpleados);
-           // setUpRecyclerView();
-            progressBar.cancel();
-        }
-    }
 
     private class QueryVehiculoTask extends AsyncTask<String, Integer, String> {
         @Override
@@ -739,13 +782,14 @@ public class MenuPrincipal extends ActivityBase
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            UtilsDML.resultQueryVehiculo(result,listVehiculos);
+            UtilsDML.resultQueryVehiculo(result, listVehiculos);
             // setUpRecyclerView();
             progressBar.cancel();
         }
+
     }
 
-    public void proccessResult(String result){
+    public void proccessResult(String result) {
         if (result.contains("OK")) {
             Toast.makeText(getApplicationContext(), getString(R.string.msg_success), Toast.LENGTH_LONG).show();
             dialog.dismiss();
@@ -753,4 +797,5 @@ public class MenuPrincipal extends ActivityBase
             Toast.makeText(getApplicationContext(), getString(R.string.msg_error) + result, Toast.LENGTH_LONG).show();
         }
     }
+
 }

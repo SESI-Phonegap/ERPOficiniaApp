@@ -23,4 +23,6 @@ public class ActivityBase extends AppCompatActivity {
         //transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         transaction.commit();
     }
+
+
 }

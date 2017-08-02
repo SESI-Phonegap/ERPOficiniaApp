@@ -37,8 +37,11 @@
 
     <string name="HomeFragment">Hello Home Fragment</string>
 
+    <!-- Dialog SelectPhoto-->
+    <string name="titleDialogSelectPhoto">Selecciona o toma una foto.</string>
 
     <!-- Dialog Vehiculo -->
+    <string name="nuevoVehiculo">Nuevo Vehiculo</string>
     <string name="btn_guardar">Guardar</string>
     <string name="btn_cancelar">Cancelar</string>
     <string name="btn_buscar">Buscar</string>

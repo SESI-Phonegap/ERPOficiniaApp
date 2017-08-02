@@ -280,30 +280,31 @@ public class UtilsDML {
         Log.w(APP_TAG,"Resultado obtenido " + result);
         //    data.setText(result);
         JSONArray jsonArray = null;
-
-        try {
-            jsonArray = new JSONArray(result);
-        } catch (JSONException e) {
-            Log.e("JSON", e.toString());
-        }
-
-        for (int i = 0; i < jsonArray.length(); i++) {
+        if (result.contains("[")) {
             try {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                listVehiculo.add(new ModelVehiculo(
-                        Integer.parseInt(jsonObject.getString("idvehiculo")),
-                        jsonObject.getString("nombre"),
-                        jsonObject.getString("modelo"),
-                        jsonObject.getString("marca"),
-                        jsonObject.getString("serie"),
-                        Integer.parseInt(jsonObject.getString("idempleado")),
-                        jsonObject.getString("photobase64"),
-                        jsonObject.getString("placas"),
-                        jsonObject.getString("color")));
-
-                //adapter.add("Clave : "+clave+" Nombre : "+ nombre);
+                jsonArray = new JSONArray(result);
             } catch (JSONException e) {
                 Log.e("JSON", e.toString());
+            }
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                try {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    listVehiculo.add(new ModelVehiculo(
+                            Integer.parseInt(jsonObject.getString("idvehiculo")),
+                            jsonObject.getString("nombre"),
+                            jsonObject.getString("modelo"),
+                            jsonObject.getString("marca"),
+                            jsonObject.getString("serie"),
+                            Integer.parseInt(jsonObject.getString("idempleado")),
+                            jsonObject.getString("photobase64"),
+                            jsonObject.getString("placas"),
+                            jsonObject.getString("color")));
+
+                    //adapter.add("Clave : "+clave+" Nombre : "+ nombre);
+                } catch (JSONException e) {
+                    Log.e("JSON", e.toString());
+                }
             }
         }
 

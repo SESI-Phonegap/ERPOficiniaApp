@@ -29,6 +29,8 @@ import android.view.ViewGroup;
 import android.despacho.com.ofinicaerp.R;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -141,9 +143,13 @@ public class VehiculoFragment extends Fragment {
                 if (item.getPhotoBase64().equals("")) {
                     viewHolder.photoVehiculo.setImageResource(R.drawable.ni_image);
                 } else {
-                    byte[] imageBytes = Base64.decode(item.getPhotoBase64(), Base64.DEFAULT);
+                 /*   byte[] imageBytes = Base64.decode(item.getPhotoBase64(), Base64.DEFAULT);
                     Bitmap decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                    viewHolder.photoVehiculo.setImageBitmap(decodedImage);
+                    viewHolder.photoVehiculo.setImageBitmap(decodedImage);*/
+                // Uri uri = Uri.parse(Constants.URL_BASE + item.getPhotoBase64());
+                    String UrlImage = Constants.URL_BASE + item.getPhotoBase64();
+                    Picasso.with(getContext()).load(UrlImage).fit().into(viewHolder.photoVehiculo);
+               //  viewHolder.photoVehiculo.setImageURI(uri);
                 }
 
         }

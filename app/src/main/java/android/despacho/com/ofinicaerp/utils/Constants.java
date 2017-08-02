@@ -3,6 +3,7 @@ package android.despacho.com.ofinicaerp.utils;
 public class Constants {
 
     //URLs -----------------------------------------------
+    public static String URL_BASE = "http://despachogonzalez.com.mx/erpoficina/";
     public static String URL_LOGIN = "http://despachogonzalez.com.mx/erpoficina/userlogin.php";
     public static String URL_ADD_VEHICULO = "http://despachogonzalez.com.mx/erpoficina/newvehiculo.php";
     public static String URL_ADD_EMPLEADO = "http://despachogonzalez.com.mx/erpoficina/newempleado.php";
@@ -26,4 +27,10 @@ public class Constants {
 
     public static final int TAKE_PICTURE_VEHICULO = 9001;
     public static final int TAKE_PICTURE_EMPLEADO = 9002;
+    public static final int PICK_IMAGE_VEHICULO = 8001;
+    public static final int PICK_IMAGE_EMPLEADO = 8002;
+
+    public static final String VEHICULO = "vehiculo";
+    public static final String EMPLEADO = "empleado";
+
 }
