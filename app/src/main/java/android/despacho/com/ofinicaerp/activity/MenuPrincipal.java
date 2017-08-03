@@ -250,7 +250,7 @@ public class MenuPrincipal extends ActivityBase
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(MenuPrincipal.this,FormVehiculo.class);
-            startActivity(intent);
+            startActivityForResult(intent,9999);
         }
     };
 
@@ -455,7 +455,7 @@ public class MenuPrincipal extends ActivityBase
 
         final String[] idNomVehiculo = new String[listVehiculos.size()];
         for (int i = 0; i < listVehiculos.size(); i++) {
-            idNomVehiculo[i] = listVehiculos.get(i).getId_vehiculo() + " " + listVehiculos.get(i).getNombre();
+            idNomVehiculo[i] = listVehiculos.get(i).getId_vehiculo() + "-" + listVehiculos.get(i).getNombre();
         }
         Button btn_guardar = (Button) view.findViewById(R.id.btn_gasolina_guardar);
         Button btn_cancelar = (Button) view.findViewById(R.id.btn_gasolina_cancelar);
@@ -477,7 +477,9 @@ public class MenuPrincipal extends ActivityBase
         spinner_idVehiculo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                idVehiculo = parent.getItemAtPosition(position).toString().substring(0, 1);
+                String[] parts = parent.getItemAtPosition(position).toString().split("-");
+
+                idVehiculo = parts[0];
             }
 
             @Override
@@ -578,6 +580,11 @@ public class MenuPrincipal extends ActivityBase
         if (resultCode == RESULT_OK) {
 
             if (data != null) {
+
+                final String sData = data.getStringExtra(Constants.REFRESH_FRAGMENT_VEHICULO);
+                if (sData.equals(Constants.REFRESH_FRAGMENT_VEHICULO)) {
+                    changeFragment(VehiculoFragment.newInstance(),R.id.mainFrame,false,false);
+                }
 
                     if (requestCode == PICK_IMAGE_VEHICULO) {
                         Uri uri = data.getData();

@@ -2,6 +2,7 @@ package android.despacho.com.ofinicaerp.activity;
 
 import android.despacho.com.ofinicaerp.fragments.GastoGasolinaFragment;
 import android.despacho.com.ofinicaerp.models.ModelGastosGasolina;
+import android.despacho.com.ofinicaerp.utils.Constants;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -12,6 +13,8 @@ import android.util.Base64;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -26,6 +29,7 @@ public class GasolinaDetails extends AppCompatActivity {
     private ImageView btn_anterior;
     private ImageView btn_siguiente;
     private ImageView photoCarro;
+    private ImageView imgBack;
     private int position;
     private int max_index;
     private List<ModelGastosGasolina> listGasolinaDetails;
@@ -39,7 +43,7 @@ public class GasolinaDetails extends AppCompatActivity {
     }
 
     public void init(){
-        selectedGasolinaDetails = GastoGasolinaFragment.listGasolina.get(position);
+        imgBack = (ImageView) findViewById(R.id.imgBack);
         photoCarro = (ImageView) findViewById(R.id.photoDetails);
         tv_carro = (TextView) findViewById(R.id.details_label_carro);
         tv_marca = (TextView) findViewById(R.id.details_label_marca);
@@ -54,6 +58,7 @@ public class GasolinaDetails extends AppCompatActivity {
 
         position = Integer.parseInt(getIntent().getStringExtra("INDEX"));
         max_index = Integer.parseInt(getIntent().getStringExtra("MAX_INDEX"));
+        selectedGasolinaDetails = GastoGasolinaFragment.listGasolina.get(position);
 
         btn_anterior.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,6 +80,13 @@ public class GasolinaDetails extends AppCompatActivity {
             }
         });
 
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
 
         loadInfo();
     }
@@ -87,24 +99,14 @@ public class GasolinaDetails extends AppCompatActivity {
         tv_litros.setText(getString(R.string.details_label_litros,String.valueOf(selectedGasolinaDetails.getCantidad_litros())));
         tv_tipoGas.setText(selectedGasolinaDetails.getTipo_gas());
         tv_monto.setText(getString(R.string.monto,String.valueOf(selectedGasolinaDetails.getCosto())));
-     /*   if (Build.VERSION.SDK_INT >= 23) {
+
             if (selectedGasolinaDetails.getPhoto_base64().equals("")) {
                 photoCarro.setImageResource(R.drawable.camaro);
             } else {
-                byte[] imageBytes = Base64.decode(selectedGasolinaDetails.getPhoto_base64(), Base64.DEFAULT);
-                Bitmap decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                photoCarro.setImageBitmap(decodedImage);
+                String UrlImage = Constants.URL_BASE + selectedGasolinaDetails.getPhoto_base64();
+                Picasso.with(this).load(UrlImage).fit().into(photoCarro);
             }
-        } else {
-*/
-            if (selectedGasolinaDetails.getPhoto_base64().equals("")) {
-                photoCarro.setImageResource(R.drawable.camaro);
-            } else {
-                byte[] imageBytes = Base64.decode(selectedGasolinaDetails.getPhoto_base64(), Base64.DEFAULT);
-                Bitmap decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                photoCarro.setImageBitmap(decodedImage);
-            }
-      //  }
+
     }
 
     public void loadInfoByIndex(int index){
@@ -116,23 +118,18 @@ public class GasolinaDetails extends AppCompatActivity {
         tv_litros.setText(getString(R.string.details_label_litros,String.valueOf(selectedGasolinaDetails.getCantidad_litros())));
         tv_tipoGas.setText(selectedGasolinaDetails.getTipo_gas());
         tv_monto.setText(getString(R.string.monto,String.valueOf(selectedGasolinaDetails.getCosto())));
-          /*   if (Build.VERSION.SDK_INT >= 23) {
-            if (selectedGasolinaDetails.getPhoto_base64().equals("")) {
-                photoCarro.setImageResource(R.drawable.camaro);
-            } else {
-                byte[] imageBytes = Base64.decode(selectedGasolinaDetails.getPhoto_base64(), Base64.DEFAULT);
-                Bitmap decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                photoCarro.setImageBitmap(decodedImage);
-            }
-        } else {
-*/
+
         if (selectedGasolinaDetails.getPhoto_base64().equals("")) {
             photoCarro.setImageResource(R.drawable.camaro);
         } else {
-            byte[] imageBytes = Base64.decode(selectedGasolinaDetails.getPhoto_base64(), Base64.DEFAULT);
-            Bitmap decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-            photoCarro.setImageBitmap(decodedImage);
+            String UrlImage = Constants.URL_BASE + selectedGasolinaDetails.getPhoto_base64();
+            Picasso.with(this).load(UrlImage).fit().into(photoCarro);
         }
-        //  }
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

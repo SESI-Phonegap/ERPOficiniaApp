@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.despacho.com.ofinicaerp.ActivityBase;
+import android.despacho.com.ofinicaerp.fragments.VehiculoFragment;
 import android.despacho.com.ofinicaerp.models.ModelEmpleado;
 import android.despacho.com.ofinicaerp.models.ModelVehiculo;
 import android.despacho.com.ofinicaerp.utils.CameraPhoto;
@@ -311,6 +312,10 @@ public class FormVehiculo extends ActivityBase implements View.OnClickListener {
             super.onPostExecute(result);
             proccessResult(result);
             progressBar.cancel();
+            Intent intent = new Intent();
+            intent.putExtra(Constants.REFRESH_FRAGMENT_VEHICULO, Constants.REFRESH_FRAGMENT_VEHICULO);
+            setResult(RESULT_OK,intent);
+            finish();
         }
 
     }

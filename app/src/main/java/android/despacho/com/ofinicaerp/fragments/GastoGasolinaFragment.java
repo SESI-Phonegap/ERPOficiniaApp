@@ -121,6 +121,11 @@ public class GastoGasolinaFragment extends Fragment {
         btn_buscar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if (testAdapter != null){
+                   testAdapter.removeAll();
+                }
+
                 if (et_fechaIni.getText().toString().equals("") || et_fechaFin.getText().toString().equals("")){
                     Toast.makeText(getActivity(),getString(R.string.msg_fecha),Toast.LENGTH_LONG).show();
                 } else {
@@ -168,7 +173,7 @@ public class GastoGasolinaFragment extends Fragment {
         GasolinaAdapter(List<ModelGastosGasolina> item, Context context) {
             items = item;
             mContext = context;
-            itemsPendingRemoval = new ArrayList<>();
+            itemsPendingRemoval = item;
             // let's generate some items
             lastInsertedIndex = 15;
 
@@ -215,6 +220,10 @@ public class GastoGasolinaFragment extends Fragment {
             return undoOn;
         }
 
+        public void removeAll(){
+            items.removeAll(itemsPendingRemoval);
+            notifyDataSetChanged();
+        }
         public void remove(int position) {
             ModelGastosGasolina item = items.get(position);
             if (itemsPendingRemoval.contains(item)) {

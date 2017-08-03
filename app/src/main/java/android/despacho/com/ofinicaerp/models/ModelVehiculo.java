@@ -14,6 +14,8 @@ public class ModelVehiculo {
     private String placas;
     private String color;
 
+    private String nombre_empleado;
+
     public ModelVehiculo(int id_vehiculo, String nombre, String modelo, String marca,
                          String serie, int id_empleado, String photoBase64, String placas, String color){
         this.id_vehiculo = id_vehiculo;
@@ -28,7 +30,8 @@ public class ModelVehiculo {
     }
 
     public ModelVehiculo(String nombre, String modelo, String marca,
-                         String serie, int id_empleado, String photoBase64, String placas, String color){
+                         String serie, int id_empleado, String photoBase64, String placas,
+                         String color){
         this.nombre = nombre;
         this.modelo = modelo;
         this.marca = marca;
@@ -37,6 +40,21 @@ public class ModelVehiculo {
         this.photoBase64 = photoBase64;
         this.placas = placas;
         this.color = color;
+
+    }
+
+    public ModelVehiculo(int id_vehiculo, String nombre, String modelo, String marca,
+                         String serie, int id_empleado, String photoBase64, String placas,
+                         String color, String nombre_empleado){
+        this.nombre = nombre;
+        this.modelo = modelo;
+        this.marca = marca;
+        this.serie = serie;
+        this.id_empleado = id_empleado;
+        this.photoBase64 = photoBase64;
+        this.placas = placas;
+        this.color = color;
+        this.nombre_empleado = nombre_empleado;
 
     }
 
@@ -74,6 +92,10 @@ public class ModelVehiculo {
 
     public String getColor() {
         return color;
+    }
+
+    public String getNombre_empleado() {
+        return nombre_empleado;
     }
 
     public String toJsonAddVehiculo() {

@@ -299,7 +299,8 @@ public class UtilsDML {
                             Integer.parseInt(jsonObject.getString("idempleado")),
                             jsonObject.getString("photobase64"),
                             jsonObject.getString("placas"),
-                            jsonObject.getString("color")));
+                            jsonObject.getString("color"),
+                            jsonObject.getString("empleado")));
 
                     //adapter.add("Clave : "+clave+" Nombre : "+ nombre);
                 } catch (JSONException e) {
@@ -314,6 +315,7 @@ public class UtilsDML {
         JSONArray jsonArray = null;
         String result = "";
 
+        Log.d("GASOLINA--", resultTask);
         try {
             jsonArray = new JSONArray(resultTask);
             if (jsonArray.length() > 0) {

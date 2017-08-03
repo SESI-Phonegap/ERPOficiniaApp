@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.despacho.com.ofinicaerp.activity.VehiculoDetails;
 import android.despacho.com.ofinicaerp.models.ModelEmpleado;
 import android.despacho.com.ofinicaerp.models.ModelVehiculo;
 import android.despacho.com.ofinicaerp.utils.Constants;
@@ -40,8 +41,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class VehiculoFragment extends Fragment {
     public RecyclerView recyclerView;
     private VehiculoAdapter testAdapter;
-    private List<ModelVehiculo> listVehiculos;
+    public static List<ModelVehiculo> listVehiculos;
     private ProgressDialog progressBar;
+    private String sIndex;
 
     public VehiculoFragment() {
         // Required empty public constructor
@@ -86,6 +88,7 @@ public class VehiculoFragment extends Fragment {
     }
 
     public void setUpRecyclerView() {
+
         testAdapter = new VehiculoAdapter(listVehiculos, getActivity());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(testAdapter);
@@ -132,7 +135,7 @@ public class VehiculoFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
             TestViewHolder viewHolder = (TestViewHolder) holder;
             final ModelVehiculo item = items.get(position);
             viewHolder.et_nombre.setText(item.getNombre());
@@ -143,14 +146,20 @@ public class VehiculoFragment extends Fragment {
                 if (item.getPhotoBase64().equals("")) {
                     viewHolder.photoVehiculo.setImageResource(R.drawable.ni_image);
                 } else {
-                 /*   byte[] imageBytes = Base64.decode(item.getPhotoBase64(), Base64.DEFAULT);
-                    Bitmap decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                    viewHolder.photoVehiculo.setImageBitmap(decodedImage);*/
-                // Uri uri = Uri.parse(Constants.URL_BASE + item.getPhotoBase64());
                     String UrlImage = Constants.URL_BASE + item.getPhotoBase64();
                     Picasso.with(getContext()).load(UrlImage).fit().into(viewHolder.photoVehiculo);
-               //  viewHolder.photoVehiculo.setImageURI(uri);
                 }
+
+                viewHolder.mView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        sIndex = String.valueOf(holder.getLayoutPosition());
+                        Intent intent = new Intent(getActivity(),VehiculoDetails.class);
+                        intent.putExtra("INDEX",sIndex);
+                        intent.putExtra("MAX_INDEX",String.valueOf(listVehiculos.size()));
+                        startActivity(intent);
+                    }
+                });
 
         }
 
@@ -167,6 +176,11 @@ public class VehiculoFragment extends Fragment {
             return undoOn;
         }
 
+        public void removeAll(){
+            for (int i = 0; i < items.size(); i++){
+                items.remove(i);
+            }
+        }
         public void remove(int position) {
             ModelVehiculo item = items.get(position);
             if (itemsPendingRemoval.contains(item)) {
