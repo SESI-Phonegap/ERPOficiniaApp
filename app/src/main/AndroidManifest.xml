@@ -45,7 +45,9 @@
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity android:name=".activity.VehiculoDetails" />
         <activity android:name=".activity.FormMantenimiento" />
-        <activity android:name=".activity.MantenimientoDetails"></activity>
+        <activity android:name=".activity.MantenimientoDetails" />
+        <activity android:name=".activity.TiendasPorRuta" />
+        <activity android:name=".activity.FormEmpleado"></activity>
     </application>
 
 </manifest>

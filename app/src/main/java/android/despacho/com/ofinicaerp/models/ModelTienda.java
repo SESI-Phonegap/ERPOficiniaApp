@@ -5,11 +5,18 @@ public class ModelTienda {
     private String nombre;
     private String direccion;
 
-    public ModelTienda(int id_tienda, String nombre, String direccion){
+    private int id_ruta;
+    private String ruta;
+
+    public ModelTienda(int id_tienda, String nombre, String direccion, int id_ruta, String ruta){
         this.id_tienda = id_tienda;
         this.nombre = nombre;
         this.direccion = direccion;
+        this.id_ruta = id_ruta;
+        this.ruta = ruta;
     }
+
+
     public int getId_tienda() {
         return id_tienda;
     }
@@ -20,5 +27,13 @@ public class ModelTienda {
 
     public String getDireccion() {
         return direccion;
+    }
+
+    public int getId_ruta() {
+        return id_ruta;
+    }
+
+    public String getRuta() {
+        return ruta;
     }
 }

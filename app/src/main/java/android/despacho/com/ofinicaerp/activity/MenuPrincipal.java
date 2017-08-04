@@ -14,10 +14,12 @@ import android.despacho.com.ofinicaerp.fragments.GastoGasolinaFragment;
 import android.despacho.com.ofinicaerp.fragments.HomeFragment;
 import android.despacho.com.ofinicaerp.fragments.MantenimientoVehiculoFragment;
 import android.despacho.com.ofinicaerp.fragments.RutasFragment;
+import android.despacho.com.ofinicaerp.fragments.TiendasFragment;
 import android.despacho.com.ofinicaerp.fragments.VehiculoFragment;
 import android.despacho.com.ofinicaerp.models.ModelDespacho_Clientes;
 import android.despacho.com.ofinicaerp.models.ModelEmpleado;
 import android.despacho.com.ofinicaerp.models.ModelGastosGasolina;
+import android.despacho.com.ofinicaerp.models.ModelRutas;
 import android.despacho.com.ofinicaerp.models.ModelVehiculo;
 import android.despacho.com.ofinicaerp.utils.CameraPhoto;
 import android.despacho.com.ofinicaerp.utils.Constants;
@@ -87,6 +89,7 @@ import static android.despacho.com.ofinicaerp.utils.Constants.TAKE_PICTURE_VEHIC
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_CLIENTE;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_EMPLEADO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_GASTO_GASOLINA;
+import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_RUTA;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_VEHICULO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_EMPLEADO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_VEHICULO;
@@ -195,6 +198,20 @@ public class MenuPrincipal extends ActivityBase
                 fab.setOnClickListener(onClickRutas);
                 break;
 
+            case R.id._nav_tienda:
+                changeFragment(TiendasFragment.newInstance(), R.id.mainFrame, false, false);
+                fab.setOnClickListener(onClickTiendas);
+                break;
+
+            case R.id._nav_ingresos:
+                break;
+
+            case R.id._nav_gastos:
+                break;
+
+            case R.id._nav_compGastos:
+                break;
+
             case R.id._nav_empleados:
                 changeFragment(EmpleadoFragment.newInstance(), R.id.mainFrame, false, false);
                 fab.setOnClickListener(onClickEmpleado);
@@ -245,7 +262,14 @@ public class MenuPrincipal extends ActivityBase
     View.OnClickListener onClickRutas = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Snackbar.make(v, "RutasFragment", BaseTransientBottomBar.LENGTH_LONG).show();
+            createDialogRuta();
+        }
+    };
+
+    View.OnClickListener onClickTiendas = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
         }
     };
 
@@ -327,6 +351,48 @@ public class MenuPrincipal extends ActivityBase
         dialogPhoto.show();
     }
 
+    public void createDialogRuta(){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
+        LayoutInflater inflater = MenuPrincipal.this.getLayoutInflater();
+        final View view = inflater.inflate(R.layout.dialog_add_ruta, null);
+
+        builder.setView(view);
+
+        final EditText et_ruta = (EditText) view.findViewById(R.id.dialog_et_ruta);
+        Button btn_guadar = (Button) view.findViewById(R.id.btn_guardar);
+        Button btn_cancelar = (Button) view.findViewById(R.id.btn_cancelar);
+
+        dialog = builder.create();
+
+        btn_cancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        btn_guadar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String ruta = et_ruta.getText().toString();
+                if (ruta.equals("")){
+                    Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
+                } else {
+                    ModelRutas rutas = new ModelRutas(ruta);
+                    String strJSON = rutas.toJsonAddRuta();
+                    new AddRutaTask().execute(URL_ADD_RUTA,strJSON);
+
+                }
+            }
+        });
+
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(false);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+        dialog.show();
+    }
 
     public void createDialogNewEmpleado() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
@@ -664,8 +730,7 @@ public class MenuPrincipal extends ActivityBase
     }
 
 
-
-    private class AddVehiculoTask extends AsyncTask<String, Integer, String> {
+    private class AddRutaTask extends AsyncTask<String, Integer, String> {
 
         @Override
         protected void onPreExecute() {
@@ -677,22 +742,22 @@ public class MenuPrincipal extends ActivityBase
         protected String doInBackground(String... params) {
             String baseUrl = params[0];
             String jsonData = params[1];
-            return UtilsDML.addData(Constants.POST_VEHICULO, baseUrl, jsonData);
-
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
+            return UtilsDML.addData(Constants.POST_RUTA, baseUrl, jsonData);
         }
 
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             proccessResult(result);
+            changeFragment(RutasFragment.newInstance(),R.id.mainFrame,false,false);
             progressBar.cancel();
         }
 
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+
+        }
     }
 
     private class AddEmpleadoTask extends AsyncTask<String, Integer, String> {
@@ -714,12 +779,14 @@ public class MenuPrincipal extends ActivityBase
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             proccessResult(result);
+            changeFragment(EmpleadoFragment.newInstance(),R.id.mainFrame,false,false);
+            progressBar.cancel();
         }
 
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
-            progressBar.cancel();
+
         }
     }
 

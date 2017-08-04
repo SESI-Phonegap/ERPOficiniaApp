@@ -5,21 +5,54 @@
 
         <item
             android:id="@+id/_nav_home"
+            android:icon="@drawable/home"
             android:title="@string/inicio"/>
-        <item
-            android:id="@+id/_nav_ruta"
-            android:title="@string/rutas"/>
+
 
     </group>
+
+    <item android:title="@string/rutas">
+        <menu>
+            <item
+                android:id="@+id/_nav_ruta"
+                android:icon="@drawable/routes"
+                android:title="@string/rutas"/>
+            <item
+                android:id="@+id/_nav_tienda"
+                android:icon="@drawable/store"
+                android:title="@string/tiendas"/>
+        </menu>
+
+    </item>
+
+    <item android:title="@string/ingresoEgresos">
+        <menu>
+            <item
+                android:id="@+id/_nav_ingresos"
+                android:icon="@drawable/income"
+                android:title="@string/ingresos"/>
+            <item
+                android:id="@+id/_nav_gastos"
+                android:icon="@drawable/money"
+                android:title="@string/gastos"/>
+            <item
+                android:id="@+id/_nav_compGastos"
+                android:icon="@drawable/ticket"
+                android:title="@string/compGastos"/>
+        </menu>
+
+    </item>
 
     <item android:title="@string/empleados">
         <menu>
             <item
                 android:id="@+id/_nav_empleados"
+                android:icon="@drawable/worker"
                 android:title="@string/empleados"/>
 
             <item
                 android:id="@+id/_nav_pago_nomina"
+                android:icon="@drawable/money"
                 android:title="@string/pagoNomina"/>
         </menu>
     </item>
@@ -28,13 +61,16 @@
         <menu>
             <item
                 android:id="@+id/_nav_registro_vehiculo"
+                android:icon="@drawable/car_"
                 android:title="@string/vehiculos"/>
             <item
                 android:id="@+id/_nav_registro_mantenimiento"
+                android:icon="@drawable/engine"
                 android:title="@string/mantenimiento"/>
 
             <item
                 android:id="@+id/_nav_gasto_gasolina"
+                android:icon="@drawable/gasstation"
                 android:title="@string/gasolina"/>
 
         </menu>
@@ -44,11 +80,11 @@
         <menu>
             <item
                 android:id="@+id/_nav_clientes"
-                android:icon="@drawable/ic_menu_share"
+                android:icon="@drawable/client"
                 android:title="@string/clientes" />
             <item
                 android:id="@+id/_nav_honorarios"
-                android:icon="@drawable/ic_menu_send"
+                android:icon="@drawable/income"
                 android:title="@string/honorarios" />
         </menu>
     </item>

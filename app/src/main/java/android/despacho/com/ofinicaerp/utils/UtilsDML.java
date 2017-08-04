@@ -9,6 +9,8 @@ import android.despacho.com.ofinicaerp.models.ModelDespacho_Clientes;
 import android.despacho.com.ofinicaerp.models.ModelEmpleado;
 import android.despacho.com.ofinicaerp.models.ModelGastosGasolina;
 import android.despacho.com.ofinicaerp.models.ModelMantenimiento;
+import android.despacho.com.ofinicaerp.models.ModelRutas;
+import android.despacho.com.ofinicaerp.models.ModelTienda;
 import android.despacho.com.ofinicaerp.models.ModelUser;
 import android.despacho.com.ofinicaerp.models.ModelVehiculo;
 import android.util.Log;
@@ -303,6 +305,65 @@ public class UtilsDML {
                             jsonObject.getString("placas"),
                             jsonObject.getString("color"),
                             jsonObject.getString("empleado")));
+
+                    //adapter.add("Clave : "+clave+" Nombre : "+ nombre);
+                } catch (JSONException e) {
+                    Log.e("JSON", e.toString());
+                }
+            }
+        }
+
+    }
+
+    public static void resultQueryRutas(String result, List<ModelRutas> listRuta){
+        //Se obtiene el resultado de la peticion Asincrona
+        Log.w(APP_TAG,"Resultado obtenido " + result);
+        //    data.setText(result);
+        JSONArray jsonArray = null;
+        if (result.contains("[")) {
+            try {
+                jsonArray = new JSONArray(result);
+            } catch (JSONException e) {
+                Log.e("JSON", e.toString());
+            }
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                try {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    listRuta.add(new ModelRutas(
+                            Integer.parseInt(jsonObject.getString("idRuta")),
+                            jsonObject.getString("ruta")));
+
+                    //adapter.add("Clave : "+clave+" Nombre : "+ nombre);
+                } catch (JSONException e) {
+                    Log.e("JSON", e.toString());
+                }
+            }
+        }
+
+    }
+
+    public static void resultQueryTiendas(String result, List<ModelTienda> listTiendas){
+        //Se obtiene el resultado de la peticion Asincrona
+        Log.w(APP_TAG,"Resultado obtenido " + result);
+        //    data.setText(result);
+        JSONArray jsonArray = null;
+        if (result.contains("[")) {
+            try {
+                jsonArray = new JSONArray(result);
+            } catch (JSONException e) {
+                Log.e("JSON", e.toString());
+            }
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                try {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    listTiendas.add(new ModelTienda(
+                            Integer.parseInt(jsonObject.getString("idTienda")),
+                            jsonObject.getString("tienda"),
+                            jsonObject.getString("direccion"),
+                            Integer.parseInt(jsonObject.getString("idRuta")),
+                            jsonObject.getString("ruta")));
 
                     //adapter.add("Clave : "+clave+" Nombre : "+ nombre);
                 } catch (JSONException e) {

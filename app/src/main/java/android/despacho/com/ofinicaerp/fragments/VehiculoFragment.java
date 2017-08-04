@@ -123,7 +123,7 @@ public class VehiculoFragment extends Fragment {
         VehiculoAdapter(List<ModelVehiculo> item, Context context) {
             items = item;
             mContext = context;
-            itemsPendingRemoval = new ArrayList<>();
+            itemsPendingRemoval = item;
             // let's generate some items
             lastInsertedIndex = 15;
 
@@ -177,10 +177,10 @@ public class VehiculoFragment extends Fragment {
         }
 
         public void removeAll(){
-            for (int i = 0; i < items.size(); i++){
-                items.remove(i);
-            }
+            items.removeAll(itemsPendingRemoval);
+            notifyDataSetChanged();
         }
+
         public void remove(int position) {
             ModelVehiculo item = items.get(position);
             if (itemsPendingRemoval.contains(item)) {

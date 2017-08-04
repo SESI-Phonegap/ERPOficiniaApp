@@ -10,16 +10,23 @@ public class Constants {
     public static String URL_ADD_CLIENTE = "http://despachogonzalez.com.mx/erpoficina/newcliente.php";
     public static String URL_ADD_GASTO_GASOLINA = "http://despachogonzalez.com.mx/erpoficina/addgasolina.php";
     public static String URL_ADD_MANTENIMIENTO = "http://despachogonzalez.com.mx/erpoficina/newmantenimiento.php";
+    public static String URL_ADD_RUTA = "http://despachogonzalez.com.mx/erpoficina/newruta.php";
+
 
     public static String URL_QUERY_EMPLEADO = "http://despachogonzalez.com.mx/erpoficina/queryempleado.php";
     public static String URL_QUERY_CLIENTE = "http://despachogonzalez.com.mx/erpoficina/querycliente.php";
     public static String URL_QUERY_VEHICULO = "http://despachogonzalez.com.mx/erpoficina/queryvehiculo.php";
+    public static String URL_QUERY_RUTAS = "http://despachogonzalez.com.mx/erpoficina/queryrutas.php";
+    public static String URL_QUERY_TIENDAS = "http://despachogonzalez.com.mx/erpoficina/query_tiendas.php";
     public static String URL_QUERY_GASTO_GASOLINA = "http://despachogonzalez.com.mx/erpoficina/query_gastoGasolina.php";
     public static String URL_QUERY_MANTENIMIENTO = "http://despachogonzalez.com.mx/erpoficina/query_mantenimiento.php";
+
 
     public static String POST_GASOLINA = "gasolina";
     public static String POST_VEHICULO = "vehiculo";
     public static String POST_EMPLEADO = "empleado";
+    public static String POST_RUTA = "ruta";
+    public static String POST_TIENDA = "tienda";
     public static String POST_CLIENTE = "cliente";
     public static String POST_FECHA = "fecha";
     public static String POST_MANTENIMIENTO = "mantenimiento";
