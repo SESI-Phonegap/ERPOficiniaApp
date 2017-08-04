@@ -46,5 +46,6 @@ public class Constants {
     public static final String EMPLEADO = "empleado";
 
     public static final String REFRESH_FRAGMENT_VEHICULO = "refresh_fragment_vehiculo";
+    public static final String REFRESH_FRAGMENT_EMPLEADO = "refresh_fragment_empleado";
 
 }

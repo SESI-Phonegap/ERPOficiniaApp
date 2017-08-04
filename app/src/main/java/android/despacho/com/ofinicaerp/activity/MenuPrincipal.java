@@ -292,7 +292,8 @@ public class MenuPrincipal extends ActivityBase
     View.OnClickListener onClickEmpleado = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            createDialogNewEmpleado();
+            Intent intent = new Intent(MenuPrincipal.this,FormEmpleado.class);
+            startActivity(intent);
         }
     };
 
