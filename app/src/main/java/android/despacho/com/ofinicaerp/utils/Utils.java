@@ -37,6 +37,21 @@ public class Utils {
         }
     }
 
+    public static String toJsonMantenimientoFecha(String idVehiculo,String fechaInicial, String fechaFinal){
+        JSONObject jsonObject= new JSONObject();
+        try {
+            jsonObject.put("idVehiculo", idVehiculo);
+            jsonObject.put("fechaIni", fechaInicial);
+            jsonObject.put("fechaFin", fechaFinal);
+
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static void showDialogDate(Context context, final EditText editText) {
         final SimpleDateFormat dateFormatter;
         dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
@@ -67,5 +82,13 @@ public class Utils {
         Matrix matrix = new Matrix();
         matrix.postRotate(angle);
         return Bitmap.createBitmap(source,0,0,source.getWidth(),source.getHeight(),matrix,true);
+    }
+
+    public static void proccessResult(Context context, String result) {
+        if (result.contains("OK")) {
+            Toast.makeText(context, context.getString(R.string.msg_success), Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(context, context.getString(R.string.msg_error) + result, Toast.LENGTH_LONG).show();
+        }
     }
 }

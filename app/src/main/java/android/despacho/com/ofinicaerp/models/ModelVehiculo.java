@@ -46,6 +46,7 @@ public class ModelVehiculo {
     public ModelVehiculo(int id_vehiculo, String nombre, String modelo, String marca,
                          String serie, int id_empleado, String photoBase64, String placas,
                          String color, String nombre_empleado){
+        this.id_vehiculo = id_vehiculo;
         this.nombre = nombre;
         this.modelo = modelo;
         this.marca = marca;

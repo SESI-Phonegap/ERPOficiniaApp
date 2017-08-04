@@ -2,11 +2,13 @@ package android.despacho.com.ofinicaerp.utils;
 
 
 import android.app.Application;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.despacho.com.ofinicaerp.R;
 import android.despacho.com.ofinicaerp.models.ModelDespacho_Clientes;
 import android.despacho.com.ofinicaerp.models.ModelEmpleado;
 import android.despacho.com.ofinicaerp.models.ModelGastosGasolina;
+import android.despacho.com.ofinicaerp.models.ModelMantenimiento;
 import android.despacho.com.ofinicaerp.models.ModelUser;
 import android.despacho.com.ofinicaerp.models.ModelVehiculo;
 import android.util.Log;
@@ -344,6 +346,62 @@ public class UtilsDML {
                                 tipo_gas,
                                 Double.parseDouble(costo));
                         resultGastoGasolina.add(gastosGasolina);
+
+
+                    } catch (JSONException e) {
+                        Log.e("JSON---", e.toString());
+                    }
+                }
+
+
+            } else {
+
+                result = context.getString(R.string.msg_usiarioIncorrecto);
+            }
+        } catch (JSONException e) {
+            return result = "Ocurrio un error al conectarse al servidor, intentelo de nuevo.";
+            //  Log.e("JSON", e.toString());
+        }
+
+
+
+        return result;
+    }
+
+    public static String resultQueryMantenimiento(Application context,String resultTask, List<ModelMantenimiento> resultMantenimiento) {
+        JSONArray jsonArray = null;
+        String result = "";
+
+        Log.d("MANTENIMIENTO--", resultTask);
+        try {
+            jsonArray = new JSONArray(resultTask);
+            if (jsonArray.length() > 0) {
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    try {
+
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                        String idMantenimiento = jsonObject.getString("idMantenimiento");
+                        String fecha = jsonObject.getString("fecha");
+                        String mantenimiento = jsonObject.getString("mantenimiento");
+                        String descripcion = jsonObject.getString("descripcion");
+                        String monto = jsonObject.getString("monto");
+                        String idVehiculo = jsonObject.getString("idVehiculo");
+                        String vehiculo = jsonObject.getString("vehiculo");
+                        String photoVehiculo = jsonObject.getString("photoVehiculo");
+
+
+                        ModelMantenimiento gastosGasolina = new ModelMantenimiento(
+                                Integer.parseInt(idMantenimiento),
+                                mantenimiento,
+                                descripcion,
+                                Double.parseDouble(monto),
+                                fecha,
+                                Integer.parseInt(idVehiculo),
+                                vehiculo,
+                                photoVehiculo);
+                        resultMantenimiento.add(gastosGasolina);
 
 
                     } catch (JSONException e) {

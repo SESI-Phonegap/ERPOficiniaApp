@@ -12,6 +12,7 @@ import android.despacho.com.ofinicaerp.fragments.ClientesDespachoFragment;
 import android.despacho.com.ofinicaerp.fragments.EmpleadoFragment;
 import android.despacho.com.ofinicaerp.fragments.GastoGasolinaFragment;
 import android.despacho.com.ofinicaerp.fragments.HomeFragment;
+import android.despacho.com.ofinicaerp.fragments.MantenimientoVehiculoFragment;
 import android.despacho.com.ofinicaerp.fragments.RutasFragment;
 import android.despacho.com.ofinicaerp.fragments.VehiculoFragment;
 import android.despacho.com.ofinicaerp.models.ModelDespacho_Clientes;
@@ -102,7 +103,7 @@ public class MenuPrincipal extends ActivityBase
     private String id_empleado;
     private ProgressDialog progressBar;
     private List<ModelEmpleado> listEmpleados;
-    private List<ModelVehiculo> listVehiculos;
+    public static List<ModelVehiculo> listVehiculos;
     private String idVehiculo;
     private EditText et_fecha;
     private String photoPathSelected;
@@ -208,6 +209,8 @@ public class MenuPrincipal extends ActivityBase
                 break;
 
             case R.id._nav_registro_mantenimiento:
+                changeFragment(MantenimientoVehiculoFragment.newInstance(), R.id.mainFrame, false, false);
+                fab.setOnClickListener(onClickMantenimiento);
                 break;
 
             case R.id._nav_gasto_gasolina:
@@ -251,6 +254,14 @@ public class MenuPrincipal extends ActivityBase
         public void onClick(View v) {
             Intent intent = new Intent(MenuPrincipal.this,FormVehiculo.class);
             startActivityForResult(intent,9999);
+        }
+    };
+
+    View.OnClickListener onClickMantenimiento = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(MenuPrincipal.this,FormMantenimiento.class);
+            startActivityForResult(intent,8888);
         }
     };
 

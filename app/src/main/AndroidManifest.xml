@@ -43,7 +43,8 @@
             android:name=".activity.FormVehiculo"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity android:name=".activity.VehiculoDetails"></activity>
+        <activity android:name=".activity.VehiculoDetails" />
+        <activity android:name=".activity.FormMantenimiento"></activity>
     </application>
 
 </manifest>

@@ -310,7 +310,7 @@ public class FormVehiculo extends ActivityBase implements View.OnClickListener {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            proccessResult(result);
+            Utils.proccessResult(FormVehiculo.this,result);
             progressBar.cancel();
             Intent intent = new Intent();
             intent.putExtra(Constants.REFRESH_FRAGMENT_VEHICULO, Constants.REFRESH_FRAGMENT_VEHICULO);
@@ -318,14 +318,6 @@ public class FormVehiculo extends ActivityBase implements View.OnClickListener {
             finish();
         }
 
-    }
-
-    public void proccessResult(String result) {
-        if (result.contains("OK")) {
-            Toast.makeText(getApplicationContext(), getString(R.string.msg_success), Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(getApplicationContext(), getString(R.string.msg_error) + result, Toast.LENGTH_LONG).show();
-        }
     }
 
     @Override

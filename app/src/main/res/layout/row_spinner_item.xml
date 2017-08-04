@@ -1,5 +1,7 @@
 <TextView
+    android:paddingStart="16dp"
     android:id="@+id/row_spinner_item"
+    android:gravity="center"
     android:text="xxxxxx"
     android:textSize="18sp"
     android:layout_width="match_parent"

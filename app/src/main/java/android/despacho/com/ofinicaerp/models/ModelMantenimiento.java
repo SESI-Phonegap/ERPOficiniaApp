@@ -1,16 +1,45 @@
 package android.despacho.com.ofinicaerp.models;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class ModelMantenimiento {
     private int id_mantenimiento;
-    private int id_tipo_mantenimiento;
+    private String mantenimiento;
+    private String descripcion;
     private double costo;
     private String fecha;
     private int id_vehiculo;
+    private String vehiculo;
+    private String imgVehiculo;
 
-    public ModelMantenimiento(int id_mantenimiento, int id_tipo_mantenimiento, double costo,
-                              String fecha, int id_vehiculo){
+    public ModelMantenimiento(int id_mantenimiento, String mantenimiento, String descripcion, double costo,
+                               String fecha, int id_vehiculo){
         this.id_mantenimiento = id_mantenimiento;
-        this.id_tipo_mantenimiento = id_tipo_mantenimiento;
+        this.mantenimiento = mantenimiento;
+        this.descripcion = descripcion;
+        this.costo = costo;
+        this.fecha = fecha;
+        this.id_vehiculo = id_vehiculo;
+    }
+
+    public ModelMantenimiento(int id_mantenimiento, String mantenimiento, String descripcion, double costo,
+                              String fecha, int id_vehiculo, String vehiculo, String imgVehiculo){
+        this.id_mantenimiento = id_mantenimiento;
+        this.mantenimiento = mantenimiento;
+        this.descripcion = descripcion;
+        this.costo = costo;
+        this.fecha = fecha;
+        this.id_vehiculo = id_vehiculo;
+        this.vehiculo = vehiculo;
+        this.imgVehiculo = imgVehiculo;
+    }
+
+    public ModelMantenimiento(String mantenimiento, String descripcion, double costo,
+                              String fecha, int id_vehiculo){
+
+        this.mantenimiento = mantenimiento;
+        this.descripcion = descripcion;
         this.costo = costo;
         this.fecha = fecha;
         this.id_vehiculo = id_vehiculo;
@@ -20,8 +49,13 @@ public class ModelMantenimiento {
         return id_mantenimiento;
     }
 
-    public int getId_tipo_mantenimiento() {
-        return id_tipo_mantenimiento;
+
+    public String getMantenimiento() {
+        return mantenimiento;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
     }
 
     public double getCosto() {
@@ -34,5 +68,30 @@ public class ModelMantenimiento {
 
     public int getId_vehiculo() {
         return id_vehiculo;
+    }
+
+    public String getVehiculo() {
+        return vehiculo;
+    }
+
+    public String getImgVehiculo() {
+        return imgVehiculo;
+    }
+
+    public String toJsonAddMantenimiento() {
+        JSONObject jsonObject= new JSONObject();
+        try {
+            jsonObject.put("fecha", getFecha());
+            jsonObject.put("mantenimiento", getMantenimiento());
+            jsonObject.put("descripcion", getDescripcion());
+            jsonObject.put("monto", getCosto());
+            jsonObject.put("idVehiculo", getId_vehiculo());
+
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
     }
 }

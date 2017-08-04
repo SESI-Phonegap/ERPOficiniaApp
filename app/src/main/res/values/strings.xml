@@ -40,6 +40,7 @@
     <!-- Dialog SelectPhoto-->
     <string name="titleDialogSelectPhoto">Selecciona o toma una foto.</string>
 
+
     <!-- Dialog Vehiculo -->
     <string name="nuevoVehiculo">Nuevo Vehiculo</string>
     <string name="btn_guardar">Guardar</string>
@@ -77,7 +78,8 @@
     <string name="fecha">Fecha</string>
     <string name="vehiculo">Vehiculo</string>
     <string name="litros">Litros</string>
-    <string name="labelmonto">Monto</string>
+    <string name="labelmonto">$</string>
+
 
     <string name="fechaDetails">Fecha:</string>
     <string name="vehiculoDetails">Vehiculo:</string>
