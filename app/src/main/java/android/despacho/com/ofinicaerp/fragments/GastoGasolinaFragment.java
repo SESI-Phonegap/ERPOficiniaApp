@@ -124,6 +124,7 @@ public class GastoGasolinaFragment extends Fragment {
 
                 if (testAdapter != null){
                    testAdapter.removeAll();
+                    total = 0;
                 }
 
                 if (et_fechaIni.getText().toString().equals("") || et_fechaFin.getText().toString().equals("")){
@@ -259,7 +260,6 @@ public class GastoGasolinaFragment extends Fragment {
             mView = itemView;
         }
     }
-
 
     private class QueryGatoGasolinaTask extends AsyncTask<String, Integer, String> {
         @Override
