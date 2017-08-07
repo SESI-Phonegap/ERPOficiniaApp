@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.despacho.com.ofinicaerp.models.ModelEmpleado;
+import android.despacho.com.ofinicaerp.utils.Constants;
 import android.despacho.com.ofinicaerp.utils.UtilsDML;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -28,6 +29,8 @@ import android.view.ViewGroup;
 import android.despacho.com.ofinicaerp.R;
 import android.widget.TextView;
 
+
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -135,28 +138,14 @@ public class EmpleadoFragment extends Fragment {
             TestViewHolder viewHolder = (TestViewHolder) holder;
             final ModelEmpleado item = items.get(position);
             viewHolder.et_nombre.setText(item.getNombre());
-            if (Build.VERSION.SDK_INT >= 23) {
-                if (item.getPhotoBase64().equals("")) {
-                    viewHolder.photoEmpleado.setImageResource(R.drawable.ni_image);
-                } else {
-                    byte[] imageBytes = Base64.decode(item.getPhotoBase64(), Base64.DEFAULT);
-                    Bitmap decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                    viewHolder.photoEmpleado.setImageBitmap(decodedImage);
-                }
-            } else {
 
                 if (item.getPhotoBase64().equals("")) {
                     viewHolder.photoEmpleado.setImageResource(R.drawable.ni_image);
                 } else {
-                        byte[] imageBytes = Base64.decode(item.getPhotoBase64(), Base64.DEFAULT);
-                        Bitmap decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                        viewHolder.photoEmpleado.setImageBitmap(decodedImage);
-
-                       // Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), Uri.parse(item.getPhotoBase64()));
-                       // viewHolder.photoEmpleado.setImageBitmap(bitmap);
-                        // viewHolder.icon.setImageURI(Uri.parse(item_photo));
+                    String UrlImage = Constants.URL_BASE + item.getPhotoBase64();
+                    Picasso.with(getContext()).load(UrlImage).fit().into(viewHolder.photoEmpleado);
                 }
-            }
+
         }
 
         @Override

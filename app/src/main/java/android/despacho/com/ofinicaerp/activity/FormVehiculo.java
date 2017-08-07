@@ -313,7 +313,7 @@ public class FormVehiculo extends ActivityBase implements View.OnClickListener {
             Utils.proccessResult(FormVehiculo.this,result);
             progressBar.cancel();
             Intent intent = new Intent();
-            intent.putExtra(Constants.REFRESH_FRAGMENT_VEHICULO, Constants.REFRESH_FRAGMENT_VEHICULO);
+            intent.putExtra(Constants.REFRESH, Constants.REFRESH_FRAGMENT_VEHICULO);
             setResult(RESULT_OK,intent);
             finish();
         }

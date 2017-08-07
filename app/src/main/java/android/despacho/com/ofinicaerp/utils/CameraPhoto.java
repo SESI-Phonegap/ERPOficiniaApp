@@ -3,8 +3,12 @@ package android.despacho.com.ofinicaerp.utils;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.BuildConfig;
+import android.support.v4.content.FileProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +32,7 @@ public class CameraPhoto {
 
     public Intent takePhotoIntent() throws IOException {
         Intent in = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        in.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         // Ensure that there's a camera activity to handle the intent
         if (in.resolveActivity(context.getPackageManager()) != null) {
             // Create the File where the photo should go
@@ -35,7 +40,7 @@ public class CameraPhoto {
 
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                in.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                in.putExtra(MediaStore.EXTRA_OUTPUT, (Build.VERSION.SDK_INT >= 23) ? FileProvider.getUriForFile(context, "android.despacho.com.ofinicaerp",photoFile) : Uri.fromFile(photoFile));
             }
         }
         return in;

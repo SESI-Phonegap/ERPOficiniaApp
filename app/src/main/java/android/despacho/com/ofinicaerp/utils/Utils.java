@@ -72,7 +72,7 @@ public class Utils {
 
     public static String encodeImageBase64(Bitmap bm) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.JPEG,80,baos);
+        bm.compress(Bitmap.CompressFormat.JPEG,50,baos);
         byte[] b = baos.toByteArray();
         String encImage = Base64.encodeToString(b, Base64.URL_SAFE | Base64.NO_WRAP);
         return encImage;

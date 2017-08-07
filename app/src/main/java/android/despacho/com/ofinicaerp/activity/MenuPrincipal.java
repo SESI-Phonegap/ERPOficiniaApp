@@ -20,6 +20,7 @@ import android.despacho.com.ofinicaerp.models.ModelDespacho_Clientes;
 import android.despacho.com.ofinicaerp.models.ModelEmpleado;
 import android.despacho.com.ofinicaerp.models.ModelGastosGasolina;
 import android.despacho.com.ofinicaerp.models.ModelRutas;
+import android.despacho.com.ofinicaerp.models.ModelTienda;
 import android.despacho.com.ofinicaerp.models.ModelVehiculo;
 import android.despacho.com.ofinicaerp.utils.CameraPhoto;
 import android.despacho.com.ofinicaerp.utils.Constants;
@@ -90,8 +91,10 @@ import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_CLIENTE;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_EMPLEADO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_GASTO_GASOLINA;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_RUTA;
+import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_TIENDA;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_VEHICULO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_EMPLEADO;
+import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_RUTAS;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_VEHICULO;
 import static android.despacho.com.ofinicaerp.utils.Constants.VEHICULO;
 
@@ -107,7 +110,9 @@ public class MenuPrincipal extends ActivityBase
     private ProgressDialog progressBar;
     private List<ModelEmpleado> listEmpleados;
     public static List<ModelVehiculo> listVehiculos;
+    private List<ModelRutas> listRutas;
     private String idVehiculo;
+    private String idRuta;
     private EditText et_fecha;
     private String photoPathSelected;
     private CameraPhoto cameraPhoto;
@@ -137,8 +142,10 @@ public class MenuPrincipal extends ActivityBase
         progressBar.setIndeterminate(true);
         listEmpleados = new ArrayList<>();
         listVehiculos = new ArrayList<>();
+        listRutas = new ArrayList<>();
 
         new QueryVehiculoTask().execute(URL_QUERY_VEHICULO);
+        new  QueryRutaTask().execute(URL_QUERY_RUTAS);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -269,7 +276,7 @@ public class MenuPrincipal extends ActivityBase
     View.OnClickListener onClickTiendas = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
+            createDialogTienda();
         }
     };
 
@@ -293,7 +300,7 @@ public class MenuPrincipal extends ActivityBase
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(MenuPrincipal.this,FormEmpleado.class);
-            startActivity(intent);
+            startActivityForResult(intent,7777);
         }
     };
 
@@ -310,47 +317,6 @@ public class MenuPrincipal extends ActivityBase
             createDialogNewGastoGasolina();
         }
     };
-
-    public void dialogSelectPhoto(final String from) {
-        final AlertDialog dialogPhoto;
-        final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
-        LayoutInflater inflater = MenuPrincipal.this.getLayoutInflater();
-        final View view = inflater.inflate(R.layout.dialog_select_photo, null);
-        builder.setView(view);
-        dialogPhoto = builder.create();
-
-        ImageView btn_camera = (ImageView) view.findViewById(R.id.btn_camera);
-        ImageView btn_gallery = (ImageView) view.findViewById(R.id.btn_gallery);
-
-        btn_camera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (from.equals(VEHICULO)) {
-                    tomaFoto(TAKE_PICTURE_VEHICULO);
-                } else if (from.equals(EMPLEADO)) {
-                    tomaFoto(TAKE_PICTURE_EMPLEADO);
-                }
-                dialogPhoto.dismiss();
-            }
-        });
-
-        btn_gallery.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (from.equals(VEHICULO)) {
-                    openGallery(PICK_IMAGE_VEHICULO);
-                } else if (from.equals(EMPLEADO)) {
-                    openGallery(PICK_IMAGE_EMPLEADO);
-                }
-                dialogPhoto.dismiss();
-            }
-        });
-
-        dialogPhoto.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-        dialogPhoto.show();
-    }
 
     public void createDialogRuta(){
         final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
@@ -395,30 +361,37 @@ public class MenuPrincipal extends ActivityBase
         dialog.show();
     }
 
-    public void createDialogNewEmpleado() {
+    public void createDialogTienda(){
+        idRuta = "";
         final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
         LayoutInflater inflater = MenuPrincipal.this.getLayoutInflater();
-        final View view = inflater.inflate(R.layout.dialog_add_empleado, null);
+        final View view = inflater.inflate(R.layout.dialog_add_tienda, null);
 
         builder.setView(view);
 
+        final String[] idNomRuta = new String[listRutas.size()];
+        for (int i = 0; i < listRutas.size(); i++) {
+            idNomRuta[i] = listRutas.get(i).getId_ruta() + "-" + listRutas.get(i).getRuta();
+        }
 
-        photoEmpleado = (CircleImageView) view.findViewById(R.id.empleado_photo);
-        Button btn_guardar = (Button) view.findViewById(R.id.btn_empleado_guardar);
-        Button btn_cancelar = (Button) view.findViewById(R.id.btn_empleado_cancelar);
-        final EditText et_nombre = (EditText) view.findViewById(R.id.empleado_nombre);
-        final EditText et_puesto = (EditText) view.findViewById(R.id.empleado_puesto);
-        final EditText et_sueldo = (EditText) view.findViewById(R.id.empleado_sueldo);
-        final EditText et_empresa = (EditText) view.findViewById(R.id.empleado_empresa);
-        final EditText et_telefono = (EditText) view.findViewById(R.id.empleado_telefono);
+        final EditText et_tienda = (EditText) view.findViewById(R.id.dialog_et_tienda);
+        final EditText et_direccion = (EditText) view.findViewById(R.id.dialog_et_direccion);
+        Spinner spinner_ruta = (Spinner) view.findViewById(R.id.spinner_dialog_et_tienda);
+        Button btn_guardar = (Button) view.findViewById(R.id.btn_guardar);
+        Button btn_cancelar = (Button) view.findViewById(R.id.btn_cancelar);
 
-        imageBase64 = "";
-        dialog = builder.create();
-
-        photoEmpleado.setOnClickListener(new View.OnClickListener() {
+        spinner_ruta.setAdapter(new ArrayAdapter<>(getApplication(), R.layout.row_spinner_item, idNomRuta));
+        spinner_ruta.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View v) {
-                dialogSelectPhoto(EMPLEADO);
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String[] parts = parent.getItemAtPosition(position).toString().split("-");
+
+                idRuta = parts[0];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
 
@@ -432,31 +405,27 @@ public class MenuPrincipal extends ActivityBase
         btn_guardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String nombre = et_nombre.getText().toString();
-                String puesto = et_puesto.getText().toString();
-                String sueldo = et_sueldo.getText().toString();
-                String empresa = et_empresa.getText().toString();
-                String telefono = et_telefono.getText().toString();
-
-                // String empleado = spinnerEmpleado.
-                if (nombre.equals("") || puesto.equals("") || sueldo.equals("") || empresa.equals("") ||
-                        telefono.equals("")) {
+                String tienda = et_tienda.getText().toString();
+                String direccion = et_direccion.getText().toString();
+                if (tienda.equals("") || direccion.equals("") || idRuta.equals("")){
                     Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
                 } else {
-                    ModelEmpleado modelEmpleado = new ModelEmpleado(nombre, puesto, Double.parseDouble(sueldo), empresa, imageBase64, telefono);
-                    String strJson = modelEmpleado.toJsonAddEmpleado();
-                    new AddEmpleadoTask().execute(URL_ADD_EMPLEADO, strJson);
-                }
+                    ModelTienda modelTienda = new ModelTienda(tienda,direccion,Integer.parseInt(idRuta));
+                    String strJSON = modelTienda.toJsonAddTienda();
+                    new AddTiendaTask().execute(URL_ADD_TIENDA,strJSON);
 
+                }
             }
         });
 
+        dialog = builder.create();
         dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(false);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
         dialog.show();
+
     }
 
     public void createDialogNewCliente() {
@@ -606,52 +575,6 @@ public class MenuPrincipal extends ActivityBase
         dialog.show();
     }
 
-    public void tomaFoto(int action) {
-
-        try {
-
-            switch (action) {
-                case TAKE_PICTURE_VEHICULO:
-                    startActivityForResult(cameraPhoto.takePhotoIntent(), TAKE_PICTURE_VEHICULO);
-                    break;
-
-                case TAKE_PICTURE_EMPLEADO:
-                    startActivityForResult(cameraPhoto.takePhotoIntent(), TAKE_PICTURE_EMPLEADO);
-                    break;
-            }
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
-    private void openGallery(int action) {
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (ActivityCompat.checkSelfPermission(MenuPrincipal.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-
-                ActivityCompat.requestPermissions(MenuPrincipal.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 999);
-
-            } else {
-                switchGallery(action);
-            }
-        } else {
-            switchGallery(action);
-        }
-
-    }
-
-    public void switchGallery(int action) {
-      //  Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-        switch (action) {
-            case PICK_IMAGE_EMPLEADO:
-                startActivityForResult(galleryPhoto.openGalleryIntent(), PICK_IMAGE_EMPLEADO);
-                break;
-
-            case PICK_IMAGE_VEHICULO:
-                startActivityForResult(galleryPhoto.openGalleryIntent(), PICK_IMAGE_VEHICULO);
-                break;
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -659,9 +582,13 @@ public class MenuPrincipal extends ActivityBase
 
             if (data != null) {
 
-                final String sData = data.getStringExtra(Constants.REFRESH_FRAGMENT_VEHICULO);
+                final String sData = data.getStringExtra(Constants.REFRESH);
                 if (sData.equals(Constants.REFRESH_FRAGMENT_VEHICULO)) {
                     changeFragment(VehiculoFragment.newInstance(),R.id.mainFrame,false,false);
+                } else if (sData.equals(Constants.REFRESH_FRAGMENT_EMPLEADO)){
+                    changeFragment(EmpleadoFragment.newInstance(),R.id.mainFrame,false,false);
+                } else if (sData.equals(Constants.REFRESH_FRAGMENT_MANTENIMIENTO)){
+                    changeFragment(MantenimientoVehiculoFragment.newInstance(),R.id.mainFrame,false,false);
                 }
 
                     if (requestCode == PICK_IMAGE_VEHICULO) {
@@ -730,7 +657,6 @@ public class MenuPrincipal extends ActivityBase
         }
     }
 
-
     private class AddRutaTask extends AsyncTask<String, Integer, String> {
 
         @Override
@@ -761,7 +687,7 @@ public class MenuPrincipal extends ActivityBase
         }
     }
 
-    private class AddEmpleadoTask extends AsyncTask<String, Integer, String> {
+    private class AddTiendaTask extends AsyncTask<String, Integer, String> {
 
         @Override
         protected void onPreExecute() {
@@ -773,14 +699,14 @@ public class MenuPrincipal extends ActivityBase
         protected String doInBackground(String... params) {
             String baseUrl = params[0];
             String jsonData = params[1];
-            return UtilsDML.addData(Constants.POST_EMPLEADO, baseUrl, jsonData);
+            return UtilsDML.addData(Constants.POST_TIENDA, baseUrl, jsonData);
         }
 
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             proccessResult(result);
-            changeFragment(EmpleadoFragment.newInstance(),R.id.mainFrame,false,false);
+            changeFragment(TiendasFragment.newInstance(),R.id.mainFrame,false,false);
             progressBar.cancel();
         }
 
@@ -847,7 +773,6 @@ public class MenuPrincipal extends ActivityBase
         }
     }
 
-
     private class QueryVehiculoTask extends AsyncTask<String, Integer, String> {
         @Override
         protected void onPreExecute() {
@@ -869,6 +794,33 @@ public class MenuPrincipal extends ActivityBase
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             UtilsDML.resultQueryVehiculo(result, listVehiculos);
+            // setUpRecyclerView();
+            progressBar.cancel();
+        }
+
+    }
+
+    private class QueryRutaTask extends AsyncTask<String, Integer, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            return UtilsDML.queryAllData(params[0]);
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            UtilsDML.resultQueryRutas(result,listRutas);
             // setUpRecyclerView();
             progressBar.cancel();
         }

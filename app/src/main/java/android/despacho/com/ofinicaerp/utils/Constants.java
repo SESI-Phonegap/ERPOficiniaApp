@@ -11,6 +11,7 @@ public class Constants {
     public static String URL_ADD_GASTO_GASOLINA = "http://despachogonzalez.com.mx/erpoficina/addgasolina.php";
     public static String URL_ADD_MANTENIMIENTO = "http://despachogonzalez.com.mx/erpoficina/newmantenimiento.php";
     public static String URL_ADD_RUTA = "http://despachogonzalez.com.mx/erpoficina/newruta.php";
+    public static String URL_ADD_TIENDA = "http://despachogonzalez.com.mx/erpoficina/newtienda.php";
 
 
     public static String URL_QUERY_EMPLEADO = "http://despachogonzalez.com.mx/erpoficina/queryempleado.php";
@@ -45,7 +46,9 @@ public class Constants {
     public static final String VEHICULO = "vehiculo";
     public static final String EMPLEADO = "empleado";
 
+    public static final String REFRESH = "refresh";
     public static final String REFRESH_FRAGMENT_VEHICULO = "refresh_fragment_vehiculo";
     public static final String REFRESH_FRAGMENT_EMPLEADO = "refresh_fragment_empleado";
+    public static final String REFRESH_FRAGMENT_MANTENIMIENTO = "refresh_fragment_mantenimiento";
 
 }

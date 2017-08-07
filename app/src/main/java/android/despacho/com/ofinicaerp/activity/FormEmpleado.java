@@ -65,6 +65,7 @@ public class FormEmpleado extends ActivityBase implements View.OnClickListener {
     }
 
     public void init(){
+        photoPathSelected = "";
         progressBar = new ProgressDialog(FormEmpleado.this);
         progressBar.setMessage("Cargando...");
         progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -122,7 +123,16 @@ public class FormEmpleado extends ActivityBase implements View.OnClickListener {
 
     public void tomaFoto() {
         try {
-            startActivityForResult(cameraPhoto.takePhotoIntent(), TAKE_PICTURE_EMPLEADO);
+            if (Build.VERSION.SDK_INT >= 23){
+                if (ActivityCompat.checkSelfPermission(FormEmpleado.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(FormEmpleado.this, new String[]{Manifest.permission.CAMERA}, 888);
+                } else {
+                    startActivityForResult(cameraPhoto.takePhotoIntent(), TAKE_PICTURE_EMPLEADO);
+                }
+            } else {
+                startActivityForResult(cameraPhoto.takePhotoIntent(), TAKE_PICTURE_EMPLEADO);
+            }
+
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -189,7 +199,7 @@ public class FormEmpleado extends ActivityBase implements View.OnClickListener {
                     Bitmap bitmap = ImageLoader.
                             init().
                             from(photoPath).
-                            requestSize(1024, 800).
+                            requestSize(500, 500).
                             getBitmap();
                     photoEmpleado.setImageBitmap(bitmap);
                     imageBase64 = Utils.encodeImageBase64(bitmap);
@@ -204,7 +214,7 @@ public class FormEmpleado extends ActivityBase implements View.OnClickListener {
                     Bitmap bitmap = ImageLoader.
                             init().
                             from(photoPath).
-                            requestSize(1024, 800).
+                            requestSize(500, 500).
                             getBitmap();
                     photoEmpleado.setImageBitmap(Utils.rotateBitmap(bitmap, 90));
                     imageBase64 = Utils.encodeImageBase64(Utils.rotateBitmap(bitmap, 90));
@@ -240,8 +250,11 @@ public class FormEmpleado extends ActivityBase implements View.OnClickListener {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             Utils.proccessResult(FormEmpleado.this,result);
-            changeFragment(EmpleadoFragment.newInstance(),R.id.mainFrame,false,false);
             progressBar.cancel();
+            Intent intent = new Intent();
+            intent.putExtra(Constants.REFRESH, Constants.REFRESH_FRAGMENT_EMPLEADO);
+            setResult(RESULT_OK,intent);
+            finish();
         }
 
         @Override

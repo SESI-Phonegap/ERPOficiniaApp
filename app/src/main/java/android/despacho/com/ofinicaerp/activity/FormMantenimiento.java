@@ -1,6 +1,7 @@
 package android.despacho.com.ofinicaerp.activity;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.despacho.com.ofinicaerp.models.ModelMantenimiento;
 import android.despacho.com.ofinicaerp.utils.Constants;
 import android.despacho.com.ofinicaerp.utils.Utils;
@@ -148,6 +149,9 @@ public class FormMantenimiento extends AppCompatActivity {
             super.onPostExecute(result);
             Utils.proccessResult(FormMantenimiento.this,result);
             progressBar.cancel();
+            Intent intent = new Intent();
+            intent.putExtra(Constants.REFRESH, Constants.REFRESH_FRAGMENT_MANTENIMIENTO);
+            setResult(RESULT_OK,intent);
         }
 
     }
