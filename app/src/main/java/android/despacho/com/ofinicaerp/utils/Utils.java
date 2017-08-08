@@ -52,6 +52,21 @@ public class Utils {
         }
     }
 
+    public static String toJsonIngresoFecha(String idRuta,String fechaInicial, String fechaFinal){
+        JSONObject jsonObject= new JSONObject();
+        try {
+            jsonObject.put("idRuta", idRuta);
+            jsonObject.put("fechaIni", fechaInicial);
+            jsonObject.put("fechaFin", fechaFinal);
+
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static void showDialogDate(Context context, final EditText editText) {
         final SimpleDateFormat dateFormatter;
         dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);

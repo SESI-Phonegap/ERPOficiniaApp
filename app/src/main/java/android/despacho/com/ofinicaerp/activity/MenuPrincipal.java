@@ -12,6 +12,7 @@ import android.despacho.com.ofinicaerp.fragments.ClientesDespachoFragment;
 import android.despacho.com.ofinicaerp.fragments.EmpleadoFragment;
 import android.despacho.com.ofinicaerp.fragments.GastoGasolinaFragment;
 import android.despacho.com.ofinicaerp.fragments.HomeFragment;
+import android.despacho.com.ofinicaerp.fragments.IngresosFragment;
 import android.despacho.com.ofinicaerp.fragments.MantenimientoVehiculoFragment;
 import android.despacho.com.ofinicaerp.fragments.RutasFragment;
 import android.despacho.com.ofinicaerp.fragments.TiendasFragment;
@@ -110,7 +111,7 @@ public class MenuPrincipal extends ActivityBase
     private ProgressDialog progressBar;
     private List<ModelEmpleado> listEmpleados;
     public static List<ModelVehiculo> listVehiculos;
-    private List<ModelRutas> listRutas;
+    public static List<ModelRutas> listRutas;
     private String idVehiculo;
     private String idRuta;
     private EditText et_fecha;
@@ -211,6 +212,8 @@ public class MenuPrincipal extends ActivityBase
                 break;
 
             case R.id._nav_ingresos:
+                changeFragment(IngresosFragment.newInstance(),R.id.mainFrame,false,false);
+                fab.setOnClickListener(onClickIngresos);
                 break;
 
             case R.id._nav_gastos:
@@ -277,6 +280,14 @@ public class MenuPrincipal extends ActivityBase
         @Override
         public void onClick(View v) {
             createDialogTienda();
+        }
+    };
+
+    View.OnClickListener onClickIngresos = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(MenuPrincipal.this,FormIngreso.class);
+            startActivityForResult(intent,6666);
         }
     };
 
@@ -589,6 +600,8 @@ public class MenuPrincipal extends ActivityBase
                     changeFragment(EmpleadoFragment.newInstance(),R.id.mainFrame,false,false);
                 } else if (sData.equals(Constants.REFRESH_FRAGMENT_MANTENIMIENTO)){
                     changeFragment(MantenimientoVehiculoFragment.newInstance(),R.id.mainFrame,false,false);
+                } else if (sData.equals(Constants.REFRESH_FRAGMENT_INGRESO)){
+                    changeFragment(IngresosFragment.newInstance(),R.id.mainFrame,false,false);
                 }
 
                     if (requestCode == PICK_IMAGE_VEHICULO) {

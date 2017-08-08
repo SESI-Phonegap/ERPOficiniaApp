@@ -84,6 +84,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <string name="concepto">Concepto</string>
     <string name="fecha">Fecha</string>
     <string name="vehiculo">Vehiculo</string>
     <string name="litros">Litros</string>

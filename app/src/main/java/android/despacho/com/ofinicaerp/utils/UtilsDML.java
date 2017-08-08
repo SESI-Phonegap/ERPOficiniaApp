@@ -8,6 +8,7 @@ import android.despacho.com.ofinicaerp.R;
 import android.despacho.com.ofinicaerp.models.ModelDespacho_Clientes;
 import android.despacho.com.ofinicaerp.models.ModelEmpleado;
 import android.despacho.com.ofinicaerp.models.ModelGastosGasolina;
+import android.despacho.com.ofinicaerp.models.ModelIngresos;
 import android.despacho.com.ofinicaerp.models.ModelMantenimiento;
 import android.despacho.com.ofinicaerp.models.ModelRutas;
 import android.despacho.com.ofinicaerp.models.ModelTienda;
@@ -463,6 +464,58 @@ public class UtilsDML {
                                 vehiculo,
                                 photoVehiculo);
                         resultMantenimiento.add(gastosGasolina);
+
+
+                    } catch (JSONException e) {
+                        Log.e("JSON---", e.toString());
+                    }
+                }
+
+
+            } else {
+
+                result = context.getString(R.string.msg_usiarioIncorrecto);
+            }
+        } catch (JSONException e) {
+            return result = "Ocurrio un error al conectarse al servidor, intentelo de nuevo.";
+            //  Log.e("JSON", e.toString());
+        }
+
+
+
+        return result;
+    }
+
+    public static String resultQueryIngreso(Application context,String resultTask, List<ModelIngresos> resultIngreso) {
+        JSONArray jsonArray = null;
+        String result = "";
+
+        Log.d("INGRESO--", resultTask);
+        try {
+            jsonArray = new JSONArray(resultTask);
+            if (jsonArray.length() > 0) {
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    try {
+
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                        String idIngreso = jsonObject.getString("idIngreso");
+                        String fecha = jsonObject.getString("fecha");
+                        String concepto = jsonObject.getString("concepto");
+                        String monto = jsonObject.getString("monto");
+                        String idRuta = jsonObject.getString("idRuta");
+                        String ruta = jsonObject.getString("ruta");
+
+
+                        ModelIngresos gastosGasolina = new ModelIngresos(
+                                Integer.parseInt(idIngreso),
+                                Integer.parseInt(idRuta),
+                                fecha,
+                                concepto,
+                                Double.parseDouble(monto),
+                                ruta);
+                        resultIngreso.add(gastosGasolina);
 
 
                     } catch (JSONException e) {

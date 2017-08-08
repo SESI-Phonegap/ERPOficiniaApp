@@ -1,5 +1,8 @@
 package android.despacho.com.ofinicaerp.models;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class ModelIngresos {
 
     private int id_ingresos;
@@ -8,12 +11,30 @@ public class ModelIngresos {
     private String concepto;
     private double cantidad;
 
+    private String ruta;
+
     public ModelIngresos(int id_ingresos, int id_ruta, String fecha, String concepto, double cantidad){
         this.id_ingresos = id_ingresos;
         this.id_ruta = id_ruta;
         this.fecha = fecha;
         this.concepto = concepto;
         this.cantidad = cantidad;
+    }
+
+    public ModelIngresos(int id_ruta, String fecha, String concepto, double cantidad){
+        this.id_ruta = id_ruta;
+        this.fecha = fecha;
+        this.concepto = concepto;
+        this.cantidad = cantidad;
+    }
+
+    public ModelIngresos(int id_ingresos, int id_ruta, String fecha, String concepto, double cantidad, String ruta){
+        this.id_ingresos = id_ingresos;
+        this.id_ruta = id_ruta;
+        this.fecha = fecha;
+        this.concepto = concepto;
+        this.cantidad = cantidad;
+        this.ruta = ruta;
     }
 
     public int getId_ingresos() {
@@ -34,5 +55,25 @@ public class ModelIngresos {
 
     public double getCantidad() {
         return cantidad;
+    }
+
+    public String getRuta() {
+        return ruta;
+    }
+
+    public String toJsonAddIngreso() {
+        JSONObject jsonObject= new JSONObject();
+        try {
+            jsonObject.put("idRuta", getId_ruta());
+            jsonObject.put("fecha", getFecha());
+            jsonObject.put("concepto", getConcepto());
+            jsonObject.put("monto", getCantidad());
+
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
     }
 }

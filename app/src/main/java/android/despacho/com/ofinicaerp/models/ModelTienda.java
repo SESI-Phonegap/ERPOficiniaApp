@@ -17,11 +17,18 @@ public class ModelTienda {
         this.direccion = direccion;
         this.id_ruta = id_ruta;
     }
-    public ModelTienda(String nombre, String direccion, int id_ruta){
+
+    public ModelTienda(int id_tienda, String nombre, String direccion, int id_ruta, String ruta){
+        this.id_tienda = id_tienda;
         this.nombre = nombre;
         this.direccion = direccion;
         this.id_ruta = id_ruta;
         this.ruta = ruta;
+    }
+    public ModelTienda(String nombre, String direccion, int id_ruta){
+        this.nombre = nombre;
+        this.direccion = direccion;
+        this.id_ruta = id_ruta;
     }
 
 
