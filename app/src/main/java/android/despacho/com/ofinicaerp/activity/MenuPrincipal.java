@@ -11,6 +11,7 @@ import android.despacho.com.ofinicaerp.R;
 import android.despacho.com.ofinicaerp.fragments.ClientesDespachoFragment;
 import android.despacho.com.ofinicaerp.fragments.EmpleadoFragment;
 import android.despacho.com.ofinicaerp.fragments.GastoGasolinaFragment;
+import android.despacho.com.ofinicaerp.fragments.GastosFragment;
 import android.despacho.com.ofinicaerp.fragments.HomeFragment;
 import android.despacho.com.ofinicaerp.fragments.IngresosFragment;
 import android.despacho.com.ofinicaerp.fragments.MantenimientoVehiculoFragment;
@@ -19,6 +20,7 @@ import android.despacho.com.ofinicaerp.fragments.TiendasFragment;
 import android.despacho.com.ofinicaerp.fragments.VehiculoFragment;
 import android.despacho.com.ofinicaerp.models.ModelDespacho_Clientes;
 import android.despacho.com.ofinicaerp.models.ModelEmpleado;
+import android.despacho.com.ofinicaerp.models.ModelGastos;
 import android.despacho.com.ofinicaerp.models.ModelGastosGasolina;
 import android.despacho.com.ofinicaerp.models.ModelRutas;
 import android.despacho.com.ofinicaerp.models.ModelTienda;
@@ -90,6 +92,7 @@ import static android.despacho.com.ofinicaerp.utils.Constants.TAKE_PICTURE_EMPLE
 import static android.despacho.com.ofinicaerp.utils.Constants.TAKE_PICTURE_VEHICULO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_CLIENTE;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_EMPLEADO;
+import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_GASTO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_GASTO_GASOLINA;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_RUTA;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_TIENDA;
@@ -114,6 +117,7 @@ public class MenuPrincipal extends ActivityBase
     public static List<ModelRutas> listRutas;
     private String idVehiculo;
     private String idRuta;
+    private String idEmpleado;
     private EditText et_fecha;
     private String photoPathSelected;
     private CameraPhoto cameraPhoto;
@@ -147,6 +151,8 @@ public class MenuPrincipal extends ActivityBase
 
         new QueryVehiculoTask().execute(URL_QUERY_VEHICULO);
         new  QueryRutaTask().execute(URL_QUERY_RUTAS);
+        new QueryEmpleadoTask().execute(URL_QUERY_EMPLEADO);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -217,6 +223,8 @@ public class MenuPrincipal extends ActivityBase
                 break;
 
             case R.id._nav_gastos:
+                changeFragment(GastosFragment.newInstance(),R.id.mainFrame,false,false);
+                fab.setOnClickListener(onClickGastos);
                 break;
 
             case R.id._nav_compGastos:
@@ -288,6 +296,13 @@ public class MenuPrincipal extends ActivityBase
         public void onClick(View v) {
             Intent intent = new Intent(MenuPrincipal.this,FormIngreso.class);
             startActivityForResult(intent,6666);
+        }
+    };
+
+    View.OnClickListener onClickGastos = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            createDialogGasto();
         }
     };
 
@@ -586,6 +601,95 @@ public class MenuPrincipal extends ActivityBase
         dialog.show();
     }
 
+    public void createDialogGasto(){
+        idRuta = "";
+        idEmpleado = "";
+        final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
+        LayoutInflater inflater = MenuPrincipal.this.getLayoutInflater();
+        final View view = inflater.inflate(R.layout.dialog_add_gasto, null);
+        builder.setView(view);
+
+        final String[] idNomRuta = new String[listRutas.size()];
+        for (int i = 0; i < listRutas.size(); i++) {
+            idNomRuta[i] = listRutas.get(i).getId_ruta() + "-" + listRutas.get(i).getRuta();
+        }
+
+        String[] idNomEmpleado = new String[listEmpleados.size()];
+        for (int x = 0; x < listEmpleados.size(); x++ ){
+            idNomEmpleado[x] = listEmpleados.get(x).getId_empleado() + "-" + listEmpleados.get(x).getNombre();
+        }
+
+        Button btn_guardar = (Button) view.findViewById(R.id.btn_gasto_guardar);
+        Button btn_cancelar = (Button) view.findViewById(R.id.btn_gasto_cancelar);
+        Spinner spinner_idRuta = (Spinner) view.findViewById(R.id.spinner_gasto_idRuta);
+        Spinner spinner_idEmpleado = (Spinner) view.findViewById(R.id.spinner_gasto_idEmpleado);
+        final EditText et_fecha = (EditText) view.findViewById(R.id.gasto_et_fecha);
+        final EditText et_monto = (EditText) view.findViewById(R.id.gasto_et_monto);
+        et_fecha.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utils.showDialogDate(MenuPrincipal.this,et_fecha);
+            }
+        });
+        spinner_idRuta.setAdapter(new ArrayAdapter<>(getApplication(), R.layout.row_spinner_item, idNomRuta));
+        spinner_idRuta.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String[] parts = parent.getItemAtPosition(position).toString().split("-");
+
+                idRuta = parts[0];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        spinner_idEmpleado.setAdapter(new ArrayAdapter<>(getApplication(), R.layout.row_spinner_item,idNomEmpleado));
+        spinner_idEmpleado.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String[] parts = parent.getItemAtPosition(position).toString().split("-");
+                idEmpleado = parts[0];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        btn_cancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        btn_guardar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String fecha = et_fecha.getText().toString();
+                String monto = et_monto.getText().toString();
+                if (fecha.equals("") || monto.equals("") || idRuta.equals("") || idEmpleado.equals("")){
+                    Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
+                } else {
+                    ModelGastos gastos = new ModelGastos(Integer.parseInt(idRuta),Double.parseDouble(monto),fecha,Integer.parseInt(idEmpleado));
+                    String strJSON = gastos.toJsonAddGasto();
+                    new AddGastoTask().execute(URL_ADD_GASTO,strJSON);
+                }
+            }
+        });
+
+        dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(false);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+        dialog.show();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -786,6 +890,36 @@ public class MenuPrincipal extends ActivityBase
         }
     }
 
+    private class AddGastoTask extends AsyncTask<String, Integer, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String baseUrl = params[0];
+            String jsonData = params[1];
+            return UtilsDML.addData(Constants.POST_GASTO, baseUrl, jsonData);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            proccessResult(result);
+          //  changeFragment(TiendasFragment.newInstance(),R.id.mainFrame,false,false);
+            progressBar.cancel();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+
+        }
+    }
+
     private class QueryVehiculoTask extends AsyncTask<String, Integer, String> {
         @Override
         protected void onPreExecute() {
@@ -838,6 +972,31 @@ public class MenuPrincipal extends ActivityBase
             progressBar.cancel();
         }
 
+    }
+
+    public class QueryEmpleadoTask extends AsyncTask<String, Integer, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            return UtilsDML.queryAllData(params[0]);
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            UtilsDML.resultQueryEmpleado(result,listEmpleados);
+            progressBar.cancel();
+        }
     }
 
     public void proccessResult(String result) {

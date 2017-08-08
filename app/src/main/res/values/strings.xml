@@ -75,6 +75,7 @@
     <!-- Fragment Gastos Gasolido-->
     <string name="gasolinaTitle">Gastos en Gasolina</string>
     <string name="gastoMantenimiento">Gastos en Mantenimiento</string>
+
     <string name="busquedaFecha">Busqueda por fecha</string>
     <string name="fechaIni">Fecha inicial</string>
     <string name="fechaFin">Fecha Final</string>

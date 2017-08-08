@@ -60,7 +60,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".activity.FormIngreso"></activity>
+        <activity android:name=".activity.FormIngreso" />
     </application>
 
 </manifest>

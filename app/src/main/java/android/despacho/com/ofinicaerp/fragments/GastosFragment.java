@@ -2,9 +2,11 @@ package android.despacho.com.ofinicaerp.fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.despacho.com.ofinicaerp.models.ModelGastos;
 import android.despacho.com.ofinicaerp.models.ModelIngresos;
 import android.despacho.com.ofinicaerp.utils.Utils;
 import android.despacho.com.ofinicaerp.utils.UtilsDML;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,29 +31,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.despacho.com.ofinicaerp.activity.MenuPrincipal.listRutas;
-import static android.despacho.com.ofinicaerp.utils.Constants.POST_INGRESO;
-import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_INGRESO;
+import static android.despacho.com.ofinicaerp.utils.Constants.POST_GASTO;
+import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_GASTOS;
 
 
-public class IngresosFragment extends Fragment {
+public class GastosFragment extends Fragment {
     private EditText et_fechaIni;
     private EditText et_fechaFin;
     private Button btn_buscar;
     private RecyclerView recyclerView;
     private TextView tv_total;
-    private IngresoAdapter testAdapter;
-    private String idRuta;
     private ProgressDialog progressBar;
+    private GastoAdapter testAdapter;
+    private String idRuta;
     private double total;
     private String sIndex;
-    private List<ModelIngresos> listIngresos;
+    private List<ModelGastos> listGastos;
 
-    public IngresosFragment() {
+
+    public GastosFragment() {
         // Required empty public constructor
     }
 
-    public static IngresosFragment newInstance() {
-        IngresosFragment fragment = new IngresosFragment();
+
+    public static GastosFragment newInstance() {
+        GastosFragment fragment = new GastosFragment();
         return fragment;
     }
 
@@ -65,7 +69,7 @@ public class IngresosFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_ingresos, container, false);
+        return inflater.inflate(R.layout.fragment_gastos, container, false);
     }
 
     @Override
@@ -73,21 +77,22 @@ public class IngresosFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         init();
     }
+
     public void init(){
+        listGastos = new ArrayList<>();
         progressBar = new ProgressDialog(getActivity());
         progressBar.setMessage("Cargando...");
         progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressBar.setCancelable(false);
         progressBar.setCanceledOnTouchOutside(false);
         progressBar.setIndeterminate(true);
-        idRuta = "";
-        listIngresos = new ArrayList<>();
-        Spinner spinner_ruta = (Spinner) getActivity().findViewById(R.id.spinner_ingreso_ruta);
         et_fechaIni = (EditText) getActivity().findViewById(R.id.et_fechaIni);
         et_fechaFin = (EditText) getActivity().findViewById(R.id.et_fechaFin);
         btn_buscar = (Button) getActivity().findViewById(R.id.btn_buscar);
-        tv_total = (TextView) getActivity().findViewById(R.id.labelTotal_ingreso);
-        recyclerView = (RecyclerView) getActivity().findViewById(R.id.recycler_view_ingresos);
+        tv_total = (TextView) getActivity().findViewById(R.id.labelTotal_gasto);
+        recyclerView = (RecyclerView) getActivity().findViewById(R.id.recycler_view_gasto);
+        Spinner spinner_ruta = (Spinner) getActivity().findViewById(R.id.spinner_gastos);
+
         int sizeListRutas = listRutas.size() + 1;
         String[] idNombRuta = new String[sizeListRutas];
         idNombRuta[0] = "100000-TODAS";
@@ -146,7 +151,7 @@ public class IngresosFragment extends Fragment {
                     String fInicial = et_fechaIni.getText().toString();
                     String fFinal = et_fechaFin.getText().toString();
                     String strJSON = Utils.toJsonIngresoFecha(idRuta,fInicial,fFinal);
-                    new QueryIngresoTask().execute(POST_INGRESO,URL_QUERY_INGRESO,strJSON);
+                    new QueryGastosTask().execute(POST_GASTO,URL_QUERY_GASTOS,strJSON);
                 }
             }
         });
@@ -164,23 +169,23 @@ public class IngresosFragment extends Fragment {
     }
 
     public void setUpRecyclerView(){
-        testAdapter = new IngresoAdapter(listIngresos,getActivity());
+        testAdapter = new GastoAdapter(listGastos,getActivity());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(testAdapter);
         recyclerView.setHasFixedSize(true);
     }
 
-    public class IngresoAdapter extends RecyclerView.Adapter {
+    public class GastoAdapter extends RecyclerView.Adapter {
         private static final int PENDING_REMOVAL_TIMEOUT = 3000; // 3sec
-        List<ModelIngresos> items;
+        List<ModelGastos> items;
         Context mContext;
-        List<ModelIngresos> itemsPendingRemoval;
+        List<ModelGastos> itemsPendingRemoval;
         int lastInsertedIndex; // so we can add some more items for testing purposes
         boolean undoOn; // is undo on, you can turn it on from the toolbar menu
 
         private Handler handler = new Handler(); // hanlder for running delayed runnables
 
-        IngresoAdapter(List<ModelIngresos> item, Context context) {
+        GastoAdapter(List<ModelGastos> item, Context context) {
             items = item;
             mContext = context;
             itemsPendingRemoval = item;
@@ -197,12 +202,11 @@ public class IngresosFragment extends Fragment {
         @Override
         public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
             TestViewHolder viewHolder = (TestViewHolder) holder;
-            final ModelIngresos item = items.get(position);
-            total += item.getCantidad();
+            final ModelGastos item = items.get(position);
+            total += item.getMonto();
             tv_total.setText(getString(R.string.total,String.valueOf(total)));
             viewHolder.et_fecha.setText(item.getFecha());
-            viewHolder.et_concepto.setText(item.getConcepto());
-            viewHolder.et_monto.setText(getString(R.string.monto,String.valueOf(item.getCantidad())));
+            viewHolder.et_monto.setText(getString(R.string.monto,String.valueOf(item.getMonto())));
             viewHolder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -234,7 +238,7 @@ public class IngresosFragment extends Fragment {
             notifyDataSetChanged();
         }
         public void remove(int position) {
-            ModelIngresos item = items.get(position);
+            ModelGastos item = items.get(position);
             if (itemsPendingRemoval.contains(item)) {
                 itemsPendingRemoval.remove(item);
             }
@@ -245,7 +249,7 @@ public class IngresosFragment extends Fragment {
         }
 
         public boolean isPendingRemoval(int position) {
-            ModelIngresos item = items.get(position);
+            ModelGastos item = items.get(position);
             return itemsPendingRemoval.contains(item);
         }
     }
@@ -253,21 +257,18 @@ public class IngresosFragment extends Fragment {
     private static class TestViewHolder extends RecyclerView.ViewHolder {
 
         TextView et_fecha;
-        TextView et_concepto;
         TextView et_monto;
         View mView;
 
         TestViewHolder(ViewGroup parent) {
-            super(LayoutInflater.from(parent.getContext()).inflate(R.layout.row_recycler_ingreso, parent, false));
-
+            super(LayoutInflater.from(parent.getContext()).inflate(R.layout.row_recycler_gasto, parent, false));
             et_fecha = (TextView) itemView.findViewById(R.id.row_fecha);
-            et_concepto = (TextView) itemView.findViewById(R.id.row_concepto);
             et_monto = (TextView) itemView.findViewById(R.id.row_monto);
             mView = itemView;
         }
     }
 
-    private class QueryIngresoTask extends AsyncTask<String, Integer, String> {
+    private class QueryGastosTask extends AsyncTask<String, Integer, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -287,7 +288,7 @@ public class IngresosFragment extends Fragment {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            UtilsDML.resultQueryIngreso(getActivity().getApplication(),result,listIngresos);
+            UtilsDML.resultQueryGastos(getActivity().getApplication(),result,listGastos);
             setUpRecyclerView();
             progressBar.cancel();
         }

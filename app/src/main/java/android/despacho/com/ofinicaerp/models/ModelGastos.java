@@ -1,6 +1,9 @@
 package android.despacho.com.ofinicaerp.models;
 
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class ModelGastos {
     private int id_gasto;
     private int id_ruta;
@@ -8,12 +11,32 @@ public class ModelGastos {
     private String fecha;
     private int id_empleado;
 
+    private String ruta;
+    private String empleado;
+
     public ModelGastos(int id_gasto, int id_ruta, double monto, String fecha, int id_empleado){
         this.id_gasto = id_gasto;
         this.id_ruta = id_ruta;
         this.monto = monto;
         this.fecha = fecha;
         this.id_empleado = id_empleado;
+    }
+
+    public ModelGastos(int id_ruta, double monto, String fecha, int id_empleado){
+        this.id_ruta = id_ruta;
+        this.monto = monto;
+        this.fecha = fecha;
+        this.id_empleado = id_empleado;
+    }
+
+    public ModelGastos(int id_gasto, int id_ruta, double monto, String fecha, int id_empleado, String ruta, String empleado){
+        this.id_gasto = id_gasto;
+        this.id_ruta = id_ruta;
+        this.monto = monto;
+        this.fecha = fecha;
+        this.id_empleado = id_empleado;
+        this.ruta = ruta;
+        this.empleado = empleado;
     }
 
     public int getId_gasto() {
@@ -34,5 +57,29 @@ public class ModelGastos {
 
     public int getId_empleado() {
         return id_empleado;
+    }
+
+    public String getRuta() {
+        return ruta;
+    }
+
+    public String getEmpleado() {
+        return empleado;
+    }
+
+    public String toJsonAddGasto() {
+        JSONObject jsonObject= new JSONObject();
+        try {
+            jsonObject.put("idRuta", getId_ruta());
+            jsonObject.put("fecha", getFecha());
+            jsonObject.put("monto", getMonto());
+            jsonObject.put("idEmpleado", getId_empleado());
+
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
     }
 }
