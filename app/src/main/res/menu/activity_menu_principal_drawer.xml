@@ -28,6 +28,10 @@
     <item android:title="@string/ingresoEgresos">
         <menu>
             <item
+                android:id="@+id/_nav_caja"
+                android:icon="@drawable/cash"
+                android:title="@string/caja"/>
+            <item
                 android:id="@+id/_nav_ingresos"
                 android:icon="@drawable/income"
                 android:title="@string/ingresos"/>

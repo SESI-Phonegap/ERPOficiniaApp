@@ -90,6 +90,7 @@
     <string name="vehiculo">Vehiculo</string>
     <string name="litros">Litros</string>
     <string name="labelmonto">$</string>
+    <string name="caja">Caja</string>
 
 
     <string name="fechaDetails">Fecha:</string>
