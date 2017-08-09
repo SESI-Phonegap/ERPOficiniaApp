@@ -5,6 +5,7 @@ import android.app.Application;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.despacho.com.ofinicaerp.R;
+import android.despacho.com.ofinicaerp.models.ModelCaja;
 import android.despacho.com.ofinicaerp.models.ModelDespacho_Clientes;
 import android.despacho.com.ofinicaerp.models.ModelEmpleado;
 import android.despacho.com.ofinicaerp.models.ModelGastos;
@@ -337,6 +338,31 @@ public class UtilsDML {
                             jsonObject.getString("ruta")));
 
                     //adapter.add("Clave : "+clave+" Nombre : "+ nombre);
+                } catch (JSONException e) {
+                    Log.e("JSON", e.toString());
+                }
+            }
+        }
+
+    }
+
+    public static void resultQueryCaja(String result, List<ModelCaja> caja){
+        //Se obtiene el resultado de la peticion Asincrona
+        Log.w(APP_TAG,"Resultado obtenido " + result);
+        //    data.setText(result);
+        JSONArray jsonArray = null;
+        if (result.contains("[")) {
+            try {
+                jsonArray = new JSONArray(result);
+            } catch (JSONException e) {
+                Log.e("JSON", e.toString());
+            }
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                try {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    caja.add(new ModelCaja(Double.parseDouble(jsonObject.getString("monto"))));
+
                 } catch (JSONException e) {
                     Log.e("JSON", e.toString());
                 }

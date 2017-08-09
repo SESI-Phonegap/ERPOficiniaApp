@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.despacho.com.ofinicaerp.ActivityBase;
 import android.despacho.com.ofinicaerp.R;
+import android.despacho.com.ofinicaerp.fragments.CajaFragment;
 import android.despacho.com.ofinicaerp.fragments.ClientesDespachoFragment;
 import android.despacho.com.ofinicaerp.fragments.EmpleadoFragment;
 import android.despacho.com.ofinicaerp.fragments.GastoGasolinaFragment;
@@ -18,6 +19,7 @@ import android.despacho.com.ofinicaerp.fragments.MantenimientoVehiculoFragment;
 import android.despacho.com.ofinicaerp.fragments.RutasFragment;
 import android.despacho.com.ofinicaerp.fragments.TiendasFragment;
 import android.despacho.com.ofinicaerp.fragments.VehiculoFragment;
+import android.despacho.com.ofinicaerp.models.ModelCaja;
 import android.despacho.com.ofinicaerp.models.ModelDespacho_Clientes;
 import android.despacho.com.ofinicaerp.models.ModelEmpleado;
 import android.despacho.com.ofinicaerp.models.ModelGastos;
@@ -74,6 +76,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.DoubleBuffer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -97,9 +100,11 @@ import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_GASTO_GASO
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_RUTA;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_TIENDA;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_VEHICULO;
+import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_CAJA;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_EMPLEADO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_RUTAS;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_VEHICULO;
+import static android.despacho.com.ofinicaerp.utils.Constants.URL_UPDATE_CAJA;
 import static android.despacho.com.ofinicaerp.utils.Constants.VEHICULO;
 
 public class MenuPrincipal extends ActivityBase
@@ -118,10 +123,11 @@ public class MenuPrincipal extends ActivityBase
     private String idVehiculo;
     private String idRuta;
     private String idEmpleado;
-    private EditText et_fecha;
     private String photoPathSelected;
     private CameraPhoto cameraPhoto;
     private GalleryPhoto galleryPhoto;
+    public static List<ModelCaja> caja;
+    public static double montoActual_Gasto;
 
 
     @Override
@@ -148,10 +154,13 @@ public class MenuPrincipal extends ActivityBase
         listEmpleados = new ArrayList<>();
         listVehiculos = new ArrayList<>();
         listRutas = new ArrayList<>();
+        caja = new ArrayList<>();
+        montoActual_Gasto = 0;
 
         new QueryVehiculoTask().execute(URL_QUERY_VEHICULO);
         new  QueryRutaTask().execute(URL_QUERY_RUTAS);
         new QueryEmpleadoTask().execute(URL_QUERY_EMPLEADO);
+        new QueryCajaTask().execute(URL_QUERY_CAJA);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -215,6 +224,11 @@ public class MenuPrincipal extends ActivityBase
             case R.id._nav_tienda:
                 changeFragment(TiendasFragment.newInstance(), R.id.mainFrame, false, false);
                 fab.setOnClickListener(onClickTiendas);
+                break;
+
+            case R.id._nav_caja:
+                changeFragment(CajaFragment.newInstance(),R.id.mainFrame,false,false);
+                fab.setOnClickListener(onClickCaja);
                 break;
 
             case R.id._nav_ingresos:
@@ -291,6 +305,12 @@ public class MenuPrincipal extends ActivityBase
         }
     };
 
+    View.OnClickListener onClickCaja = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            createDialogUpdateCaja();
+        }
+    };
     View.OnClickListener onClickIngresos = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -518,7 +538,7 @@ public class MenuPrincipal extends ActivityBase
     }
 
     public void createDialogNewGastoGasolina() {
-
+        montoActual_Gasto = 0;
         idVehiculo = "";
         final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
         LayoutInflater inflater = MenuPrincipal.this.getLayoutInflater();
@@ -533,7 +553,7 @@ public class MenuPrincipal extends ActivityBase
         Button btn_guardar = (Button) view.findViewById(R.id.btn_gasolina_guardar);
         Button btn_cancelar = (Button) view.findViewById(R.id.btn_gasolina_cancelar);
         final Spinner spinner_idVehiculo = (Spinner) view.findViewById(R.id.gasolina_spinner_idvehiculo);
-        et_fecha = (EditText) view.findViewById(R.id.gasolina_et_fecha);
+        final EditText et_fecha = (EditText) view.findViewById(R.id.gasolina_et_fecha);
         final EditText et_gas = (EditText) view.findViewById(R.id.gasolina_et_tipoGas);
         final EditText et_litros = (EditText) view.findViewById(R.id.gasolina_et_litros);
         final EditText et_monto = (EditText) view.findViewById(R.id.gasolina_et_monto);
@@ -574,20 +594,26 @@ public class MenuPrincipal extends ActivityBase
                 String gas = et_gas.getText().toString();
                 String litros = et_litros.getText().toString();
                 String monto = et_monto.getText().toString();
+                montoActual_Gasto = caja.get(0).getMonto() - Double.parseDouble(monto);
 
                 // String empleado = spinnerEmpleado.
                 if (fecha.equals("") || gas.equals("") || litros.equals("") || monto.equals("") || idNomVehiculo.equals("")) {
                     Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
                 } else {
-                    ModelGastosGasolina gastoGas = new ModelGastosGasolina(
-                            Integer.parseInt(idVehiculo),
-                            fecha,
-                            gas,
-                            Double.parseDouble(litros),
-                            Double.parseDouble(monto));
+                    if (montoActual_Gasto < 0){
+                        Snackbar.make(v, getResources().getString(R.string.msg_monto_mayor_a_caja), Snackbar.LENGTH_LONG).show();
+                    } else {
 
-                    String strJson = gastoGas.toJsonAddGasolina();
-                    new AddGastoGasolinaTask().execute(URL_ADD_GASTO_GASOLINA, strJson);
+                        ModelGastosGasolina gastoGas = new ModelGastosGasolina(
+                                Integer.parseInt(idVehiculo),
+                                fecha,
+                                gas,
+                                Double.parseDouble(litros),
+                                Double.parseDouble(monto));
+
+                        String strJson = gastoGas.toJsonAddGasolina();
+                        new AddGastoGasolinaTask().execute(URL_ADD_GASTO_GASOLINA, strJson);
+                    }
                 }
 
             }
@@ -602,6 +628,7 @@ public class MenuPrincipal extends ActivityBase
     }
 
     public void createDialogGasto(){
+        montoActual_Gasto = 0;
         idRuta = "";
         idEmpleado = "";
         final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
@@ -671,12 +698,64 @@ public class MenuPrincipal extends ActivityBase
             public void onClick(View v) {
                 String fecha = et_fecha.getText().toString();
                 String monto = et_monto.getText().toString();
+                montoActual_Gasto = caja.get(0).getMonto() - Double.parseDouble(monto);
+
                 if (fecha.equals("") || monto.equals("") || idRuta.equals("") || idEmpleado.equals("")){
                     Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
                 } else {
-                    ModelGastos gastos = new ModelGastos(Integer.parseInt(idRuta),Double.parseDouble(monto),fecha,Integer.parseInt(idEmpleado));
-                    String strJSON = gastos.toJsonAddGasto();
-                    new AddGastoTask().execute(URL_ADD_GASTO,strJSON);
+                    if (montoActual_Gasto < 0){
+                        Snackbar.make(v, getResources().getString(R.string.msg_monto_mayor_a_caja), Snackbar.LENGTH_LONG).show();
+                    } else {
+                        ModelGastos gastos = new ModelGastos(Integer.parseInt(idRuta), Double.parseDouble(monto), fecha, Integer.parseInt(idEmpleado));
+                        String strJSON = gastos.toJsonAddGasto();
+                        new AddGastoTask().execute(URL_ADD_GASTO, strJSON);
+                    }
+                }
+            }
+        });
+
+        dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(false);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+        dialog.show();
+    }
+
+    public void createDialogUpdateCaja(){
+        idRuta = "";
+        idEmpleado = "";
+        final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
+        LayoutInflater inflater = MenuPrincipal.this.getLayoutInflater();
+        final View view = inflater.inflate(R.layout.dialog_update_caja, null);
+        builder.setView(view);
+
+        Log.d("CAJA--",String.valueOf(caja.get(0).getMonto()));
+        Button btn_guardar = (Button) view.findViewById(R.id.btn_caja_guardar);
+        Button btn_cancelar = (Button) view.findViewById(R.id.btn_caja_cancelar);
+        final EditText et_monto = (EditText) view.findViewById(R.id.caja_et_monto);
+
+        btn_cancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        btn_guardar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String monto = et_monto.getText().toString();
+                if (monto.equals("")){
+                    Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
+                } else {
+                    double montoActual = caja.get(0).getMonto();
+                    Log.d("CAJA--",String.valueOf(montoActual));
+                    double suma = montoActual + Double.parseDouble(monto);
+                    ModelCaja modelCaja = new ModelCaja(suma);
+                    String strJSON = modelCaja.toJsonUpdateCaja();
+                    new UpdateCajaTask().execute(URL_UPDATE_CAJA,strJSON);
                 }
             }
         });
@@ -882,6 +961,7 @@ public class MenuPrincipal extends ActivityBase
             super.onPostExecute(result);
             proccessResult(result);
             progressBar.cancel();
+            new QueryCajaTask().execute(URL_QUERY_CAJA);
         }
 
         @Override
@@ -911,6 +991,38 @@ public class MenuPrincipal extends ActivityBase
             proccessResult(result);
           //  changeFragment(TiendasFragment.newInstance(),R.id.mainFrame,false,false);
             progressBar.cancel();
+            new QueryCajaTask().execute(URL_QUERY_CAJA);
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+
+        }
+    }
+
+    private class UpdateCajaTask extends AsyncTask<String, Integer, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String baseUrl = params[0];
+            String jsonData = params[1];
+            return UtilsDML.addData(Constants.POST_CAJA, baseUrl, jsonData);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            proccessResult(result);
+            //  changeFragment(TiendasFragment.newInstance(),R.id.mainFrame,false,false);
+            progressBar.cancel();
+            new QueryCajaTask().execute(URL_QUERY_CAJA);
         }
 
         @Override
@@ -997,6 +1109,34 @@ public class MenuPrincipal extends ActivityBase
             UtilsDML.resultQueryEmpleado(result,listEmpleados);
             progressBar.cancel();
         }
+    }
+
+    private class QueryCajaTask extends AsyncTask<String, Integer, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            return UtilsDML.queryAllData(params[0]);
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            caja = new ArrayList<>();
+            UtilsDML.resultQueryCaja(result,caja);
+            // setUpRecyclerView();
+            progressBar.cancel();
+        }
+
     }
 
     public void proccessResult(String result) {

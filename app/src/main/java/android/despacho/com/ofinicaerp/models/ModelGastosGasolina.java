@@ -4,6 +4,8 @@ package android.despacho.com.ofinicaerp.models;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static android.despacho.com.ofinicaerp.activity.MenuPrincipal.montoActual_Gasto;
+
 public class ModelGastosGasolina {
     private int id_gasto_gas;
     private int id_vehiculo;
@@ -99,6 +101,7 @@ public class ModelGastosGasolina {
             jsonObject.put("gas", getTipo_gas());
             jsonObject.put("litros", getCantidad_litros());
             jsonObject.put("costo", getCosto());
+            jsonObject.put("caja", montoActual_Gasto);
 
             return jsonObject.toString();
         } catch (JSONException e) {

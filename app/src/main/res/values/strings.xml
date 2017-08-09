@@ -13,6 +13,7 @@
     <string name="descrip">Descripción</string>
 
     <string name="msg_campos_vacios">No debe dejar campos vacios (*)obligatorios</string>
+    <string name="msg_monto_mayor_a_caja">El monto a gastar es mayor a lo que hay en caja.</string>
     <string name="msg_fecha">Seleccione la fecha</string>
     <string name="msg_foto">Debes de ingresar una foto</string>
     <string name="msg_usiarioIncorrecto">Usuario o contraseña incorrectos.</string>
@@ -85,6 +86,9 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <string name="cantActualCaja">En Caja.</string>
+
+    <string name="titlecaja">Abono a caja</string>
     <string name="concepto">Concepto</string>
     <string name="fecha">Fecha</string>
     <string name="vehiculo">Vehiculo</string>

@@ -4,6 +4,9 @@ package android.despacho.com.ofinicaerp.models;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static android.despacho.com.ofinicaerp.activity.MenuPrincipal.caja;
+import static android.despacho.com.ofinicaerp.activity.MenuPrincipal.montoActual_Gasto;
+
 public class ModelGastos {
     private int id_gasto;
     private int id_ruta;
@@ -74,6 +77,7 @@ public class ModelGastos {
             jsonObject.put("fecha", getFecha());
             jsonObject.put("monto", getMonto());
             jsonObject.put("idEmpleado", getId_empleado());
+            jsonObject.put("caja",montoActual_Gasto);
 
             return jsonObject.toString();
         } catch (JSONException e) {
