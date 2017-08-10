@@ -3,6 +3,8 @@ package android.despacho.com.ofinicaerp.models;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static android.despacho.com.ofinicaerp.activity.FormMantenimiento.montoActual_Gasto_Mantenimiento;
+
 public class ModelMantenimiento {
     private int id_mantenimiento;
     private String mantenimiento;
@@ -86,6 +88,8 @@ public class ModelMantenimiento {
             jsonObject.put("descripcion", getDescripcion());
             jsonObject.put("monto", getCosto());
             jsonObject.put("idVehiculo", getId_vehiculo());
+            jsonObject.put("caja", montoActual_Gasto_Mantenimiento);
+
 
             return jsonObject.toString();
         } catch (JSONException e) {

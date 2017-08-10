@@ -8,6 +8,7 @@ import android.despacho.com.ofinicaerp.utils.Utils;
 import android.despacho.com.ofinicaerp.utils.UtilsDML;
 import android.os.AsyncTask;
 import android.provider.ContactsContract;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.despacho.com.ofinicaerp.R;
@@ -20,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import static android.despacho.com.ofinicaerp.activity.MenuPrincipal.caja;
 import static android.despacho.com.ofinicaerp.activity.MenuPrincipal.listVehiculos;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_MANTENIMIENTO;
 
@@ -34,6 +36,7 @@ public class FormMantenimiento extends AppCompatActivity {
     private ImageView imgBack;
     private String idVehiculo;
     private ProgressDialog progressBar;
+    public static double montoActual_Gasto_Mantenimiento;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +46,7 @@ public class FormMantenimiento extends AppCompatActivity {
     }
 
     public void init(){
+        montoActual_Gasto_Mantenimiento = 0;
         progressBar = new ProgressDialog(FormMantenimiento.this);
         progressBar.setMessage("Cargando...");
         progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -97,20 +101,25 @@ public class FormMantenimiento extends AppCompatActivity {
                 String descripcion = et_descripcion.getText().toString();
                 String fecha = et_fecha.getText().toString();
                 String monto = et_moto.getText().toString();
+                montoActual_Gasto_Mantenimiento = caja.get(0).getMonto() - Double.parseDouble(monto);
 
                 if (idVehiculo.equals("") || mantenimiento.equals("") || descripcion.equals("")
                         || fecha.equals("") || monto.equals("")){
                     Toast.makeText(FormMantenimiento.this,getString(R.string.msg_campos_vacios),Toast.LENGTH_LONG).show();
                 } else {
-                    ModelMantenimiento modelMantenimiento = new ModelMantenimiento(
-                            mantenimiento,
-                            descripcion,
-                            Double.parseDouble(monto),
-                            fecha,
-                            Integer.parseInt(idVehiculo));
+                    if (montoActual_Gasto_Mantenimiento < 0){
+                        Snackbar.make(v, getResources().getString(R.string.msg_monto_mayor_a_caja), Snackbar.LENGTH_LONG).show();
+                    } else {
+                        ModelMantenimiento modelMantenimiento = new ModelMantenimiento(
+                                mantenimiento,
+                                descripcion,
+                                Double.parseDouble(monto),
+                                fecha,
+                                Integer.parseInt(idVehiculo));
 
-                    String strJSON = modelMantenimiento.toJsonAddMantenimiento();
-                    new AddMantenimientoTask().execute(URL_ADD_MANTENIMIENTO,strJSON);
+                        String strJSON = modelMantenimiento.toJsonAddMantenimiento();
+                        new AddMantenimientoTask().execute(URL_ADD_MANTENIMIENTO, strJSON);
+                    }
                 }
             }
         });

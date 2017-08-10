@@ -140,6 +140,12 @@ public class MenuPrincipal extends ActivityBase
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        new QueryCajaTask().execute(URL_QUERY_CAJA);
+    }
+
     public void init() {
         cameraPhoto = new CameraPhoto(getApplicationContext());
         galleryPhoto = new GalleryPhoto(getApplicationContext());
@@ -1111,7 +1117,7 @@ public class MenuPrincipal extends ActivityBase
         }
     }
 
-    private class QueryCajaTask extends AsyncTask<String, Integer, String> {
+        private class QueryCajaTask extends AsyncTask<String, Integer, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
