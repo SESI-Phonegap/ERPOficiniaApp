@@ -46,7 +46,7 @@ public class CajaFragment extends Fragment {
 
     public void init(){
         tv_caja = (TextView) getActivity().findViewById(R.id.tv_caja);
-        tv_caja.setText(String.valueOf(montoActual_Gasto));
+        tv_caja.setText(getString(R.string.pesoscaja,String.valueOf(montoActual_Gasto)));
     }
 
     @Override

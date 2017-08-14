@@ -164,9 +164,10 @@ public class MenuPrincipal extends ActivityBase
         montoActual_Gasto = 0;
 
         new QueryVehiculoTask().execute(URL_QUERY_VEHICULO);
-        new  QueryRutaTask().execute(URL_QUERY_RUTAS);
+        new QueryRutaTask().execute(URL_QUERY_RUTAS);
         new QueryEmpleadoTask().execute(URL_QUERY_EMPLEADO);
         new QueryCajaTask().execute(URL_QUERY_CAJA);
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -233,17 +234,17 @@ public class MenuPrincipal extends ActivityBase
                 break;
 
             case R.id._nav_caja:
-                changeFragment(CajaFragment.newInstance(),R.id.mainFrame,false,false);
+                changeFragment(CajaFragment.newInstance(), R.id.mainFrame, false, false);
                 fab.setOnClickListener(onClickCaja);
                 break;
 
             case R.id._nav_ingresos:
-                changeFragment(IngresosFragment.newInstance(),R.id.mainFrame,false,false);
+                changeFragment(IngresosFragment.newInstance(), R.id.mainFrame, false, false);
                 fab.setOnClickListener(onClickIngresos);
                 break;
 
             case R.id._nav_gastos:
-                changeFragment(GastosFragment.newInstance(),R.id.mainFrame,false,false);
+                changeFragment(GastosFragment.newInstance(), R.id.mainFrame, false, false);
                 fab.setOnClickListener(onClickGastos);
                 break;
 
@@ -320,8 +321,8 @@ public class MenuPrincipal extends ActivityBase
     View.OnClickListener onClickIngresos = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(MenuPrincipal.this,FormIngreso.class);
-            startActivityForResult(intent,6666);
+            Intent intent = new Intent(MenuPrincipal.this, FormIngreso.class);
+            startActivityForResult(intent, 6666);
         }
     };
 
@@ -335,24 +336,24 @@ public class MenuPrincipal extends ActivityBase
     View.OnClickListener onClickVehiculo = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(MenuPrincipal.this,FormVehiculo.class);
-            startActivityForResult(intent,9999);
+            Intent intent = new Intent(MenuPrincipal.this, FormVehiculo.class);
+            startActivityForResult(intent, 9999);
         }
     };
 
     View.OnClickListener onClickMantenimiento = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(MenuPrincipal.this,FormMantenimiento.class);
-            startActivityForResult(intent,8888);
+            Intent intent = new Intent(MenuPrincipal.this, FormMantenimiento.class);
+            startActivityForResult(intent, 8888);
         }
     };
 
     View.OnClickListener onClickEmpleado = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(MenuPrincipal.this,FormEmpleado.class);
-            startActivityForResult(intent,7777);
+            Intent intent = new Intent(MenuPrincipal.this, FormEmpleado.class);
+            startActivityForResult(intent, 7777);
         }
     };
 
@@ -370,7 +371,7 @@ public class MenuPrincipal extends ActivityBase
         }
     };
 
-    public void createDialogRuta(){
+    public void createDialogRuta() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
         LayoutInflater inflater = MenuPrincipal.this.getLayoutInflater();
         final View view = inflater.inflate(R.layout.dialog_add_ruta, null);
@@ -394,12 +395,12 @@ public class MenuPrincipal extends ActivityBase
             @Override
             public void onClick(View v) {
                 String ruta = et_ruta.getText().toString();
-                if (ruta.equals("")){
+                if (ruta.equals("")) {
                     Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
                 } else {
                     ModelRutas rutas = new ModelRutas(ruta);
                     String strJSON = rutas.toJsonAddRuta();
-                    new AddRutaTask().execute(URL_ADD_RUTA,strJSON);
+                    new AddRutaTask().execute(URL_ADD_RUTA, strJSON);
 
                 }
             }
@@ -413,7 +414,7 @@ public class MenuPrincipal extends ActivityBase
         dialog.show();
     }
 
-    public void createDialogTienda(){
+    public void createDialogTienda() {
         idRuta = "";
         final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
         LayoutInflater inflater = MenuPrincipal.this.getLayoutInflater();
@@ -459,12 +460,12 @@ public class MenuPrincipal extends ActivityBase
             public void onClick(View v) {
                 String tienda = et_tienda.getText().toString();
                 String direccion = et_direccion.getText().toString();
-                if (tienda.equals("") || direccion.equals("") || idRuta.equals("")){
+                if (tienda.equals("") || direccion.equals("") || idRuta.equals("")) {
                     Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
                 } else {
-                    ModelTienda modelTienda = new ModelTienda(tienda,direccion,Integer.parseInt(idRuta));
+                    ModelTienda modelTienda = new ModelTienda(tienda, direccion, Integer.parseInt(idRuta));
                     String strJSON = modelTienda.toJsonAddTienda();
-                    new AddTiendaTask().execute(URL_ADD_TIENDA,strJSON);
+                    new AddTiendaTask().execute(URL_ADD_TIENDA, strJSON);
 
                 }
             }
@@ -606,7 +607,7 @@ public class MenuPrincipal extends ActivityBase
                 if (fecha.equals("") || gas.equals("") || litros.equals("") || monto.equals("") || idNomVehiculo.equals("")) {
                     Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
                 } else {
-                    if (montoActual_Gasto < 0){
+                    if (montoActual_Gasto < 0) {
                         Snackbar.make(v, getResources().getString(R.string.msg_monto_mayor_a_caja), Snackbar.LENGTH_LONG).show();
                     } else {
 
@@ -633,7 +634,7 @@ public class MenuPrincipal extends ActivityBase
         dialog.show();
     }
 
-    public void createDialogGasto(){
+    public void createDialogGasto() {
         montoActual_Gasto = 0;
         idRuta = "";
         idEmpleado = "";
@@ -648,7 +649,7 @@ public class MenuPrincipal extends ActivityBase
         }
 
         String[] idNomEmpleado = new String[listEmpleados.size()];
-        for (int x = 0; x < listEmpleados.size(); x++ ){
+        for (int x = 0; x < listEmpleados.size(); x++) {
             idNomEmpleado[x] = listEmpleados.get(x).getId_empleado() + "-" + listEmpleados.get(x).getNombre();
         }
 
@@ -661,7 +662,7 @@ public class MenuPrincipal extends ActivityBase
         et_fecha.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.showDialogDate(MenuPrincipal.this,et_fecha);
+                Utils.showDialogDate(MenuPrincipal.this, et_fecha);
             }
         });
         spinner_idRuta.setAdapter(new ArrayAdapter<>(getApplication(), R.layout.row_spinner_item, idNomRuta));
@@ -678,7 +679,7 @@ public class MenuPrincipal extends ActivityBase
 
             }
         });
-        spinner_idEmpleado.setAdapter(new ArrayAdapter<>(getApplication(), R.layout.row_spinner_item,idNomEmpleado));
+        spinner_idEmpleado.setAdapter(new ArrayAdapter<>(getApplication(), R.layout.row_spinner_item, idNomEmpleado));
         spinner_idEmpleado.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -706,10 +707,10 @@ public class MenuPrincipal extends ActivityBase
                 String monto = et_monto.getText().toString();
                 montoActual_Gasto = caja.get(0).getMonto() - Double.parseDouble(monto);
 
-                if (fecha.equals("") || monto.equals("") || idRuta.equals("") || idEmpleado.equals("")){
+                if (fecha.equals("") || monto.equals("") || idRuta.equals("") || idEmpleado.equals("")) {
                     Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
                 } else {
-                    if (montoActual_Gasto < 0){
+                    if (montoActual_Gasto < 0) {
                         Snackbar.make(v, getResources().getString(R.string.msg_monto_mayor_a_caja), Snackbar.LENGTH_LONG).show();
                     } else {
                         ModelGastos gastos = new ModelGastos(Integer.parseInt(idRuta), Double.parseDouble(monto), fecha, Integer.parseInt(idEmpleado));
@@ -729,7 +730,7 @@ public class MenuPrincipal extends ActivityBase
         dialog.show();
     }
 
-    public void createDialogUpdateCaja(){
+    public void createDialogUpdateCaja() {
         idRuta = "";
         idEmpleado = "";
         final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
@@ -737,7 +738,7 @@ public class MenuPrincipal extends ActivityBase
         final View view = inflater.inflate(R.layout.dialog_update_caja, null);
         builder.setView(view);
 
-        Log.d("CAJA--",String.valueOf(caja.get(0).getMonto()));
+        Log.d("CAJA--", String.valueOf(caja.get(0).getMonto()));
         Button btn_guardar = (Button) view.findViewById(R.id.btn_caja_guardar);
         Button btn_cancelar = (Button) view.findViewById(R.id.btn_caja_cancelar);
         final EditText et_monto = (EditText) view.findViewById(R.id.caja_et_monto);
@@ -753,15 +754,15 @@ public class MenuPrincipal extends ActivityBase
             @Override
             public void onClick(View v) {
                 String monto = et_monto.getText().toString();
-                if (monto.equals("")){
+                if (monto.equals("")) {
                     Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
                 } else {
                     double montoActual = caja.get(0).getMonto();
-                    Log.d("CAJA--",String.valueOf(montoActual));
+                    Log.d("CAJA--", String.valueOf(montoActual));
                     double suma = montoActual + Double.parseDouble(monto);
                     ModelCaja modelCaja = new ModelCaja(suma);
                     String strJSON = modelCaja.toJsonUpdateCaja();
-                    new UpdateCajaTask().execute(URL_UPDATE_CAJA,strJSON);
+                    new UpdateCajaTask().execute(URL_UPDATE_CAJA, strJSON);
                 }
             }
         });
@@ -784,48 +785,48 @@ public class MenuPrincipal extends ActivityBase
 
                 final String sData = data.getStringExtra(Constants.REFRESH);
                 if (sData.equals(Constants.REFRESH_FRAGMENT_VEHICULO)) {
-                    changeFragment(VehiculoFragment.newInstance(),R.id.mainFrame,false,false);
-                } else if (sData.equals(Constants.REFRESH_FRAGMENT_EMPLEADO)){
-                    changeFragment(EmpleadoFragment.newInstance(),R.id.mainFrame,false,false);
-                } else if (sData.equals(Constants.REFRESH_FRAGMENT_MANTENIMIENTO)){
-                    changeFragment(MantenimientoVehiculoFragment.newInstance(),R.id.mainFrame,false,false);
-                } else if (sData.equals(Constants.REFRESH_FRAGMENT_INGRESO)){
-                    changeFragment(IngresosFragment.newInstance(),R.id.mainFrame,false,false);
+                    changeFragment(VehiculoFragment.newInstance(), R.id.mainFrame, false, false);
+                } else if (sData.equals(Constants.REFRESH_FRAGMENT_EMPLEADO)) {
+                    changeFragment(EmpleadoFragment.newInstance(), R.id.mainFrame, false, false);
+                } else if (sData.equals(Constants.REFRESH_FRAGMENT_MANTENIMIENTO)) {
+                    changeFragment(MantenimientoVehiculoFragment.newInstance(), R.id.mainFrame, false, false);
+                } else if (sData.equals(Constants.REFRESH_FRAGMENT_INGRESO)) {
+                    changeFragment(IngresosFragment.newInstance(), R.id.mainFrame, false, false);
                 }
 
-                    if (requestCode == PICK_IMAGE_VEHICULO) {
-                        Uri uri = data.getData();
-                        galleryPhoto.setPhotoUri(uri);
-                        String photoPath = galleryPhoto.getPath();
-                        try {
-                            Bitmap bitmap = ImageLoader.
-                                    init().
-                                    from(photoPath).
-                                    requestSize(1024, 800).
-                                    getBitmap();
-                            photoCar.setImageBitmap(bitmap);
-                   //         imageBase64 = Utils.encodeImageBase64(bitmap);
-                        }catch (FileNotFoundException e){
-                            e.printStackTrace();
-                        }
+                if (requestCode == PICK_IMAGE_VEHICULO) {
+                    Uri uri = data.getData();
+                    galleryPhoto.setPhotoUri(uri);
+                    String photoPath = galleryPhoto.getPath();
+                    try {
+                        Bitmap bitmap = ImageLoader.
+                                init().
+                                from(photoPath).
+                                requestSize(1024, 800).
+                                getBitmap();
+                        photoCar.setImageBitmap(bitmap);
+                        //         imageBase64 = Utils.encodeImageBase64(bitmap);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
 
-                    } else if (requestCode == PICK_IMAGE_EMPLEADO) {
-                        Uri uri = data.getData();
-                        galleryPhoto.setPhotoUri(uri);
-                        String photoPath = galleryPhoto.getPath();
-                        try {
-                            Bitmap bitmap = ImageLoader.
-                                    init().
-                                    from(photoPath).
-                                    requestSize(1024, 800).
-                                    getBitmap();
-                            photoEmpleado.setImageBitmap(bitmap);
-                    //        imageBase64 = Utils.encodeImageBase64(bitmap);
-                        }catch (FileNotFoundException e){
-                            e.printStackTrace();
-                        }
+                } else if (requestCode == PICK_IMAGE_EMPLEADO) {
+                    Uri uri = data.getData();
+                    galleryPhoto.setPhotoUri(uri);
+                    String photoPath = galleryPhoto.getPath();
+                    try {
+                        Bitmap bitmap = ImageLoader.
+                                init().
+                                from(photoPath).
+                                requestSize(1024, 800).
+                                getBitmap();
+                        photoEmpleado.setImageBitmap(bitmap);
+                        //        imageBase64 = Utils.encodeImageBase64(bitmap);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
 
-                    } /*else if (requestCode == TAKE_PICTURE_EMPLEADO) {
+                } /*else if (requestCode == TAKE_PICTURE_EMPLEADO) {
                         String photoPath = cameraPhoto.getPhotoPath();
                         try {
                             Bitmap bitmap = ImageLoader.
@@ -854,7 +855,6 @@ public class MenuPrincipal extends ActivityBase
                     }*/
 
 
-
             }
         }
     }
@@ -878,7 +878,7 @@ public class MenuPrincipal extends ActivityBase
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             proccessResult(result);
-            changeFragment(RutasFragment.newInstance(),R.id.mainFrame,false,false);
+            changeFragment(RutasFragment.newInstance(), R.id.mainFrame, false, false);
             progressBar.cancel();
         }
 
@@ -908,7 +908,7 @@ public class MenuPrincipal extends ActivityBase
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             proccessResult(result);
-            changeFragment(TiendasFragment.newInstance(),R.id.mainFrame,false,false);
+            changeFragment(TiendasFragment.newInstance(), R.id.mainFrame, false, false);
             progressBar.cancel();
         }
 
@@ -995,7 +995,7 @@ public class MenuPrincipal extends ActivityBase
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             proccessResult(result);
-          //  changeFragment(TiendasFragment.newInstance(),R.id.mainFrame,false,false);
+            //  changeFragment(TiendasFragment.newInstance(),R.id.mainFrame,false,false);
             progressBar.cancel();
             new QueryCajaTask().execute(URL_QUERY_CAJA);
         }
@@ -1085,7 +1085,7 @@ public class MenuPrincipal extends ActivityBase
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            UtilsDML.resultQueryRutas(result,listRutas);
+            UtilsDML.resultQueryRutas(result, listRutas);
             // setUpRecyclerView();
             progressBar.cancel();
         }
@@ -1112,12 +1112,12 @@ public class MenuPrincipal extends ActivityBase
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            UtilsDML.resultQueryEmpleado(result,listEmpleados);
+            UtilsDML.resultQueryEmpleado(result, listEmpleados);
             progressBar.cancel();
         }
     }
 
-        private class QueryCajaTask extends AsyncTask<String, Integer, String> {
+    private class QueryCajaTask extends AsyncTask<String, Integer, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -1138,9 +1138,10 @@ public class MenuPrincipal extends ActivityBase
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             caja = new ArrayList<>();
-            UtilsDML.resultQueryCaja(result,caja);
+            UtilsDML.resultQueryCaja(result, caja);
             // setUpRecyclerView();
             progressBar.cancel();
+            montoActual_Gasto = caja.get(0).getMonto();
         }
 
     }
