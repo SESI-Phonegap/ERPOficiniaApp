@@ -60,4 +60,7 @@ public class Constants {
     public static final String REFRESH_FRAGMENT_MANTENIMIENTO = "refresh_fragment_mantenimiento";
     public static final String REFRESH_FRAGMENT_INGRESO = "refresh_fragment_ingreso";
 
+    public static final String PAYMENT_NUMBER_FORMAT_REGEX = "[$,.]";
+    public static final String STRING_EMPTY = "";
+    public static final String PAYMENT_NUMBER_FORMAT = "#,###,##0.00";
 }

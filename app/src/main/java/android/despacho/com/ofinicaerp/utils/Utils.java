@@ -7,6 +7,10 @@ import android.content.Context;
 import android.despacho.com.ofinicaerp.R;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.text.Editable;
+import android.text.Selection;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -15,6 +19,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -106,4 +112,28 @@ public class Utils {
             Toast.makeText(context, context.getString(R.string.msg_error) + result, Toast.LENGTH_LONG).show();
         }
     }
+
+    public static double convertToDouble(String value) {
+        if(value == null || value.trim().isEmpty()) return 0.0;
+        try {
+            DecimalFormat format = new DecimalFormat(Constants.PAYMENT_NUMBER_FORMAT, new DecimalFormatSymbols(Locale.US));
+            return format.parse(value).doubleValue();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return 0.0;
+        }
+        //     return 0.0;
+    }
+
+    public static String parseToString(double value) {
+        try {
+            DecimalFormat format = new DecimalFormat(Constants.PAYMENT_NUMBER_FORMAT, new DecimalFormatSymbols(Locale.US));
+            return format.format(value);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return Constants.STRING_EMPTY;
+    }
+
+
 }

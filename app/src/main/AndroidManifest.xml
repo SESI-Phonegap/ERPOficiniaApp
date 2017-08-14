@@ -61,6 +61,7 @@
         </provider>
 
         <activity android:name=".activity.FormIngreso" />
+        <activity android:name=".activity.FormComprobanteGasto"></activity>
     </application>
 
 </manifest>

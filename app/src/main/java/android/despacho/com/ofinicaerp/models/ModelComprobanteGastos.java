@@ -10,11 +10,13 @@ public class ModelComprobanteGastos {
     private double monto;
     private int id_gasto;
     private int status_comprobante;
-    private String tipo_gasto;
+    private int tipo_gasto;
+    private String categoria;
+    private String tipo_comprobante;
 
     public ModelComprobanteGastos(int id_comprobante, String fecha, String concepto,
                                   String unidad, double cantidad, double monto, int id_gasto,
-                                  int status_comprobante, String tipo_gasto){
+                                  int status_comprobante, int tipo_gasto, String categoria, String tipo_comprobante){
         this.id_comprobante = id_comprobante;
         this.fecha = fecha;
         this.concepto = concepto;
@@ -24,6 +26,8 @@ public class ModelComprobanteGastos {
         this.id_gasto = id_gasto;
         this.status_comprobante = status_comprobante;
         this.tipo_gasto = tipo_gasto;
+        this.categoria = categoria;
+        this.tipo_comprobante = tipo_comprobante;
 
     }
 
@@ -59,7 +63,15 @@ public class ModelComprobanteGastos {
         return status_comprobante;
     }
 
-    public String getTipo_gasto() {
+    public int getTipo_gasto() {
         return tipo_gasto;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public String getTipo_comprobante() {
+        return tipo_comprobante;
     }
 }

@@ -10,6 +10,7 @@ import android.despacho.com.ofinicaerp.ActivityBase;
 import android.despacho.com.ofinicaerp.R;
 import android.despacho.com.ofinicaerp.fragments.CajaFragment;
 import android.despacho.com.ofinicaerp.fragments.ClientesDespachoFragment;
+import android.despacho.com.ofinicaerp.fragments.ComprobanteFragment;
 import android.despacho.com.ofinicaerp.fragments.EmpleadoFragment;
 import android.despacho.com.ofinicaerp.fragments.GastoGasolinaFragment;
 import android.despacho.com.ofinicaerp.fragments.GastosFragment;
@@ -49,6 +50,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
+import android.text.Selection;
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -128,6 +132,7 @@ public class MenuPrincipal extends ActivityBase
     private GalleryPhoto galleryPhoto;
     public static List<ModelCaja> caja;
     public static double montoActual_Gasto;
+    private EditText et_monto;
 
 
     @Override
@@ -249,6 +254,8 @@ public class MenuPrincipal extends ActivityBase
                 break;
 
             case R.id._nav_compGastos:
+                changeFragment(ComprobanteFragment.newInstance(), R.id.mainFrame, false, false);
+                fab.setOnClickListener(onClickComprobante);
                 break;
 
             case R.id._nav_empleados:
@@ -330,6 +337,14 @@ public class MenuPrincipal extends ActivityBase
         @Override
         public void onClick(View v) {
             createDialogGasto();
+        }
+    };
+
+    View.OnClickListener onClickComprobante = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(MenuPrincipal.this,FormComprobanteGasto.class);
+            startActivity(intent);
         }
     };
 
@@ -741,7 +756,8 @@ public class MenuPrincipal extends ActivityBase
         Log.d("CAJA--", String.valueOf(caja.get(0).getMonto()));
         Button btn_guardar = (Button) view.findViewById(R.id.btn_caja_guardar);
         Button btn_cancelar = (Button) view.findViewById(R.id.btn_caja_cancelar);
-        final EditText et_monto = (EditText) view.findViewById(R.id.caja_et_monto);
+        et_monto = (EditText) view.findViewById(R.id.caja_et_monto);
+        et_monto.addTextChangedListener(textWatcherMontoCaja);
 
         btn_cancelar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -753,7 +769,7 @@ public class MenuPrincipal extends ActivityBase
         btn_guardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String monto = et_monto.getText().toString();
+                String monto = et_monto.getText().toString().replaceAll(Constants.PAYMENT_NUMBER_FORMAT_REGEX, Constants.STRING_EMPTY);
                 if (monto.equals("")) {
                     Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
                 } else {
@@ -767,6 +783,8 @@ public class MenuPrincipal extends ActivityBase
             }
         });
 
+
+
         dialog = builder.create();
         dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(false);
@@ -775,6 +793,31 @@ public class MenuPrincipal extends ActivityBase
 
         dialog.show();
     }
+
+    TextWatcher textWatcherMontoCaja = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            et_monto.removeTextChangedListener(this);
+            String cleanString = s.toString().replaceAll(Constants.PAYMENT_NUMBER_FORMAT_REGEX, Constants.STRING_EMPTY);
+            double parsed = Utils.convertToDouble(cleanString);
+            String formated = Utils.parseToString((parsed / 100));
+
+            et_monto.setText(formated);
+            Selection.setSelection(et_monto.getEditableText(),et_monto.getEditableText().length());
+
+            et_monto.addTextChangedListener(textWatcherMontoCaja);
+        }
+    };
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -1154,5 +1197,7 @@ public class MenuPrincipal extends ActivityBase
             Toast.makeText(getApplicationContext(), getString(R.string.msg_error) + result, Toast.LENGTH_LONG).show();
         }
     }
+
+
 
 }
