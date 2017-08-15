@@ -1,7 +1,13 @@
 package android.despacho.com.ofinicaerp.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.despacho.com.ofinicaerp.activity.MenuPrincipal;
+import android.despacho.com.ofinicaerp.models.ModelTipoGasto;
+import android.despacho.com.ofinicaerp.utils.Constants;
+import android.despacho.com.ofinicaerp.utils.UtilsDML;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,7 +17,12 @@ import android.view.ViewGroup;
 
 import android.despacho.com.ofinicaerp.R;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ComprobanteFragment extends Fragment {
+
+
 
     public ComprobanteFragment() {
         // Required empty public constructor
@@ -37,6 +48,11 @@ public class ComprobanteFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        init();
+    }
+
+    public void init(){
+
     }
 
     @Override
@@ -48,5 +64,7 @@ public class ComprobanteFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
     }
+
+
 
 }

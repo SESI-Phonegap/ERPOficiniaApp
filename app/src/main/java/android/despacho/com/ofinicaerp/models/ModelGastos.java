@@ -42,6 +42,11 @@ public class ModelGastos {
         this.empleado = empleado;
     }
 
+    public ModelGastos(int id_gasto, double monto){
+        this.id_gasto = id_gasto;
+        this.monto = monto;
+    }
+
     public int getId_gasto() {
         return id_gasto;
     }

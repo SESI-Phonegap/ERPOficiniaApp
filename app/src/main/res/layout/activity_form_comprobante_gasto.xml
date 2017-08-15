@@ -74,31 +74,38 @@
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="16dp"
         app:layout_constraintTop_toBottomOf="@+id/spinner_id_gasto"
-        app:layout_constraintRight_toLeftOf="@+id/radioButton_no"
         android:layout_marginEnd="8dp"
         app:layout_constraintHorizontal_bias="0.0"
-        android:id="@+id/textView13" />
+        android:id="@+id/textView13"
+        app:layout_constraintRight_toLeftOf="@+id/radioGroup"
+        android:layout_marginRight="8dp" />
 
-    <RadioButton
-        android:id="@+id/radioButton_no"
+    <RadioGroup
         android:layout_width="wrap_content"
-        android:layout_height="20dp"
-        android:text="@string/no"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_marginEnd="16dp"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/spinner_id_gasto" />
-
-    <RadioButton
-        android:id="@+id/radioButton_si"
-        android:layout_width="wrap_content"
-        android:layout_height="20dp"
-        android:text="@string/si"
-        app:layout_constraintRight_toLeftOf="@+id/radioButton_no"
-        android:layout_marginEnd="20dp"
-        android:layout_marginTop="16dp"
         app:layout_constraintTop_toBottomOf="@+id/spinner_id_gasto"
-         />
+        android:id="@+id/radioGroup">
+
+        <RadioButton
+            android:id="@+id/radioButton_si"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:text="@string/si" />
+
+        <RadioButton
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="10dp"
+            android:id="@+id/radioButton_no"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:text="@string/no" />
+
+
+    </RadioGroup>
 
     <EditText
         android:id="@+id/et_fecha_compr"

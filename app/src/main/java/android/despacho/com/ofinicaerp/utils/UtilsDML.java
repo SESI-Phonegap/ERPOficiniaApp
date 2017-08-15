@@ -14,6 +14,7 @@ import android.despacho.com.ofinicaerp.models.ModelIngresos;
 import android.despacho.com.ofinicaerp.models.ModelMantenimiento;
 import android.despacho.com.ofinicaerp.models.ModelRutas;
 import android.despacho.com.ofinicaerp.models.ModelTienda;
+import android.despacho.com.ofinicaerp.models.ModelTipoGasto;
 import android.despacho.com.ofinicaerp.models.ModelUser;
 import android.despacho.com.ofinicaerp.models.ModelVehiculo;
 import android.util.Log;
@@ -617,4 +618,76 @@ public class UtilsDML {
 
         return result;
     }
+
+    public static String resultQueryGastosNoComprobados(Application context,String resultTask, List<ModelGastos> resultGasto) {
+        JSONArray jsonArray = null;
+        String result = "";
+
+        Log.d("INGRESO--", resultTask);
+        try {
+            jsonArray = new JSONArray(resultTask);
+            if (jsonArray.length() > 0) {
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    try {
+
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                        String idGasto = jsonObject.getString("idGasto");
+                        String monto = jsonObject.getString("monto");
+
+                        ModelGastos gastos = new ModelGastos(
+                                Integer.parseInt(idGasto),
+                                Double.parseDouble(monto));
+                        resultGasto.add(gastos);
+
+
+                    } catch (JSONException e) {
+                        Log.e("JSON---", e.toString());
+                    }
+                }
+
+
+            } else {
+
+                result = context.getString(R.string.msg_usiarioIncorrecto);
+            }
+        } catch (JSONException e) {
+            return result = "Ocurrio un error al conectarse al servidor, intentelo de nuevo.";
+            //  Log.e("JSON", e.toString());
+        }
+
+
+
+        return result;
+    }
+
+    public static void resultQueryTipoGasto(String result, List<ModelTipoGasto> listTipoGasto){
+        //Se obtiene el resultado de la peticion Asincrona
+        Log.w(APP_TAG,"Resultado obtenido " + result);
+        //    data.setText(result);
+        JSONArray jsonArray = null;
+        if (result.contains("[")) {
+            try {
+                jsonArray = new JSONArray(result);
+            } catch (JSONException e) {
+                Log.e("JSON", e.toString());
+            }
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                try {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    listTipoGasto.add(new ModelTipoGasto(
+                            Integer.parseInt(jsonObject.getString("idTipoGasto")),
+                            jsonObject.getString("tipoGasto")));
+
+                    //adapter.add("Clave : "+clave+" Nombre : "+ nombre);
+                } catch (JSONException e) {
+                    Log.e("JSON", e.toString());
+                }
+            }
+        }
+
+    }
+
 }
