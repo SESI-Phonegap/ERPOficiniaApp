@@ -579,14 +579,12 @@ public class UtilsDML {
                     try {
 
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-
                         String idGasto = jsonObject.getString("idGasto");
                         String fecha = jsonObject.getString("fecha");
                         String monto = jsonObject.getString("monto");
                         String idRuta = jsonObject.getString("idRuta");
                         String ruta = jsonObject.getString("ruta");
                         String empleado = jsonObject.getString("empleado");
-
 
                         ModelGastos gastos = new ModelGastos(
                                 Integer.parseInt(idGasto),
@@ -598,12 +596,10 @@ public class UtilsDML {
                                 empleado);
                         resultGasto.add(gastos);
 
-
                     } catch (JSONException e) {
                         Log.e("JSON---", e.toString());
                     }
                 }
-
 
             } else {
 
@@ -613,8 +609,6 @@ public class UtilsDML {
             return result = "Ocurrio un error al conectarse al servidor, intentelo de nuevo.";
             //  Log.e("JSON", e.toString());
         }
-
-
 
         return result;
     }
@@ -635,10 +629,12 @@ public class UtilsDML {
 
                         String idGasto = jsonObject.getString("idGasto");
                         String monto = jsonObject.getString("monto");
+                        String fecha = jsonObject.getString("fecha");
 
                         ModelGastos gastos = new ModelGastos(
                                 Integer.parseInt(idGasto),
-                                Double.parseDouble(monto));
+                                Double.parseDouble(monto),
+                                fecha);
                         resultGasto.add(gastos);
 
 

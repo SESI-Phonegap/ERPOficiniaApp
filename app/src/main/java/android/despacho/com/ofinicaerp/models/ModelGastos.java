@@ -42,9 +42,10 @@ public class ModelGastos {
         this.empleado = empleado;
     }
 
-    public ModelGastos(int id_gasto, double monto){
+    public ModelGastos(int id_gasto, double monto , String fecha){
         this.id_gasto = id_gasto;
         this.monto = monto;
+        this.fecha = fecha;
     }
 
     public int getId_gasto() {

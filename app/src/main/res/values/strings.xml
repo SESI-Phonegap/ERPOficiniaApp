@@ -13,6 +13,8 @@
     <string name="descrip">Descripción</string>
 
     <string name="msg_campos_vacios">No debe dejar campos vacios (*)obligatorios</string>
+    <string name="msg_monto_cero">El monto debe de ser mayor a cero.</string>
+    <string name="msg_monto_mayor_a_gasto">El monto del comprobante es mayor al gasto.</string>
     <string name="msg_monto_mayor_a_caja">El monto a gastar es mayor a lo que hay en caja.</string>
     <string name="msg_fecha">Seleccione la fecha</string>
     <string name="msg_foto">Debes de ingresar una foto</string>

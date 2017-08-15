@@ -15,6 +15,8 @@ public class Constants {
     public static String URL_ADD_INGRESO = "http://despachogonzalez.com.mx/erpoficina/newingreso.php";
     public static String URL_ADD_GASTO = "http://despachogonzalez.com.mx/erpoficina/newgasto.php";
     public static String URL_UPDATE_CAJA = "http://despachogonzalez.com.mx/erpoficina/updatecaja.php";
+    public static String URL_ADD_COMPROBANTE = "http://despachogonzalez.com.mx/erpoficina/newcomprobante.php";
+
 
     public static String URL_QUERY_EMPLEADO = "http://despachogonzalez.com.mx/erpoficina/queryempleado.php";
     public static String URL_QUERY_CLIENTE = "http://despachogonzalez.com.mx/erpoficina/querycliente.php";
@@ -41,6 +43,7 @@ public class Constants {
     public static String POST_INGRESO = "ingreso";
     public static String POST_GASTO = "gasto";
     public static String POST_CAJA = "caja";
+    public static String POST_COMPROBANTE = "comprobante";
 
 
     public static String PUTEXTRA_ID_EMPLEADO = "id_empleado";
@@ -63,6 +66,7 @@ public class Constants {
     public static final String REFRESH_FRAGMENT_INGRESO = "refresh_fragment_ingreso";
 
     public static final String PAYMENT_NUMBER_FORMAT_REGEX = "[$,.]";
+    public static final String PAYMENT_NUMBER_FORMAT_REGEX_POINT = "[$,]";
     public static final String STRING_EMPTY = "";
     public static final String PAYMENT_NUMBER_FORMAT = "#,###,##0.00";
 }

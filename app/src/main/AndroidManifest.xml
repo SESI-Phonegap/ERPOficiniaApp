@@ -45,10 +45,12 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity android:name=".activity.VehiculoDetails" />
-        <activity android:name=".activity.FormMantenimiento" />
+        <activity android:name=".activity.FormMantenimiento"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
         <activity android:name=".activity.MantenimientoDetails" />
         <activity android:name=".activity.TiendasPorRuta" />
-        <activity android:name=".activity.FormEmpleado" />
+        <activity android:name=".activity.FormEmpleado"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -60,8 +62,10 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".activity.FormIngreso" />
-        <activity android:name=".activity.FormComprobanteGasto"></activity>
+        <activity android:name=".activity.FormIngreso"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
+        <activity android:name=".activity.FormComprobanteGasto"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
     </application>
 
 </manifest>
