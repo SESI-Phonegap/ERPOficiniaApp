@@ -78,7 +78,7 @@
     <android.support.v7.widget.AppCompatSpinner
         android:id="@+id/spinner_id_gasto"
         android:layout_width="0dp"
-        android:layout_height="35dp"
+        android:layout_height="40dp"
         android:layout_marginLeft="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginRight="16dp"

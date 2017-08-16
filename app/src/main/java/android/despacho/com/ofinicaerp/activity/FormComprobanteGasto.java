@@ -121,7 +121,7 @@ public class FormComprobanteGasto extends AppCompatActivity implements RadioGrou
                 String[] idNomGasto = new String[listGastos.size()];
 
                 for (int x = 0; x < listGastos.size(); x++){
-                    idNomGasto[x] = listGastos.get(x).getId_gasto() + "-" + listGastos.get(x).getFecha() + "-" + getString(R.string.monto,Utils.parseToString(listGastos.get(x).getMonto()));
+                    idNomGasto[x] = listGastos.get(x).getId_gasto() + "-" + listGastos.get(x).getFecha() + "-" + listGastos.get(x).getRuta() + "-\n" + getString(R.string.monto,Utils.parseToString(listGastos.get(x).getMonto()));
                 }
                 spinner_id_gasto.setAdapter(new ArrayAdapter<>(getApplication(),R.layout.row_spinner_item,idNomGasto));
 
@@ -142,7 +142,7 @@ public class FormComprobanteGasto extends AppCompatActivity implements RadioGrou
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         String[] parts = parent.getItemAtPosition(position).toString().split("-");
                         idGasto = parts[0];
-                        montoGastoSelect = Double.parseDouble(parts[4].replaceAll(Constants.PAYMENT_NUMBER_FORMAT_REGEX_POINT, Constants.STRING_EMPTY));
+                        montoGastoSelect = Double.parseDouble(parts[5].replaceAll(Constants.PAYMENT_NUMBER_FORMAT_REGEX_POINT, Constants.STRING_EMPTY));
                     }
 
                     @Override

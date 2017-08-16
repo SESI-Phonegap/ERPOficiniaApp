@@ -630,11 +630,13 @@ public class UtilsDML {
                         String idGasto = jsonObject.getString("idGasto");
                         String monto = jsonObject.getString("monto");
                         String fecha = jsonObject.getString("fecha");
+                        String ruta = jsonObject.getString("ruta");
 
                         ModelGastos gastos = new ModelGastos(
                                 Integer.parseInt(idGasto),
                                 Double.parseDouble(monto),
-                                fecha);
+                                fecha,
+                                ruta);
                         resultGasto.add(gastos);
 
 
