@@ -107,7 +107,7 @@ public class FormComprobanteGasto extends AppCompatActivity implements RadioGrou
             }
         });
 
-        String[] arrayTipoComprobante = {"Ninguna","Nota","Ticket","Factura", "Devolucion"} ;
+        String[] arrayTipoComprobante = getResources().getStringArray(R.array.array_tipo_comprobante);
 
         spinner_tipo_comprobante.setAdapter(new ArrayAdapter<>(getApplication(),R.layout.row_spinner_item,arrayTipoComprobante));
 

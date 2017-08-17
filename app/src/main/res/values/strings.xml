@@ -34,6 +34,8 @@
     <string name="gastos">Gastos</string>
     <string name="ingresos">Ingresos</string>
     <string name="compGastos">Comprobación de gastos</string>
+    <string name="comprobanteGastos">Comprobante de Gastos</string>
+    <string name="todos">Todos</string>
 
     <string name="empleados">Trabajadores</string>
     <string name="pagoNomina">Pago de nomina</string>

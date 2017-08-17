@@ -56,7 +56,10 @@ public class ComprobanteFragment extends Fragment {
         /*SELECT comprobante_gasto.id_comprobante_gasto,comprobante_gasto.fecha,comprobante_gasto.concepto,comprobante_gasto.monto,
                 comprobante_gasto.tipo_gasto_oxxo,comprobante_gasto.categoria,comprobante_gasto.tipo_comprobante
         FROM comprobante_gasto
-        WHERE comprobante_gasto.categoria = 'Telefono' AND comprobante_gasto.tipo_gasto_oxxo = 0
+        WHERE comprobante_gasto.categoria = 'Telefono'
+        AND comprobante_gasto.tipo_gasto_oxxo = 0
+        AND comprobante_gasto.fecha
+	    BETWEEN '$sFechaIni' AND '$sFechaFin'
         ORDER BY comprobante_gasto.fecha ASC*/
     }
 
