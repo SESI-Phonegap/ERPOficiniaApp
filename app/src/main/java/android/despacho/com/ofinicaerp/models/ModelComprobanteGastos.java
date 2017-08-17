@@ -4,6 +4,8 @@ package android.despacho.com.ofinicaerp.models;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static android.despacho.com.ofinicaerp.activity.FormComprobanteGasto.updateCaja;
+
 public class ModelComprobanteGastos {
     private int id_comprobante;
     private String fecha;
@@ -90,6 +92,7 @@ public class ModelComprobanteGastos {
             jsonObject.put("categoria",getCategoria());
             jsonObject.put("tipoComprobante",getTipo_comprobante());
             jsonObject.put("montoGasto",getMontoGasto());
+            jsonObject.put("updateCaja",updateCaja);
 
             return jsonObject.toString();
         } catch (JSONException e) {

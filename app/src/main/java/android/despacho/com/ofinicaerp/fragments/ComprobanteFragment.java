@@ -53,6 +53,11 @@ public class ComprobanteFragment extends Fragment {
 
     public void init(){
 
+        /*SELECT comprobante_gasto.id_comprobante_gasto,comprobante_gasto.fecha,comprobante_gasto.concepto,comprobante_gasto.monto,
+                comprobante_gasto.tipo_gasto_oxxo,comprobante_gasto.categoria,comprobante_gasto.tipo_comprobante
+        FROM comprobante_gasto
+        WHERE comprobante_gasto.categoria = 'Telefono' AND comprobante_gasto.tipo_gasto_oxxo = 0
+        ORDER BY comprobante_gasto.fecha ASC*/
     }
 
     @Override

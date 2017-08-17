@@ -33,6 +33,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.despacho.com.ofinicaerp.activity.MenuPrincipal.caja;
+
 public class FormComprobanteGasto extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener {
     private Spinner spinner_tipo_comprobante;
     private Spinner spinner_categoria;
@@ -51,6 +53,7 @@ public class FormComprobanteGasto extends AppCompatActivity implements RadioGrou
     private int iGastoOxxo;
     private RadioGroup radioGroup;
     private double montoGastoSelect;
+    public static double updateCaja;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +63,7 @@ public class FormComprobanteGasto extends AppCompatActivity implements RadioGrou
     }
 
     public void init(){
+        updateCaja = 0;
         montoGastoSelect = 0;
         iGastoOxxo = 0;
         listGastos = new ArrayList<>();
@@ -187,6 +191,7 @@ public class FormComprobanteGasto extends AppCompatActivity implements RadioGrou
                         if (updateMontoGasto <= 0){
                             Snackbar.make(v,getString(R.string.msg_monto_mayor_a_gasto), Snackbar.LENGTH_LONG).show();
                         } else {
+                            updateCaja = caja.get(0).getMonto() + montoParse;
                             ModelComprobanteGastos comprobanteGastos = new ModelComprobanteGastos(fecha,concepto,montoParse,
                                     Integer.parseInt(idGasto),iGastoOxxo,idCategoria,tipoComprobante,updateMontoGasto);
                             String strJSON = comprobanteGastos.toJsonAddComprobante();
