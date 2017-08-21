@@ -36,6 +36,7 @@
     <string name="compGastos">Comprobación de gastos</string>
     <string name="comprobanteGastos">Comprobante de Gastos</string>
     <string name="todos">Todos</string>
+    <string name="categoria">Categ</string>
 
     <string name="empleados">Trabajadores</string>
     <string name="pagoNomina">Pago de nomina</string>
