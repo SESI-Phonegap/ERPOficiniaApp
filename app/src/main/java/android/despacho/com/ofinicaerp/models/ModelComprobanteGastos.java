@@ -32,6 +32,19 @@ public class ModelComprobanteGastos {
 
     }
 
+    public ModelComprobanteGastos(int id_comprobante, String fecha, String concepto,
+                                  double monto, int tipo_gasto_oxxo,
+                                  String categoria, String tipo_comprobante){
+        this.id_comprobante = id_comprobante;
+        this.fecha = fecha;
+        this.concepto = concepto;
+        this.monto = monto;
+        this.tipo_gasto_oxxo = tipo_gasto_oxxo;
+        this.categoria = categoria;
+        this.tipo_comprobante = tipo_comprobante;
+
+    }
+
     public ModelComprobanteGastos(String fecha, String concepto,
                                   double monto, int id_gasto, int tipo_gasto_oxxo,
                                   String categoria, String tipo_comprobante, double montoGasto){

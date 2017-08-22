@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.despacho.com.ofinicaerp.R;
 import android.despacho.com.ofinicaerp.models.ModelCaja;
+import android.despacho.com.ofinicaerp.models.ModelComprobanteGastos;
 import android.despacho.com.ofinicaerp.models.ModelDespacho_Clientes;
 import android.despacho.com.ofinicaerp.models.ModelEmpleado;
 import android.despacho.com.ofinicaerp.models.ModelGastos;
@@ -160,6 +161,7 @@ public class UtilsDML {
                 sb.append(line + NL);
             }
             in.close();
+
             return sb.toString();
         }catch (Exception e){
             return "Exception happened: " + e.getMessage();
@@ -604,6 +606,54 @@ public class UtilsDML {
             } else {
 
                 result = context.getString(R.string.msg_usiarioIncorrecto);
+            }
+        } catch (JSONException e) {
+            return result = "Ocurrio un error al conectarse al servidor, intentelo de nuevo.";
+            //  Log.e("JSON", e.toString());
+        }
+
+        return result;
+    }
+
+    public static String resultQueryComprobantes(Application context,String resultTask, List<ModelComprobanteGastos> resultComprobantes) {
+        JSONArray jsonArray = null;
+        String result = "";
+
+        Log.d("INGRESO--", resultTask);
+        try {
+            jsonArray = new JSONArray(resultTask);
+            if (jsonArray.length() > 0) {
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    try {
+
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        String idComprobante = jsonObject.getString("idComprobante");
+                        String fecha = jsonObject.getString("fecha");
+                        String concepto = jsonObject.getString("concepto");
+                        String monto = jsonObject.getString("monto");
+                        String oxxo = jsonObject.getString("oxxo");
+                        String categoria = jsonObject.getString("categoria");
+                        String tipoComprobante = jsonObject.getString("tipoComprobante");
+
+                        ModelComprobanteGastos gastos = new ModelComprobanteGastos(
+                                Integer.parseInt(idComprobante),
+                                fecha,
+                                concepto,
+                                Double.parseDouble(monto),
+                                Integer.parseInt(oxxo),
+                                categoria,
+                                tipoComprobante);
+                        resultComprobantes.add(gastos);
+
+                    } catch (JSONException e) {
+                        Log.e("JSON---", e.toString());
+                    }
+                }
+
+            } else {
+
+                result = context.getString(R.string.msg_error);
             }
         } catch (JSONException e) {
             return result = "Ocurrio un error al conectarse al servidor, intentelo de nuevo.";

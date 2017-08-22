@@ -143,6 +143,7 @@ public class GastosFragment extends Fragment {
                 if (testAdapter != null){
                     testAdapter.removeAll();
                     total = 0;
+                    tv_total.setText(getString(R.string.total,String.valueOf(total)));
                 }
 
                 if (et_fechaIni.getText().toString().equals("") || et_fechaFin.getText().toString().equals("") || idRuta.equals("")){

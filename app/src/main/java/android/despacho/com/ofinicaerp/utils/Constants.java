@@ -30,6 +30,7 @@ public class Constants {
     public static String URL_QUERY_CAJA = "http://despachogonzalez.com.mx/erpoficina/query_caja.php";
     public static String URL_QUERY_TIPO_GASTO = "http://despachogonzalez.com.mx/erpoficina/query_tipogasto.php";
     public static String URL_QUERY_GASTO_NO_COMPROBADOS = "http://despachogonzalez.com.mx/erpoficina/query_gasto_no_comp.php";
+    public static String URL_QUERY_COMPROBANTES_GASTOS = "http://despachogonzalez.com.mx/erpoficina/query_comprobantes.php";
 
 
     public static String POST_GASOLINA = "gasolina";

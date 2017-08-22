@@ -73,6 +73,23 @@ public class Utils {
         }
     }
 
+    public static String toJsonComprobante(String categoria, String tipoComprobante, int oxxo , String fechaInicial, String fechaFinal){
+        JSONObject jsonObject= new JSONObject();
+        try {
+            jsonObject.put("categoria", categoria);
+            jsonObject.put("tipoComprobante", tipoComprobante);
+            jsonObject.put("oxxo", oxxo);
+            jsonObject.put("fechaIni", fechaInicial);
+            jsonObject.put("fechaFin", fechaFinal);
+
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static void showDialogDate(Context context, final EditText editText) {
         final SimpleDateFormat dateFormatter;
         dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
