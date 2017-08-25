@@ -674,6 +674,7 @@ public class MenuPrincipal extends ActivityBase
         Spinner spinner_idEmpleado = (Spinner) view.findViewById(R.id.spinner_gasto_idEmpleado);
         final EditText et_fecha = (EditText) view.findViewById(R.id.gasto_et_fecha);
         final EditText et_monto = (EditText) view.findViewById(R.id.gasto_et_monto);
+        et_monto.addTextChangedListener(textWatcherMontoCaja);
         et_fecha.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -719,7 +720,8 @@ public class MenuPrincipal extends ActivityBase
             @Override
             public void onClick(View v) {
                 String fecha = et_fecha.getText().toString();
-                String monto = et_monto.getText().toString();
+                //String monto = et_monto.getText().toString();
+                String monto = et_monto.getText().toString().replaceAll(Constants.PAYMENT_NUMBER_FORMAT_REGEX_POINT, Constants.STRING_EMPTY);
                 montoActual_Gasto = caja.get(0).getMonto() - Double.parseDouble(monto);
 
                 if (fecha.equals("") || monto.equals("") || idRuta.equals("") || idEmpleado.equals("")) {
@@ -734,6 +736,31 @@ public class MenuPrincipal extends ActivityBase
                     }
                 }
             }
+
+            TextWatcher textWatcherMontoCaja = new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    et_monto.removeTextChangedListener(this);
+                    String cleanString = s.toString().replaceAll(Constants.PAYMENT_NUMBER_FORMAT_REGEX, Constants.STRING_EMPTY);
+                    double parsed = Utils.convertToDouble(cleanString);
+                    String formated = Utils.parseToString((parsed / 100));
+
+                    et_monto.setText(formated);
+                    Selection.setSelection(et_monto.getEditableText(),et_monto.getEditableText().length());
+
+                    et_monto.addTextChangedListener(textWatcherMontoCaja);
+                }
+            };
         });
 
         dialog = builder.create();

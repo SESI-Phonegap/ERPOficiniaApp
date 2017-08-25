@@ -29,6 +29,18 @@ import cz.msebera.android.httpclient.extras.Base64;
 
 public class Utils {
 
+    public static String toJsonIdGasto(String idGasto){
+        JSONObject jsonObject= new JSONObject();
+        try {
+            jsonObject.put("idGasto", idGasto);
+
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
+    }
     public static String toJsonRangoFecha(String fechaInicial, String fechaFinal){
         JSONObject jsonObject= new JSONObject();
         try {

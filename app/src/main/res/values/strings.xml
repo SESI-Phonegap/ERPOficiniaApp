@@ -107,6 +107,8 @@
 
     <string name="cobraOxxo">¿Por cobrar a oxxo?</string>
 
+    <string name="tipoComprobante">Comprob.:</string>
+
     <string name="fechaDetails">Fecha:</string>
     <string name="vehiculoDetails">Vehiculo:</string>
     <string name="marcaDetails">Marca:</string>

@@ -2,6 +2,8 @@ package android.despacho.com.ofinicaerp.fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.despacho.com.ofinicaerp.activity.GastosDetails;
 import android.despacho.com.ofinicaerp.models.ModelGastos;
 import android.despacho.com.ofinicaerp.models.ModelIngresos;
 import android.despacho.com.ofinicaerp.utils.Utils;
@@ -211,8 +213,12 @@ public class GastosFragment extends Fragment {
             viewHolder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    sIndex = String.valueOf(holder.getLayoutPosition());
-                   /* Intent intent = new Intent(getActivity(),IngresosDetails.class);
+
+                    Intent intent = new Intent(getActivity(), GastosDetails.class);
+                    intent.putExtra("ID_GASTO",item.getId_gasto());
+                    startActivity(intent);
+                    /*sIndex = String.valueOf(holder.getLayoutPosition());
+                    Intent intent = new Intent(getActivity(),IngresosDetails.class);
                     intent.putExtra("INDEX",sIndex);
                     intent.putExtra("MAX_INDEX",String.valueOf(listIngresos.size()));
                     startActivity(intent);*/
