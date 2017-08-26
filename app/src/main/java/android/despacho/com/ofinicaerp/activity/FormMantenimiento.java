@@ -12,6 +12,9 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.despacho.com.ofinicaerp.R;
+import android.text.Editable;
+import android.text.Selection;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -31,7 +34,7 @@ public class FormMantenimiento extends AppCompatActivity {
     private EditText et_fecha;
     private EditText et_mantenimiento;
     private EditText et_descripcion;
-    private EditText et_moto;
+    private EditText et_monto;
     private Button btn_guardar;
     private ImageView imgBack;
     private String idVehiculo;
@@ -58,7 +61,8 @@ public class FormMantenimiento extends AppCompatActivity {
         et_fecha = (EditText) findViewById(R.id.et_mantenimiento_fecha);
         et_mantenimiento = (EditText) findViewById(R.id.et_mantenimiento);
         et_descripcion = (EditText) findViewById(R.id.et_mantenimiento_descripcion);
-        et_moto = (EditText) findViewById(R.id.et_mantenimiento_monto);
+        et_monto = (EditText) findViewById(R.id.et_mantenimiento_monto);
+        et_monto.addTextChangedListener(textWatcherMonto);
         btn_guardar = (Button) findViewById(R.id.btn_guardar);
         imgBack = (ImageView) findViewById(R.id.imgBack);
         imgBack.setOnClickListener(new View.OnClickListener() {
@@ -100,7 +104,7 @@ public class FormMantenimiento extends AppCompatActivity {
                 String mantenimiento = et_mantenimiento.getText().toString();
                 String descripcion = et_descripcion.getText().toString();
                 String fecha = et_fecha.getText().toString();
-                String monto = et_moto.getText().toString();
+                String monto = et_monto.getText().toString().replaceAll(Constants.PAYMENT_NUMBER_FORMAT_REGEX_POINT, Constants.STRING_EMPTY);
                 montoActual_Gasto_Mantenimiento = caja.get(0).getMonto() - Double.parseDouble(monto);
 
                 if (idVehiculo.equals("") || mantenimiento.equals("") || descripcion.equals("")
@@ -126,6 +130,31 @@ public class FormMantenimiento extends AppCompatActivity {
 
 
     }
+
+    TextWatcher textWatcherMonto = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            et_monto.removeTextChangedListener(textWatcherMonto);
+            String cleanString = s.toString().replaceAll(Constants.PAYMENT_NUMBER_FORMAT_REGEX, Constants.STRING_EMPTY);
+            double parsed = Utils.convertToDouble(cleanString);
+            String formated = Utils.parseToString((parsed / 100));
+
+            et_monto.setText(formated);
+            Selection.setSelection(et_monto.getEditableText(),et_monto.getEditableText().length());
+
+            et_monto.addTextChangedListener(textWatcherMonto);
+        }
+    };
 
     @Override
     public void onBackPressed() {
@@ -158,9 +187,10 @@ public class FormMantenimiento extends AppCompatActivity {
             super.onPostExecute(result);
             Utils.proccessResult(FormMantenimiento.this,result);
             progressBar.cancel();
-            Intent intent = new Intent();
+            Intent intent = new Intent(FormMantenimiento.this,MenuPrincipal.class);
             intent.putExtra(Constants.REFRESH, Constants.REFRESH_FRAGMENT_MANTENIMIENTO);
             setResult(RESULT_OK,intent);
+            finish();
         }
 
     }

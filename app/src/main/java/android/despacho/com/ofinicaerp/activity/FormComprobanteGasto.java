@@ -2,6 +2,7 @@ package android.despacho.com.ofinicaerp.activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.despacho.com.ofinicaerp.models.ModelComprobanteGastos;
 import android.despacho.com.ofinicaerp.models.ModelGastos;
 import android.despacho.com.ofinicaerp.models.ModelTipoGasto;
@@ -321,17 +322,14 @@ public class FormComprobanteGasto extends AppCompatActivity implements RadioGrou
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            proccessResult(result);
             progressBar.cancel();
+            Utils.proccessResult(FormComprobanteGasto.this, result);
+            Intent intent = new Intent(FormComprobanteGasto.this,MenuPrincipal.class);
+            intent.putExtra(Constants.REFRESH, Constants.REFRESH_FRAGMENT_COMPROBANTE);
+            setResult(RESULT_OK,intent);
+            finish();
         }
+
     }
 
-    public void proccessResult(String result) {
-        if (result.contains("OK")) {
-            Toast.makeText(FormComprobanteGasto.this, getString(R.string.msg_success), Toast.LENGTH_LONG).show();
-            finish();
-        } else {
-            Toast.makeText(FormComprobanteGasto.this,getString(R.string.msg_error) + result, Toast.LENGTH_LONG).show();
-        }
-    }
 }

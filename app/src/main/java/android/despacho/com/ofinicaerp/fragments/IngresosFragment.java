@@ -3,6 +3,7 @@ package android.despacho.com.ofinicaerp.fragments;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.despacho.com.ofinicaerp.models.ModelIngresos;
+import android.despacho.com.ofinicaerp.utils.Constants;
 import android.despacho.com.ofinicaerp.utils.Utils;
 import android.despacho.com.ofinicaerp.utils.UtilsDML;
 import android.os.AsyncTask;
@@ -12,6 +13,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.Selection;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,7 +77,8 @@ public class IngresosFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         init();
     }
-    public void init(){
+
+    public void init() {
         progressBar = new ProgressDialog(getActivity());
         progressBar.setMessage("Cargando...");
         progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -95,7 +100,7 @@ public class IngresosFragment extends Fragment {
             idNombRuta[i] = listRutas.get(x).getId_ruta() + "-" + listRutas.get(x).getRuta();
         }
 
-        spinner_ruta.setAdapter(new ArrayAdapter<>(getActivity(),R.layout.row_spinner_item,idNombRuta));
+        spinner_ruta.setAdapter(new ArrayAdapter<>(getActivity(), R.layout.row_spinner_item, idNombRuta));
         spinner_ruta.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -113,8 +118,8 @@ public class IngresosFragment extends Fragment {
         et_fechaIni.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.showDialogDate(getContext(),et_fechaIni);
-                if (!et_fechaIni.getText().toString().equals("") || !et_fechaFin.getText().toString().equals("")){
+                Utils.showDialogDate(getContext(), et_fechaIni);
+                if (!et_fechaIni.getText().toString().equals("") || !et_fechaFin.getText().toString().equals("")) {
                     btn_buscar.setEnabled(true);
                     btn_buscar.setAlpha(1.0f);
                 }
@@ -124,8 +129,8 @@ public class IngresosFragment extends Fragment {
         et_fechaFin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.showDialogDate(getContext(),et_fechaFin);
-                if (!et_fechaIni.getText().toString().equals("") || !et_fechaFin.getText().toString().equals("")){
+                Utils.showDialogDate(getContext(), et_fechaFin);
+                if (!et_fechaIni.getText().toString().equals("") || !et_fechaFin.getText().toString().equals("")) {
                     btn_buscar.setEnabled(true);
                     btn_buscar.setAlpha(1.0f);
                 }
@@ -135,23 +140,24 @@ public class IngresosFragment extends Fragment {
         btn_buscar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (testAdapter != null){
+                if (testAdapter != null) {
                     testAdapter.removeAll();
                     total = 0;
                 }
 
-                if (et_fechaIni.getText().toString().equals("") || et_fechaFin.getText().toString().equals("") || idRuta.equals("")){
-                    Toast.makeText(getActivity(),getString(R.string.msg_fecha),Toast.LENGTH_LONG).show();
+                if (et_fechaIni.getText().toString().equals("") || et_fechaFin.getText().toString().equals("") || idRuta.equals("")) {
+                    Toast.makeText(getActivity(), getString(R.string.msg_fecha), Toast.LENGTH_LONG).show();
                 } else {
                     String fInicial = et_fechaIni.getText().toString();
                     String fFinal = et_fechaFin.getText().toString();
-                    String strJSON = Utils.toJsonIngresoFecha(idRuta,fInicial,fFinal);
-                    new QueryIngresoTask().execute(POST_INGRESO,URL_QUERY_INGRESO,strJSON);
+                    String strJSON = Utils.toJsonIngresoFecha(idRuta, fInicial, fFinal);
+                    new QueryIngresoTask().execute(POST_INGRESO, URL_QUERY_INGRESO, strJSON);
                 }
             }
         });
 
     }
+
 
     @Override
     public void onAttach(Context context) {
@@ -163,8 +169,8 @@ public class IngresosFragment extends Fragment {
         super.onDetach();
     }
 
-    public void setUpRecyclerView(){
-        testAdapter = new IngresoAdapter(listIngresos,getActivity());
+    public void setUpRecyclerView() {
+        testAdapter = new IngresoAdapter(listIngresos, getActivity());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(testAdapter);
         recyclerView.setHasFixedSize(true);
@@ -196,13 +202,13 @@ public class IngresosFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-            TestViewHolder viewHolder = (TestViewHolder) holder;
+            final TestViewHolder viewHolder = (TestViewHolder) holder;
             final ModelIngresos item = items.get(position);
             total += item.getCantidad();
-            tv_total.setText(getString(R.string.total,String.valueOf(total)));
+            tv_total.setText(Utils.parseToString(total));
             viewHolder.et_fecha.setText(item.getFecha());
             viewHolder.et_concepto.setText(item.getConcepto());
-            viewHolder.et_monto.setText(getString(R.string.monto,String.valueOf(item.getCantidad())));
+            viewHolder.et_monto.setText(getString(R.string.monto,Utils.parseToString(item.getCantidad())));
             viewHolder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -213,6 +219,8 @@ public class IngresosFragment extends Fragment {
                     startActivity(intent);*/
                 }
             });
+
+
 
         }
 
@@ -229,10 +237,11 @@ public class IngresosFragment extends Fragment {
             return undoOn;
         }
 
-        public void removeAll(){
+        public void removeAll() {
             items.removeAll(itemsPendingRemoval);
             notifyDataSetChanged();
         }
+
         public void remove(int position) {
             ModelIngresos item = items.get(position);
             if (itemsPendingRemoval.contains(item)) {
@@ -276,7 +285,7 @@ public class IngresosFragment extends Fragment {
 
         @Override
         protected String doInBackground(String... params) {
-            return UtilsDML.addData(params[0],params[1],params[2]);
+            return UtilsDML.addData(params[0], params[1], params[2]);
         }
 
         @Override
@@ -287,7 +296,7 @@ public class IngresosFragment extends Fragment {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            UtilsDML.resultQueryIngreso(getActivity().getApplication(),result,listIngresos);
+            UtilsDML.resultQueryIngreso(getActivity().getApplication(), result, listIngresos);
             setUpRecyclerView();
             progressBar.cancel();
         }

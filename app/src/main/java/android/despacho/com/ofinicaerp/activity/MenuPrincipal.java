@@ -578,7 +578,8 @@ public class MenuPrincipal extends ActivityBase
         final EditText et_fecha = (EditText) view.findViewById(R.id.gasolina_et_fecha);
         final EditText et_gas = (EditText) view.findViewById(R.id.gasolina_et_tipoGas);
         final EditText et_litros = (EditText) view.findViewById(R.id.gasolina_et_litros);
-        final EditText et_monto = (EditText) view.findViewById(R.id.gasolina_et_monto);
+        et_monto = (EditText) view.findViewById(R.id.gasolina_et_monto);
+        et_monto.addTextChangedListener(textWatcherMontoCaja);
 
         dialog = builder.create();
 
@@ -615,7 +616,7 @@ public class MenuPrincipal extends ActivityBase
                 String fecha = et_fecha.getText().toString();
                 String gas = et_gas.getText().toString();
                 String litros = et_litros.getText().toString();
-                String monto = et_monto.getText().toString();
+                String monto = et_monto.getText().toString().replaceAll(Constants.PAYMENT_NUMBER_FORMAT_REGEX_POINT, Constants.STRING_EMPTY);
                 montoActual_Gasto = caja.get(0).getMonto() - Double.parseDouble(monto);
 
                 // String empleado = spinnerEmpleado.
@@ -673,7 +674,7 @@ public class MenuPrincipal extends ActivityBase
         Spinner spinner_idRuta = (Spinner) view.findViewById(R.id.spinner_gasto_idRuta);
         Spinner spinner_idEmpleado = (Spinner) view.findViewById(R.id.spinner_gasto_idEmpleado);
         final EditText et_fecha = (EditText) view.findViewById(R.id.gasto_et_fecha);
-        final EditText et_monto = (EditText) view.findViewById(R.id.gasto_et_monto);
+        et_monto = (EditText) view.findViewById(R.id.gasto_et_monto);
         et_monto.addTextChangedListener(textWatcherMontoCaja);
         et_fecha.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -834,7 +835,7 @@ public class MenuPrincipal extends ActivityBase
 
         @Override
         public void afterTextChanged(Editable s) {
-            et_monto.removeTextChangedListener(this);
+            et_monto.removeTextChangedListener(textWatcherMontoCaja);
             String cleanString = s.toString().replaceAll(Constants.PAYMENT_NUMBER_FORMAT_REGEX, Constants.STRING_EMPTY);
             double parsed = Utils.convertToDouble(cleanString);
             String formated = Utils.parseToString((parsed / 100));
@@ -862,6 +863,8 @@ public class MenuPrincipal extends ActivityBase
                     changeFragment(MantenimientoVehiculoFragment.newInstance(), R.id.mainFrame, false, false);
                 } else if (sData.equals(Constants.REFRESH_FRAGMENT_INGRESO)) {
                     changeFragment(IngresosFragment.newInstance(), R.id.mainFrame, false, false);
+                } else if (sData.equals(Constants.REFRESH_FRAGMENT_COMPROBANTE)){
+                    changeFragment(ComprobanteFragment.newInstance(), R.id.mainFrame, false, false);
                 }
 
                 if (requestCode == PICK_IMAGE_VEHICULO) {

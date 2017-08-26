@@ -10,6 +10,9 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.despacho.com.ofinicaerp.R;
+import android.text.Editable;
+import android.text.Selection;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -49,6 +52,7 @@ public class FormIngreso extends AppCompatActivity {
         et_fecha = (EditText) findViewById(R.id.et_fecha);
         et_concepto = (EditText) findViewById(R.id.et_ingreso_concepto);
         et_monto = (EditText) findViewById(R.id.et_ingreso_monto);
+        et_monto.addTextChangedListener(textWatcherMonto);
         Button btn_guardar = (Button) findViewById(R.id.btn_guardar);
 
         imgBack.setOnClickListener(new View.OnClickListener() {
@@ -89,7 +93,7 @@ public class FormIngreso extends AppCompatActivity {
             public void onClick(View v) {
                 String fecha = et_fecha.getText().toString();
                 String concepto = et_concepto.getText().toString();
-                String monto = et_monto.getText().toString();
+                String monto = et_monto.getText().toString().replaceAll(Constants.PAYMENT_NUMBER_FORMAT_REGEX_POINT, Constants.STRING_EMPTY);
 
                 if (fecha.equals("") || concepto.equals("") || monto.equals("") || idRuta.equals("")){
                     Toast.makeText(FormIngreso.this,getString(R.string.msg_campos_vacios),Toast.LENGTH_LONG).show();
@@ -101,6 +105,31 @@ public class FormIngreso extends AppCompatActivity {
             }
         });
     }
+
+    TextWatcher textWatcherMonto = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            et_monto.removeTextChangedListener(this);
+            String cleanString = s.toString().replaceAll(Constants.PAYMENT_NUMBER_FORMAT_REGEX, Constants.STRING_EMPTY);
+            double parsed = Utils.convertToDouble(cleanString);
+            String formated = Utils.parseToString((parsed / 100));
+
+            et_monto.setText(formated);
+            Selection.setSelection(et_monto.getEditableText(),et_monto.getEditableText().length());
+
+            et_monto.addTextChangedListener(textWatcherMonto);
+        }
+    };
 
     @Override
     public void onBackPressed() {
@@ -133,9 +162,10 @@ public class FormIngreso extends AppCompatActivity {
             super.onPostExecute(result);
             Utils.proccessResult(FormIngreso.this,result);
             progressBar.cancel();
-            Intent intent = new Intent();
+            Intent intent = new Intent(FormIngreso.this,MenuPrincipal.class);
             intent.putExtra(Constants.REFRESH, Constants.REFRESH_FRAGMENT_INGRESO);
             setResult(RESULT_OK,intent);
+            finish();
         }
 
     }
