@@ -70,7 +70,8 @@
         <activity
             android:name=".activity.FormComprobanteGasto"
             android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity android:name=".activity.GastosDetails"></activity>
+        <activity android:name=".activity.GastosDetails" />
+        <activity android:name=".activity.FormNomina"></activity>
     </application>
 
 </manifest>
