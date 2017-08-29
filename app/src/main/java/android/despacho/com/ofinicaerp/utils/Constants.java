@@ -16,6 +16,7 @@ public class Constants {
     public static String URL_ADD_GASTO = "http://despachogonzalez.com.mx/erpoficina/newgasto.php";
     public static String URL_UPDATE_CAJA = "http://despachogonzalez.com.mx/erpoficina/updatecaja.php";
     public static String URL_ADD_COMPROBANTE = "http://despachogonzalez.com.mx/erpoficina/newcomprobante.php";
+    public static String URL_ADD_NOMINA = "http://despachogonzalez.com.mx/erpoficina/newnomina.php";
 
 
     public static String URL_QUERY_EMPLEADO = "http://despachogonzalez.com.mx/erpoficina/queryempleado.php";
@@ -45,6 +46,7 @@ public class Constants {
     public static String POST_GASTO = "gasto";
     public static String POST_CAJA = "caja";
     public static String POST_COMPROBANTE = "comprobante";
+    public static String POST_NOMINA = "nomina";
 
 
     public static String PUTEXTRA_ID_EMPLEADO = "id_empleado";

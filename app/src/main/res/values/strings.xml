@@ -40,7 +40,11 @@
     <string name="categoria">Categ</string>
 
     <string name="empleados">Trabajadores</string>
-    <string name="pagoNomina">Pago de nomina</string>
+
+    <string name="semana1">Semana 1</string>
+    <string name="semana2">Semana 2</string>
+    <string name="semana3">Semana 3</string>
+    <string name="semana4">Semana 4</string>
 
     <string name="vehiculos">Vehiculos</string>
     <string name="mantenimiento">Mantenimiento</string>
@@ -89,7 +93,7 @@
     <string name="monto">$ %s</string>
     <string name="total">Total: $ %s</string>
     <string name="pesoscaja">$ %s Pesos.</string>
-
+    <string name="label_total">Total</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="comprobantegasto">Comprobante de Gastos</string>

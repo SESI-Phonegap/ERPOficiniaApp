@@ -1,22 +1,35 @@
 package android.despacho.com.ofinicaerp.models;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+
+
 public class ModelPagoEmpleado {
     private int id_pago;
     private int id_empleado;
-    private String status;
+    private double monto;
     private String fecha;
-    private String mes;
-    private String semana;
-    private double cantidad;
+    private int mes;
+    private int semana;
 
-    public ModelPagoEmpleado(int id_pago, int id_empleado, String status,String fecha, String mes, String semana, double cantidad){
+    public ModelPagoEmpleado(int id_pago, int id_empleado, double monto,String fecha, int mes, int semana){
         this.id_pago = id_pago;
         this.id_empleado = id_empleado;
-        this.status = status;
+        this.monto = monto;
         this.fecha = fecha;
         this.mes = mes;
         this.semana = semana;
-        this.cantidad = cantidad;
+
+    }
+
+    public ModelPagoEmpleado(int id_empleado, double monto,String fecha, int mes, int semana){
+        this.id_empleado = id_empleado;
+        this.monto = monto;
+        this.fecha = fecha;
+        this.mes = mes;
+        this.semana = semana;
+
     }
 
     public int getId_pago() {
@@ -27,15 +40,15 @@ public class ModelPagoEmpleado {
         return id_empleado;
     }
 
-    public String getStatus() {
-        return status;
+    public double getMonto() {
+        return monto;
     }
 
-    public String getMes() {
+    public int getMes() {
         return mes;
     }
 
-    public String getSemana() {
+    public int getSemana() {
         return semana;
     }
 
@@ -43,7 +56,21 @@ public class ModelPagoEmpleado {
         return fecha;
     }
 
-    public double getCantidad() {
-        return cantidad;
+
+    public String toJSONAddNomina(){
+        JSONObject jsonObject= new JSONObject();
+        try {
+            jsonObject.put("idEmpleado", getId_empleado());
+            jsonObject.put("fecha", getFecha());
+            jsonObject.put("monto", getMonto());
+            jsonObject.put("mes",getMes());
+            jsonObject.put("semana",getSemana());
+
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
     }
 }

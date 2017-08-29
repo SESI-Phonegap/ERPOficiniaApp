@@ -18,25 +18,25 @@
     </string-array>
 
     <string-array name="semanas">
-        <item>Semana 1</item>
-        <item>Semana 2</item>
-        <item>Semana 3</item>
-        <item>Semana 4</item>
+        <item>1-Semana 1</item>
+        <item>2-Semana 2</item>
+        <item>3-Semana 3</item>
+        <item>4-Semana 4</item>
     </string-array>
 
     <string-array name="meses">
-        <item>ENERO</item>
-        <item>FEBRERO</item>
-        <item>MARZO</item>
-        <item>ABRIL</item>
-        <item>MAYO</item>
-        <item>JUNIO</item>
-        <item>JULIO</item>
-        <item>AGOSTO</item>
-        <item>SEPTIEMBRE</item>
-        <item>OCTUBRE</item>
-        <item>NOVIEMBRE</item>
-        <item>DICIEMBRE</item>
+        <item>1-ENERO</item>
+        <item>2-FEBRERO</item>
+        <item>3-MARZO</item>
+        <item>4-ABRIL</item>
+        <item>5-MAYO</item>
+        <item>6-JUNIO</item>
+        <item>7-JULIO</item>
+        <item>8-AGOSTO</item>
+        <item>9-SEPTIEMBRE</item>
+        <item>10-OCTUBRE</item>
+        <item>11-NOVIEMBRE</item>
+        <item>12-DICIEMBRE</item>
     </string-array>
 
 

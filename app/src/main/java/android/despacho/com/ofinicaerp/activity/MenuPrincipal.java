@@ -1,11 +1,7 @@
 package android.despacho.com.ofinicaerp.activity;
 
-import android.Manifest;
-import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.despacho.com.ofinicaerp.ActivityBase;
 import android.despacho.com.ofinicaerp.R;
 import android.despacho.com.ofinicaerp.fragments.CajaFragment;
@@ -17,6 +13,7 @@ import android.despacho.com.ofinicaerp.fragments.GastosFragment;
 import android.despacho.com.ofinicaerp.fragments.HomeFragment;
 import android.despacho.com.ofinicaerp.fragments.IngresosFragment;
 import android.despacho.com.ofinicaerp.fragments.MantenimientoVehiculoFragment;
+import android.despacho.com.ofinicaerp.fragments.NominaFragment;
 import android.despacho.com.ofinicaerp.fragments.RutasFragment;
 import android.despacho.com.ofinicaerp.fragments.TiendasFragment;
 import android.despacho.com.ofinicaerp.fragments.VehiculoFragment;
@@ -31,29 +28,22 @@ import android.despacho.com.ofinicaerp.models.ModelVehiculo;
 import android.despacho.com.ofinicaerp.utils.CameraPhoto;
 import android.despacho.com.ofinicaerp.utils.Constants;
 import android.despacho.com.ofinicaerp.utils.GalleryPhoto;
-import android.despacho.com.ofinicaerp.utils.ImageFilePath;
 import android.despacho.com.ofinicaerp.utils.ImageLoader;
 import android.despacho.com.ofinicaerp.utils.Utils;
 import android.despacho.com.ofinicaerp.utils.UtilsDML;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,48 +58,30 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.DoubleBuffer;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.despacho.com.ofinicaerp.utils.Constants.ADMIN;
-import static android.despacho.com.ofinicaerp.utils.Constants.EMPLEADO;
 import static android.despacho.com.ofinicaerp.utils.Constants.PICK_IMAGE_EMPLEADO;
 import static android.despacho.com.ofinicaerp.utils.Constants.PICK_IMAGE_VEHICULO;
 import static android.despacho.com.ofinicaerp.utils.Constants.PUTEXTRA_ID_EMPLEADO;
 import static android.despacho.com.ofinicaerp.utils.Constants.PUTEXTRA_TIPO_USER;
-import static android.despacho.com.ofinicaerp.utils.Constants.TAKE_PICTURE_EMPLEADO;
-import static android.despacho.com.ofinicaerp.utils.Constants.TAKE_PICTURE_VEHICULO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_CLIENTE;
-import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_EMPLEADO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_GASTO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_GASTO_GASOLINA;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_RUTA;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_TIENDA;
-import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_VEHICULO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_CAJA;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_EMPLEADO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_RUTAS;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_VEHICULO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_UPDATE_CAJA;
-import static android.despacho.com.ofinicaerp.utils.Constants.VEHICULO;
 
 public class MenuPrincipal extends ActivityBase
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -264,6 +236,9 @@ public class MenuPrincipal extends ActivityBase
                 break;
 
             case R.id._nav_pago_nomina:
+                Fragment nominaFragment = Fragment.instantiate(MenuPrincipal.this,NominaFragment.class.getName());
+                changeFragment(nominaFragment, R.id.mainFrame, false, false);
+                fab.setOnClickListener(onClickNomina);
                 break;
 
             case R.id._nav_registro_vehiculo:
@@ -369,6 +344,14 @@ public class MenuPrincipal extends ActivityBase
         public void onClick(View v) {
             Intent intent = new Intent(MenuPrincipal.this, FormEmpleado.class);
             startActivityForResult(intent, 7777);
+        }
+    };
+
+    View.OnClickListener onClickNomina = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(MenuPrincipal.this, FormNomina.class);
+            startActivity(intent);
         }
     };
 
