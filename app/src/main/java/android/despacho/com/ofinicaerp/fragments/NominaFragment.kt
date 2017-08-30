@@ -21,6 +21,7 @@ import android.os.AsyncTask
 import android.os.Handler
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
@@ -31,7 +32,7 @@ class NominaFragment : Fragment() {
 
     private lateinit var nominaList: MutableList<ModelPagoEmpleado>
     private lateinit var progressBar: ProgressDialog
-    private lateinit var testAdapter: NominaAdapter
+    private var testAdapter: NominaAdapter? = null
     private var _idMes: Int = 1
     private var _ano: String = ""
 
@@ -60,7 +61,7 @@ class NominaFragment : Fragment() {
 
     fun init() {
         nominaList = ArrayList()
-        progressBar = ProgressDialog(activity.application)
+        progressBar = ProgressDialog(activity)
         progressBar.setMessage("Cargando...")
         progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER)
         progressBar.setCancelable(false)
@@ -72,7 +73,8 @@ class NominaFragment : Fragment() {
         val anoActual = calendarAno.get(Calendar.YEAR).toString().trim()
         val iAnoAtual = anoActual.toInt()
         val iMinAno = iAnoAtual - 5
-        val arrayAno: ArrayList<String> = arrayListOf((iMinAno + 1).toString(), (iMinAno + 2).toString(), (iMinAno + 3).toString(), (iMinAno + 4).toString(), (iAnoAtual).toString())
+
+        val arrayAno: ArrayList<String> = arrayListOf(iAnoAtual.toString(), (iMinAno + 4).toString(), (iMinAno + 3).toString(), (iMinAno + 2).toString(), (iMinAno + 1).toString())
 
         spinner_mes.adapter = ArrayAdapter(activity.application, R.layout.row_spinner_item, meses)
         spinner_ano.adapter = ArrayAdapter(activity.application, R.layout.row_spinner_item, arrayAno)
@@ -100,13 +102,14 @@ class NominaFragment : Fragment() {
         }
 
         btn_buscar.setOnClickListener({
-            testAdapter.removeAll()
-            labelTotal_ingreso.setText("")
 
+            if (testAdapter != null) {
+                testAdapter!!.removeAll()
+                labelTotal_ingreso.text = ""
+            }
             val modelNomina = ModelPagoEmpleado(_idMes,_ano)
             val strJSON = modelNomina.toJSONQueryNomina()
-
-
+            nominaTask().execute(Constants.URL_QUERY_NOMINA,strJSON)
         })
     }
 
@@ -119,8 +122,8 @@ class NominaFragment : Fragment() {
     }
 
     fun setUpRecyclerView() {
-        testAdapter = NominaAdapter(nominaList, activity.application, labelTotal_ingreso)
-        recycler_view_nomina.layoutManager = LinearLayoutManager(activity.application)
+        testAdapter = NominaAdapter(nominaList, activity, labelTotal_ingreso)
+        recycler_view_nomina.layoutManager = LinearLayoutManager(activity)
         recycler_view_nomina.adapter = testAdapter
         recycler_view_nomina.setHasFixedSize(true)
     }
@@ -136,6 +139,7 @@ class NominaFragment : Fragment() {
             private set // is undo on, you can turn it on from the toolbar menu
         private val handler = Handler() // hanlder for running delayed runnables
         internal var _labelTotal: TextView = labelTotal
+        internal var total:Double = 0.0
 
         init {
             items = item
@@ -154,7 +158,7 @@ class NominaFragment : Fragment() {
         override fun onBindViewHolder(holder: TestViewHolder?, position: Int) {
             val viewHolder = holder as TestViewHolder
             val item = items[position]
-            var total = +item.monto
+            total = total + item.monto
 
             _labelTotal.setText(mContext.getString(R.string.total, total.toString()))
             var semana = ""
@@ -223,23 +227,24 @@ class NominaFragment : Fragment() {
         init {
             tv_nombre = itemView.findViewById(R.id.tv_empleado) as TextView
             tv_semana = itemView.findViewById(R.id.tv_semana) as TextView
-            tv_monto = itemView.findViewById(R.id.tv_total) as TextView
+            tv_monto = itemView.findViewById(R.id.tv_monto) as TextView
             mView = itemView
         }
     }
 
-    inner class gastosDetailsTask : AsyncTask<String, Int, String>() {
+    inner class nominaTask : AsyncTask<String, Int, String>() {
         override fun onPreExecute() {
             super.onPreExecute()
             progressBar.show()
         }
 
         override fun doInBackground(vararg params: String?): String {
-            return UtilsDML.addData(Constants.POST_COMPROBANTE, params[0], params[1])
+            return UtilsDML.addData(Constants.POST_NOMINA, params[0], params[1])
         }
 
         override fun onPostExecute(result: String?) {
             super.onPostExecute(result)
+            Log.d("RESULT22--",result)
             UtilsDML.resultQueryNomina(activity.application, result, nominaList)
             setUpRecyclerView()
             progressBar.cancel()
