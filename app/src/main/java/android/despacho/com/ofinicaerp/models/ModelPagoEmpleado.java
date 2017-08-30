@@ -12,24 +12,45 @@ public class ModelPagoEmpleado {
     private String fecha;
     private int mes;
     private int semana;
+    private String ano;
 
-    public ModelPagoEmpleado(int id_pago, int id_empleado, double monto,String fecha, int mes, int semana){
+    private String nombreEmpleado;
+
+    public ModelPagoEmpleado(int id_pago, int id_empleado, double monto,String fecha, int mes, int semana, String ano, String nombreEmpleado){
         this.id_pago = id_pago;
         this.id_empleado = id_empleado;
         this.monto = monto;
         this.fecha = fecha;
         this.mes = mes;
         this.semana = semana;
+        this.ano = ano;
+        this.nombreEmpleado = nombreEmpleado;
 
     }
 
-    public ModelPagoEmpleado(int id_empleado, double monto,String fecha, int mes, int semana){
+    public ModelPagoEmpleado(int id_pago, int id_empleado, double monto, int mes, int semana, String ano, String nombreEmpleado){
+        this.id_pago = id_pago;
+        this.id_empleado = id_empleado;
+        this.monto = monto;
+        this.mes = mes;
+        this.semana = semana;
+        this.ano = ano;
+        this.nombreEmpleado = nombreEmpleado;
+
+    }
+
+    public ModelPagoEmpleado(int id_empleado, double monto,String fecha, int mes, int semana, String ano){
         this.id_empleado = id_empleado;
         this.monto = monto;
         this.fecha = fecha;
         this.mes = mes;
         this.semana = semana;
+        this.ano = ano;
+    }
 
+    public ModelPagoEmpleado(int mes,String ano){
+        this.mes = mes;
+        this.ano = ano;
     }
 
     public int getId_pago() {
@@ -56,6 +77,13 @@ public class ModelPagoEmpleado {
         return fecha;
     }
 
+    public String getAno() {
+        return ano;
+    }
+
+    public String getNombreEmpleado() {
+        return nombreEmpleado;
+    }
 
     public String toJSONAddNomina(){
         JSONObject jsonObject= new JSONObject();
@@ -65,6 +93,21 @@ public class ModelPagoEmpleado {
             jsonObject.put("monto", getMonto());
             jsonObject.put("mes",getMes());
             jsonObject.put("semana",getSemana());
+            jsonObject.put("ano",getAno());
+
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public String toJSONQueryNomina(){
+        JSONObject jsonObject= new JSONObject();
+        try {
+            jsonObject.put("mes",getMes());
+            jsonObject.put("ano",getAno());
 
             return jsonObject.toString();
         } catch (JSONException e) {

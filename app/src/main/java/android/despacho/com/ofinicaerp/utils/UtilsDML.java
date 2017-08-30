@@ -13,6 +13,7 @@ import android.despacho.com.ofinicaerp.models.ModelGastos;
 import android.despacho.com.ofinicaerp.models.ModelGastosGasolina;
 import android.despacho.com.ofinicaerp.models.ModelIngresos;
 import android.despacho.com.ofinicaerp.models.ModelMantenimiento;
+import android.despacho.com.ofinicaerp.models.ModelPagoEmpleado;
 import android.despacho.com.ofinicaerp.models.ModelRutas;
 import android.despacho.com.ofinicaerp.models.ModelTienda;
 import android.despacho.com.ofinicaerp.models.ModelTipoGasto;
@@ -736,6 +737,53 @@ public class UtilsDML {
             }
         }
 
+    }
+
+    public static String resultQueryNomina(Application context,String resultTask, List<ModelPagoEmpleado> resultNomina) {
+        JSONArray jsonArray = null;
+        String result = "";
+
+        Log.d("Nomina--", resultTask);
+        try {
+            jsonArray = new JSONArray(resultTask);
+            if (jsonArray.length() > 0) {
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    try {
+
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        String idNomina = jsonObject.getString("idNomina");
+                        String idEmpleado = jsonObject.getString("idEmpleado");
+                        String monto = jsonObject.getString("monto");
+                        String mes = jsonObject.getString("mes");
+                        String semana = jsonObject.getString("semana");
+                        String nombreEmpleado = jsonObject.getString("nombreEmpleado");
+                        String ano = jsonObject.getString("ano");
+                        ModelPagoEmpleado gastos = new ModelPagoEmpleado(
+                                Integer.parseInt(idNomina),
+                                Integer.parseInt(idEmpleado),
+                                Double.parseDouble(monto),
+                                Integer.parseInt(mes),
+                                Integer.parseInt(semana),
+                                ano,
+                                nombreEmpleado);
+                        resultNomina.add(gastos);
+
+                    } catch (JSONException e) {
+                        Log.e("JSON---", e.toString());
+                    }
+                }
+
+            } else {
+
+                result = context.getString(R.string.msg_error);
+            }
+        } catch (JSONException e) {
+            return result = "Ocurrio un error al conectarse al servidor, intentelo de nuevo.";
+            //  Log.e("JSON", e.toString());
+        }
+
+        return result;
     }
 
 }

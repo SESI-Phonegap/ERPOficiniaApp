@@ -33,7 +33,6 @@
         <activity
             android:name=".activity.MenuPrincipal"
             android:label="@string/title_activity_menu_principal"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity

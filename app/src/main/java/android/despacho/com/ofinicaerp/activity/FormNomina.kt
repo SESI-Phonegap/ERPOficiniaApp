@@ -24,6 +24,7 @@ import kotlinx.android.synthetic.main.activity_form_nomina.spinner_semana
 import kotlinx.android.synthetic.main.activity_form_nomina.btn_guardar
 import kotlinx.android.synthetic.main.activity_form_nomina.et_cantidad
 import kotlinx.android.synthetic.main.activity_form_nomina.et_fecha
+import java.util.*
 import kotlin.collections.ArrayList
 
 
@@ -94,9 +95,13 @@ class FormNomina : AppCompatActivity() {
             if (et_cantidad.text.equals("") || et_fecha.text.equals("")) {
                 Toast.makeText(this@FormNomina, getString(R.string.msg_campos_vacios), Toast.LENGTH_LONG).show()
             } else {
+                val calendarAno = Calendar.getInstance()
+                val anoActual = calendarAno.get(Calendar.YEAR).toString().trim()
+                val iAnoActual = anoActual.toInt()
+
                 val monto = et_cantidad.text.toString().replace(Constants.PAYMENT_NUMBER_FORMAT_REGEX_POINT.toRegex(), Constants.STRING_EMPTY).toDouble()
                 val fecha = et_fecha.text.toString()
-                val modelPagoEmpleado = ModelPagoEmpleado(_idEmpleado,monto, fecha,_idMes ,_idSemana)
+                val modelPagoEmpleado = ModelPagoEmpleado(_idEmpleado,monto, fecha,_idMes ,_idSemana,iAnoActual.toString())
                 val strJSON = modelPagoEmpleado.toJSONAddNomina()
                 addNominaTask().execute(Constants.URL_ADD_NOMINA,strJSON)
             }

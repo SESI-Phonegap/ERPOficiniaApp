@@ -2,71 +2,43 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
+    android:layout_height="50dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
         android:id="@+id/tv_empleado"
-        android:layout_width="160dp"
+        android:layout_width="wrap_content"
         android:layout_height="30dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ellipsize="end"
         android:maxLines="1"
         android:text="Marco Antonio Gonzalez Mendez"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="0dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tv_semana1"
-        android:layout_width="80dp"
+        android:id="@+id/tv_semana"
+        android:layout_width="wrap_content"
         android:layout_height="30dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="$ 2,500.00"
+        android:text="Semana 1"
+        app:layout_constraintEnd_toStartOf="@+id/tv_monto"
         app:layout_constraintStart_toEndOf="@+id/tv_empleado"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tv_semana2"
-        android:layout_width="80dp"
+        android:id="@+id/tv_monto"
+        android:layout_width="wrap_content"
         android:layout_height="30dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
         android:text="$ 2,500.00"
-        app:layout_constraintStart_toEndOf="@+id/tv_semana1"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tv_semana3"
-        android:layout_width="80dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="$ 2,500.00"
-        app:layout_constraintStart_toEndOf="@+id/tv_semana2"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tv_semana4"
-        android:layout_width="80dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="$ 2,500.00"
-        app:layout_constraintStart_toEndOf="@+id/tv_semana3"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tv_total"
-        android:layout_width="80dp"
-        android:layout_height="30dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="$ 12,500.00"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tv_semana4"
         app:layout_constraintTop_toTopOf="parent" />
+
     <View
         android:layout_width="0dp"
         android:layout_height="1dp"
