@@ -1,5 +1,9 @@
 <resources>
-    <string name="app_name">OfinicaERP</string>
+    <string name="gastoTotales">Gastos Totales</string>
+    <string name="ingresosTotales">Ingresos</string>
+    <string name="otrosGastos">Otros Gastos</string>
+
+    <string name="app_name">Admin Oficina</string>
     <string name="inicioSesion">Iniciar Sesión</string>
     <string name="email">e-mail</string>
     <string name="pass">Contraseña</string>

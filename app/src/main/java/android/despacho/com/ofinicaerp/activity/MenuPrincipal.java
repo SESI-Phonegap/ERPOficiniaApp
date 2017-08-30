@@ -105,16 +105,13 @@ public class MenuPrincipal extends ActivityBase
     public static List<ModelCaja> caja;
     public static double montoActual_Gasto;
     private EditText et_monto;
-
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_principal);
-
         init();
-
-
     }
 
     @Override
@@ -145,7 +142,6 @@ public class MenuPrincipal extends ActivityBase
         new QueryEmpleadoTask().execute(URL_QUERY_EMPLEADO);
         new QueryCajaTask().execute(URL_QUERY_CAJA);
 
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -162,20 +158,26 @@ public class MenuPrincipal extends ActivityBase
         int idUser = getIntent().getIntExtra(PUTEXTRA_ID_EMPLEADO, 0);
 
         Log.i("USER-MENUP--", typeUser + " - " + idUser);
-        Menu menu = navigationView.getMenu();
-        MenuItem mClientes = menu.findItem(R.id._nav_clientes);
-        MenuItem mHonorarios = menu.findItem(R.id._nav_honorarios);
 
-        if (typeUser.equals(ADMIN)) {
-
-        } else {
-            mClientes.setEnabled(false);
-            mHonorarios.setEnabled(false);
+        if (!typeUser.equals(ADMIN)) {
+            deshabilitaOpciones();
         }
-
-
         changeFragment(HomeFragment.newInstance(), R.id.mainFrame, false, false);
         fab.setOnClickListener(onClickHome);
+    }
+
+    public void deshabilitaOpciones(){
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        Menu miMenu = navigationView.getMenu();
+        miMenu.findItem(R.id._nav_honorarios).setVisible(false);
+        miMenu.findItem(R.id._nav_clientes).setVisible(false);
+        miMenu.findItem(R.id._nav_registro_vehiculo).setVisible(false);
+        miMenu.findItem(R.id._nav_pago_nomina).setVisible(false);
+        miMenu.findItem(R.id._nav_empleados).setVisible(false);
+        miMenu.findItem(R.id._nav_ingresos).setVisible(false);
+        miMenu.findItem(R.id._nav_caja).setVisible(false);
+        miMenu.findItem(R.id._nav_tienda).setVisible(false);
+        miMenu.findItem(R.id._nav_ruta).setVisible(false);
     }
 
     @Override
@@ -187,7 +189,6 @@ public class MenuPrincipal extends ActivityBase
             super.onBackPressed();
         }
     }
-
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -269,7 +270,6 @@ public class MenuPrincipal extends ActivityBase
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
 
     // Eventos para el FloatingActionButton
 
@@ -370,6 +370,9 @@ public class MenuPrincipal extends ActivityBase
     };
 
     public void createDialogRuta() {
+        if (dialog != null){
+            dialog.cancel();
+        }
         final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
         LayoutInflater inflater = MenuPrincipal.this.getLayoutInflater();
         final View view = inflater.inflate(R.layout.dialog_add_ruta, null);
@@ -413,6 +416,9 @@ public class MenuPrincipal extends ActivityBase
     }
 
     public void createDialogTienda() {
+        if (dialog != null){
+            dialog.cancel();
+        }
         idRuta = "";
         final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
         LayoutInflater inflater = MenuPrincipal.this.getLayoutInflater();
@@ -480,6 +486,9 @@ public class MenuPrincipal extends ActivityBase
     }
 
     public void createDialogNewCliente() {
+        if (dialog != null){
+            dialog.cancel();
+        }
         final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
         LayoutInflater inflater = MenuPrincipal.this.getLayoutInflater();
         final View view = inflater.inflate(R.layout.dialog_add_cliente, null);
@@ -543,6 +552,9 @@ public class MenuPrincipal extends ActivityBase
     }
 
     public void createDialogNewGastoGasolina() {
+        if (dialog != null){
+            dialog.cancel();
+        }
         montoActual_Gasto = 0;
         idVehiculo = "";
         final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
@@ -600,12 +612,12 @@ public class MenuPrincipal extends ActivityBase
                 String gas = et_gas.getText().toString();
                 String litros = et_litros.getText().toString();
                 String monto = et_monto.getText().toString().replaceAll(Constants.PAYMENT_NUMBER_FORMAT_REGEX_POINT, Constants.STRING_EMPTY);
-                montoActual_Gasto = caja.get(0).getMonto() - Double.parseDouble(monto);
 
                 // String empleado = spinnerEmpleado.
                 if (fecha.equals("") || gas.equals("") || litros.equals("") || monto.equals("") || idNomVehiculo.equals("")) {
                     Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
                 } else {
+                    montoActual_Gasto = caja.get(0).getMonto() - Double.parseDouble(monto);
                     if (montoActual_Gasto < 0) {
                         Snackbar.make(v, getResources().getString(R.string.msg_monto_mayor_a_caja), Snackbar.LENGTH_LONG).show();
                     } else {
@@ -634,6 +646,9 @@ public class MenuPrincipal extends ActivityBase
     }
 
     public void createDialogGasto() {
+        if (dialog != null){
+            dialog.cancel();
+        }
         montoActual_Gasto = 0;
         idRuta = "";
         idEmpleado = "";
@@ -706,11 +721,12 @@ public class MenuPrincipal extends ActivityBase
                 String fecha = et_fecha.getText().toString();
                 //String monto = et_monto.getText().toString();
                 String monto = et_monto.getText().toString().replaceAll(Constants.PAYMENT_NUMBER_FORMAT_REGEX_POINT, Constants.STRING_EMPTY);
-                montoActual_Gasto = caja.get(0).getMonto() - Double.parseDouble(monto);
+
 
                 if (fecha.equals("") || monto.equals("") || idRuta.equals("") || idEmpleado.equals("")) {
                     Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
                 } else {
+                    montoActual_Gasto = caja.get(0).getMonto() - Double.parseDouble(monto);
                     if (montoActual_Gasto < 0) {
                         Snackbar.make(v, getResources().getString(R.string.msg_monto_mayor_a_caja), Snackbar.LENGTH_LONG).show();
                     } else {
@@ -757,6 +773,9 @@ public class MenuPrincipal extends ActivityBase
     }
 
     public void createDialogUpdateCaja() {
+        if (dialog != null){
+            dialog.cancel();
+        }
         idRuta = "";
         idEmpleado = "";
         final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
