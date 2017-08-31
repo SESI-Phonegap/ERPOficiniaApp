@@ -29,9 +29,11 @@ import java.util.List;
 
 import static android.despacho.com.ofinicaerp.utils.Constants.POST_FECHA;
 import static android.despacho.com.ofinicaerp.utils.Constants.POST_GASTO;
+import static android.despacho.com.ofinicaerp.utils.Constants.POST_INGRESO;
 import static android.despacho.com.ofinicaerp.utils.Constants.POST_MANTENIMIENTO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_GASTOS;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_GASTO_GASOLINA;
+import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_INGRESO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_MANTENIMIENTO;
 
 
@@ -55,6 +57,7 @@ public class HomeFragment extends Fragment {
     private double iMantenimiento;
     private double iGasolina;
     private double iNomina;
+    private double iIngresos;
     private double iGatosTotales;
 
     private static String ALL = "100000";
@@ -99,6 +102,7 @@ public class HomeFragment extends Fragment {
         iMantenimiento = 0;
         iNomina = 0;
         iOtrosGastos = 0;
+        iIngresos = 0;
         tv_ingresos = (TextView) getActivity().findViewById(R.id.tv_ingresos_totales);
         tv_gastosTotales = (TextView) getActivity().findViewById(R.id.tv_gastos_totales);
         tv_otrosGastos = (TextView) getActivity().findViewById(R.id.tv_gasto);
@@ -139,6 +143,13 @@ public class HomeFragment extends Fragment {
 
         String strJSONManteni = Utils.toJsonMantenimientoFecha(ALL,fechaInicial,fechaActual);
         new QueryMantenimientoTask().execute(POST_MANTENIMIENTO,URL_QUERY_MANTENIMIENTO,strJSONManteni);
+
+        ModelPagoEmpleado modelNomina = new ModelPagoEmpleado(calendar.get(Calendar.MONTH) + 1, anoActual);
+        String strJSONNomina = modelNomina.toJSONQueryNomina();
+        new nominaTask().execute(Constants.URL_QUERY_NOMINA,strJSONNomina);
+
+        String strJSONIngreso = Utils.toJsonIngresoFecha(ALL, fechaInicial, fechaActual);
+        new QueryIngresoTask().execute(POST_INGRESO, URL_QUERY_INGRESO, strJSONIngreso);
     }
 
     @Override
@@ -259,6 +270,7 @@ public class HomeFragment extends Fragment {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
+            Log.d("NOMINA--",result);
             UtilsDML.resultQueryNomina(getActivity().getApplication(), result, nominaList);
             for (int x = 0 ; x < nominaList.size() ; x++ ){
                 iNomina += nominaList.get(x).getMonto();
@@ -288,7 +300,12 @@ public class HomeFragment extends Fragment {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
+            Log.d("ING--",result);
             UtilsDML.resultQueryIngreso(getActivity().getApplication(), result, listIngresos);
+            for (int x = 0 ; x < listIngresos.size() ; x++ ){
+                iIngresos += listIngresos.get(x).getCantidad();
+            }
+            tv_ingresos.setText(getString(R.string.pesoscaja, Utils.parseToString(iIngresos)));
             progressBar.cancel();
         }
     }

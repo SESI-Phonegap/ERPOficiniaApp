@@ -49,11 +49,11 @@ public class Login extends AppCompatActivity {
         Button btn_entrar = (Button) findViewById(R.id.btn_login_entrar);
         modelUser = new ArrayList<>();
 
-       /* et_email.setText("marco.gonzalez.cp@gmail.com");
-        et_pass.setText("100Marco100");*/
+        et_email.setText("marco.gonzalez.cp@gmail.com");
+        et_pass.setText("100Marco100");
 
-        et_email.setText("christian.glez.100@gmail.com");
-        et_pass.setText("Mexico-17");
+        /*et_email.setText("christian.glez.100@gmail.com");
+        et_pass.setText("Mexico-17");*/
 
 
         btn_entrar.setOnClickListener(new View.OnClickListener() {
