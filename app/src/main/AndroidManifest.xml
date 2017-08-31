@@ -33,6 +33,7 @@
         <activity
             android:name=".activity.MenuPrincipal"
             android:label="@string/title_activity_menu_principal"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
@@ -70,7 +71,9 @@
             android:name=".activity.FormComprobanteGasto"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity android:name=".activity.GastosDetails" />
-        <activity android:name=".activity.FormNomina"></activity>
+        <activity android:name=".activity.FormNomina" />
+        <activity android:name=".activity.FormHonorario"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
     </application>
 
 </manifest>

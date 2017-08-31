@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,10 +28,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import static android.despacho.com.ofinicaerp.utils.Constants.ADMIN;
 import static android.despacho.com.ofinicaerp.utils.Constants.POST_FECHA;
 import static android.despacho.com.ofinicaerp.utils.Constants.POST_GASTO;
 import static android.despacho.com.ofinicaerp.utils.Constants.POST_INGRESO;
 import static android.despacho.com.ofinicaerp.utils.Constants.POST_MANTENIMIENTO;
+import static android.despacho.com.ofinicaerp.utils.Constants.PUTEXTRA_TIPO_USER;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_GASTOS;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_GASTO_GASOLINA;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_INGRESO;
@@ -52,6 +55,9 @@ public class HomeFragment extends Fragment {
     private TextView tv_mantenimiento;
     private TextView tv_gasolina;
     private TextView tv_nomina;
+    private TextView tv_mes;
+    private CardView cardViewTotales;
+    private CardView cardViewGastos;
 
     private double iOtrosGastos;
     private double iMantenimiento;
@@ -103,6 +109,9 @@ public class HomeFragment extends Fragment {
         iNomina = 0;
         iOtrosGastos = 0;
         iIngresos = 0;
+        cardViewGastos = (CardView) getActivity().findViewById(R.id.cardView3);
+        cardViewTotales = (CardView) getActivity().findViewById(R.id.cardView2);
+        tv_mes = (TextView) getActivity().findViewById(R.id.tv_mes);
         tv_ingresos = (TextView) getActivity().findViewById(R.id.tv_ingresos_totales);
         tv_gastosTotales = (TextView) getActivity().findViewById(R.id.tv_gastos_totales);
         tv_otrosGastos = (TextView) getActivity().findViewById(R.id.tv_gasto);
@@ -121,6 +130,11 @@ public class HomeFragment extends Fragment {
         progressBar.setCanceledOnTouchOutside(false);
         progressBar.setIndeterminate(true);
 
+        String typeUser = getActivity().getIntent().getStringExtra(PUTEXTRA_TIPO_USER);
+        if (!typeUser.equals(ADMIN)) {
+            cardViewTotales.setVisibility(View.INVISIBLE);
+            cardViewGastos.setVisibility(View.INVISIBLE);
+        }
         Calendar calendar = Calendar.getInstance();
         String anoActual = String.valueOf(calendar.get(Calendar.YEAR));
         String mesActual = String.valueOf(calendar.get(Calendar.MONTH) + 1);
@@ -130,6 +144,45 @@ public class HomeFragment extends Fragment {
         }
         if (Integer.parseInt(diaActual) <= 9) {
             diaActual = "0" + diaActual;
+        }
+
+        switch (calendar.get(Calendar.MONTH) + 1){
+            case 1:
+                tv_mes.setText("ENERO");
+                break;
+            case 2:
+                tv_mes.setText("FEBRERO");
+                break;
+            case 3:
+                tv_mes.setText("MARZO");
+                break;
+            case 4:
+                tv_mes.setText("ABRIL");
+                break;
+            case 5:
+                tv_mes.setText("MAYO");
+                break;
+            case 6:
+                tv_mes.setText("JUNIO");
+                break;
+            case 7:
+                tv_mes.setText("JULIO");
+                break;
+            case 8:
+                tv_mes.setText("AGOSTO");
+                break;
+            case 9:
+                tv_mes.setText("SEPTIEMBRE");
+                break;
+            case 10:
+                tv_mes.setText("OCTUBRE");
+                break;
+            case 11:
+                tv_mes.setText("NOVIEMBRE");
+                break;
+            case 12:
+                tv_mes.setText("DICIEMBRE");
+                break;
         }
 
         String fechaInicial = anoActual + "-" + mesActual + "-" + "01";
@@ -187,6 +240,8 @@ public class HomeFragment extends Fragment {
             for (int x = 0 ; x < listGastos.size() ; x++ ){
                 iOtrosGastos += listGastos.get(x).getMonto();
             }
+            iGatosTotales += iOtrosGastos;
+            tv_gastosTotales.setText(getString(R.string.pesoscaja, Utils.parseToString(iGatosTotales)));
             tv_otrosGastos.setText(getString(R.string.pesoscaja, Utils.parseToString(iOtrosGastos)));
             progressBar.cancel();
         }
@@ -216,6 +271,8 @@ public class HomeFragment extends Fragment {
             for (int x = 0 ; x < listGasolina.size() ; x++ ){
                 iGasolina += listGasolina.get(x).getCosto();
             }
+            iGatosTotales += iGasolina;
+            tv_gastosTotales.setText(getString(R.string.pesoscaja, Utils.parseToString(iGatosTotales)));
             tv_gasolina.setText(getString(R.string.pesoscaja, Utils.parseToString(iGasolina)));
             progressBar.cancel();
         }
@@ -245,6 +302,8 @@ public class HomeFragment extends Fragment {
             for (int x = 0 ; x < listMantenimiento.size() ; x++ ){
                 iMantenimiento += listMantenimiento.get(x).getCosto();
             }
+            iGatosTotales += iMantenimiento;
+            tv_gastosTotales.setText(getString(R.string.pesoscaja, Utils.parseToString(iGatosTotales)));
             tv_mantenimiento.setText(getString(R.string.pesoscaja, Utils.parseToString(iMantenimiento)));
             progressBar.cancel();
         }
@@ -275,6 +334,8 @@ public class HomeFragment extends Fragment {
             for (int x = 0 ; x < nominaList.size() ; x++ ){
                 iNomina += nominaList.get(x).getMonto();
             }
+            iGatosTotales += iNomina;
+            tv_gastosTotales.setText(getString(R.string.pesoscaja, Utils.parseToString(iGatosTotales)));
             tv_nomina.setText(getString(R.string.pesoscaja, Utils.parseToString(iNomina)));
             progressBar.cancel();
         }

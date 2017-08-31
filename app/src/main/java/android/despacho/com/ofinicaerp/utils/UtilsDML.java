@@ -8,6 +8,7 @@ import android.despacho.com.ofinicaerp.R;
 import android.despacho.com.ofinicaerp.models.ModelCaja;
 import android.despacho.com.ofinicaerp.models.ModelComprobanteGastos;
 import android.despacho.com.ofinicaerp.models.ModelDespacho_Clientes;
+import android.despacho.com.ofinicaerp.models.ModelDespacho_Honorarios;
 import android.despacho.com.ofinicaerp.models.ModelEmpleado;
 import android.despacho.com.ofinicaerp.models.ModelGastos;
 import android.despacho.com.ofinicaerp.models.ModelGastosGasolina;
@@ -786,4 +787,48 @@ public class UtilsDML {
         return result;
     }
 
+    public static String resultQueryHonorarios(Application context,String resultTask, List<ModelDespacho_Honorarios> resultHono) {
+        JSONArray jsonArray = null;
+        String result = "";
+
+        Log.d("HONO--", resultTask);
+        try {
+            jsonArray = new JSONArray(resultTask);
+            if (jsonArray.length() > 0) {
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    try {
+
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        String idHonorario = jsonObject.getString("idHonorario");
+                        String empleadoNomb = jsonObject.getString("empleadoNomb");
+                        String monto = jsonObject.getString("monto");
+                        String mes = jsonObject.getString("idMes");
+                        String ano = jsonObject.getString("ano");
+                        String status = jsonObject.getString("status");
+                        ModelDespacho_Honorarios honorarios = new ModelDespacho_Honorarios(
+                                Integer.parseInt(idHonorario),
+                                Integer.parseInt(mes),
+                                ano,
+                                Integer.parseInt(status),
+                                empleadoNomb,
+                                Double.parseDouble(monto));
+                        resultHono.add(honorarios);
+
+                    } catch (JSONException e) {
+                        Log.e("JSON---", e.toString());
+                    }
+                }
+
+            } else {
+
+                result = context.getString(R.string.msg_error);
+            }
+        } catch (JSONException e) {
+            return result = "Ocurrio un error al conectarse al servidor, intentelo de nuevo.";
+            //  Log.e("JSON", e.toString());
+        }
+
+        return result;
+    }
 }

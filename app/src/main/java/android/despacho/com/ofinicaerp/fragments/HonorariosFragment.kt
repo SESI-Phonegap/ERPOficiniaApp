@@ -2,19 +2,25 @@ package android.despacho.com.ofinicaerp.fragments
 
 import android.app.ProgressDialog
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
-import kotlinx.android.synthetic.main.fragment_nomina.spinner_ano
-import kotlinx.android.synthetic.main.fragment_nomina.spinner_mes
-import kotlinx.android.synthetic.main.fragment_nomina.btn_buscar
-import kotlinx.android.synthetic.main.fragment_nomina.recycler_view_nomina
-import kotlinx.android.synthetic.main.fragment_nomina.labelTotal_ingreso
+import kotlinx.android.synthetic.main.fragment_honorarios.spinner_ano
+import kotlinx.android.synthetic.main.fragment_honorarios.spinner_mes
+import kotlinx.android.synthetic.main.fragment_honorarios.radioGroup2
+import kotlinx.android.synthetic.main.fragment_honorarios.radioButton_todos
+import kotlinx.android.synthetic.main.fragment_honorarios.recycler_view_honorarios
+import kotlinx.android.synthetic.main.fragment_honorarios.tv_honorarios_total
+import kotlinx.android.synthetic.main.fragment_honorarios.btn_buscar
+
 import android.despacho.com.ofinicaerp.R
-import android.despacho.com.ofinicaerp.models.ModelPagoEmpleado
+import android.despacho.com.ofinicaerp.activity.FormHonorario
+import android.despacho.com.ofinicaerp.models.ModelDespacho_Clientes
+import android.despacho.com.ofinicaerp.models.ModelDespacho_Honorarios
 import android.despacho.com.ofinicaerp.utils.Constants
 import android.despacho.com.ofinicaerp.utils.Utils
 import android.despacho.com.ofinicaerp.utils.UtilsDML
@@ -23,27 +29,19 @@ import android.os.Handler
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.TextView
+import android.widget.*
 import java.util.*
 import kotlin.collections.ArrayList
 
-class NominaFragment : Fragment() {
 
-    private lateinit var nominaList: MutableList<ModelPagoEmpleado>
-    private lateinit var progressBar: ProgressDialog
-    private var testAdapter: NominaAdapter? = null
+class HonorariosFragment : Fragment(), RadioGroup.OnCheckedChangeListener {
+
     private var _idMes: Int = 1
     private var _ano: String = ""
-
-    companion object {
-
-        fun newInstance(): NominaFragment {
-            val fragment = NominaFragment()
-            return fragment
-        }
-    }
+    private var iStatus: Int = 3
+    private lateinit var honorariosList: MutableList<ModelDespacho_Honorarios>
+    private lateinit var progressBar: ProgressDialog
+    private var testAdapter: HonorarioAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +50,7 @@ class NominaFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater!!.inflate(R.layout.fragment_nomina, container, false)
+        return inflater!!.inflate(R.layout.fragment_honorarios, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
@@ -60,8 +58,8 @@ class NominaFragment : Fragment() {
         init()
     }
 
-    fun init() {
-        nominaList = ArrayList()
+    fun init(){
+        honorariosList = ArrayList()
         progressBar = ProgressDialog(activity)
         progressBar.setMessage("Cargando...")
         progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER)
@@ -74,7 +72,6 @@ class NominaFragment : Fragment() {
         val anoActual = calendarAno.get(Calendar.YEAR).toString().trim()
         val iAnoAtual = anoActual.toInt()
         val iMinAno = iAnoAtual - 5
-
         val arrayAno: ArrayList<String> = arrayListOf(iAnoAtual.toString(), (iMinAno + 4).toString(), (iMinAno + 3).toString(), (iMinAno + 2).toString(), (iMinAno + 1).toString())
 
         spinner_mes.adapter = ArrayAdapter(activity.application, R.layout.row_spinner_item, meses)
@@ -102,17 +99,43 @@ class NominaFragment : Fragment() {
 
         }
 
-        btn_buscar.setOnClickListener({
+        radioGroup2.setOnCheckedChangeListener(this)
+        radioButton_todos.isChecked = true
 
+        btn_buscar.setOnClickListener({
             if (testAdapter != null) {
                 testAdapter!!.removeAll()
-                labelTotal_ingreso.text = ""
+                tv_honorarios_total.text = ""
             }
-            val modelNomina = ModelPagoEmpleado(_idMes,_ano)
-            val strJSON = modelNomina.toJSONQueryNomina()
-            nominaTask().execute(Constants.URL_QUERY_NOMINA,strJSON)
+
+            val modelHonorario = ModelDespacho_Honorarios(_idMes,_ano,iStatus)
+            val strJSON = modelHonorario.toJSONQueryHono()
+            honorariosTask().execute(Constants.URL_QUERY_HONORARIOS,strJSON)
         })
+
     }
+
+    override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
+
+        when (checkedId) {
+
+            R.id.radioButton_pagado -> {
+                iStatus = 1
+                Log.d("STATUS",iStatus.toString());
+            }
+
+            R.id.radioButton_noPagado -> {
+                iStatus = 2
+                Log.d("STATUS",iStatus.toString());
+            }
+
+            R.id.radioButton_todos -> {
+                iStatus = 3
+                Log.d("STATUS",iStatus.toString());
+            }
+        }
+    }
+
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -122,24 +145,33 @@ class NominaFragment : Fragment() {
         super.onDetach()
     }
 
-    fun setUpRecyclerView() {
-        testAdapter = NominaAdapter(nominaList, activity)
-        recycler_view_nomina.layoutManager = LinearLayoutManager(activity)
-        recycler_view_nomina.adapter = testAdapter
-        recycler_view_nomina.setHasFixedSize(true)
+
+    companion object {
+        fun newInstance(): HonorariosFragment {
+            val fragment = HonorariosFragment()
+            return fragment
+        }
     }
 
-    class NominaAdapter internal constructor(item: MutableList<ModelPagoEmpleado>, context: Context) : RecyclerView.Adapter<TestViewHolder>() {
+    fun setUpRecyclerView() {
+        testAdapter = HonorarioAdapter(honorariosList, activity)
+        recycler_view_honorarios.layoutManager = LinearLayoutManager(activity)
+        recycler_view_honorarios.adapter = testAdapter
+        recycler_view_honorarios.setHasFixedSize(true)
+    }
+
+    class HonorarioAdapter internal constructor(item: MutableList<ModelDespacho_Honorarios>, context: Context) : RecyclerView.Adapter<TestViewHolder>() {
 
 
-        internal var items: MutableList<ModelPagoEmpleado>
+        internal var items: MutableList<ModelDespacho_Honorarios>
         internal var mContext: Context
-        internal var itemsPendingRemoval: MutableList<ModelPagoEmpleado>
+        internal var itemsPendingRemoval: MutableList<ModelDespacho_Honorarios>
         internal var lastInsertedIndex: Int = 0 // so we can add some more items for testing purposes
+        internal val arrayMes:ArrayList<String> = arrayListOf("","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre")
+
         var isUndoOn: Boolean = false
             private set // is undo on, you can turn it on from the toolbar menu
         private val handler = Handler() // hanlder for running delayed runnables
-
 
         init {
             items = item
@@ -159,24 +191,31 @@ class NominaFragment : Fragment() {
             val viewHolder = holder as TestViewHolder
             val item = items[position]
 
-            var semana = ""
-            when (item.semana) {
-                1 -> {
-                    semana = "Semana 1"
-                }
-                2 -> {
-                    semana = "Semana 2"
-                }
-                3 -> {
-                    semana = "Semana 3"
-                }
-                4 -> {
-                    semana = "Semana 4"
-                }
-            }
-            viewHolder.tv_nombre.text = item.nombreEmpleado
+            viewHolder.tv_nombre.text = item.clienteNombre
             viewHolder.tv_monto.text = mContext.getString(R.string.monto, Utils.parseToString(item.monto))
-            viewHolder.tv_semana.text = semana
+            viewHolder.tv_ano.text = item.ano
+            viewHolder.tv_mes.text = arrayMes[item.id_mes]
+            if (item.status == 1) {
+                viewHolder.img_status.setImageDrawable(mContext.resources.getDrawable(R.drawable.yes))
+            } else {
+                viewHolder.img_status.setImageDrawable(mContext.resources.getDrawable(R.drawable.no))
+            }
+
+            viewHolder.mView.setOnClickListener({
+                val idHonorario = item.id_honorario.toString()
+                val idMes = item.id_mes.toString()
+                val _ano = item.ano
+                val _status = item.status.toString()
+                val intent = Intent(mContext.applicationContext,FormHonorario::class.java)
+                intent.putExtra("ID_HONO",idHonorario)
+                intent.putExtra("ID_MES",idMes)
+                intent.putExtra("ANO",_ano)
+                intent.putExtra("STATUS",_status)
+                intent.putExtra("CLIENT",item.clienteNombre)
+                intent.putExtra("MONTO",item.monto.toString())
+                mContext.startActivity(intent)
+
+            })
 
         }
 
@@ -216,42 +255,48 @@ class NominaFragment : Fragment() {
     }
 
 
-    class TestViewHolder internal constructor(parent: ViewGroup) : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_recyclerview_nomina, parent, false)) {
+    class TestViewHolder internal constructor(parent: ViewGroup) : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_recyclerview_honorarios, parent, false)) {
         internal var tv_nombre: TextView
-        internal val tv_semana: TextView
+        internal val tv_mes: TextView
+        internal val tv_ano: TextView
         internal var tv_monto: TextView
+        internal var img_status: ImageView
         internal var mView: View
 
         init {
-            tv_nombre = itemView.findViewById(R.id.tv_empleado) as TextView
-            tv_semana = itemView.findViewById(R.id.tv_semana) as TextView
-            tv_monto = itemView.findViewById(R.id.tv_monto) as TextView
+            tv_nombre = itemView.findViewById(R.id.h_nombre) as TextView
+            tv_mes = itemView.findViewById(R.id.h_mes) as TextView
+            tv_ano = itemView.findViewById(R.id.h_ano) as TextView
+            tv_monto = itemView.findViewById(R.id.h_monto) as TextView
+            img_status = itemView.findViewById(R.id.h_status) as ImageView
             mView = itemView
         }
     }
 
-    inner class nominaTask : AsyncTask<String, Int, String>() {
+    inner class honorariosTask : AsyncTask<String, Int, String>() {
         override fun onPreExecute() {
             super.onPreExecute()
             progressBar.show()
         }
 
         override fun doInBackground(vararg params: String?): String {
-            return UtilsDML.addData(Constants.POST_NOMINA, params[0], params[1])
+            return UtilsDML.addData(Constants.POST_HONORARIOS, params[0], params[1])
         }
 
         override fun onPostExecute(result: String?) {
             super.onPostExecute(result)
-            Log.d("RESULT22--",result)
-            UtilsDML.resultQueryNomina(activity.application, result, nominaList)
+            Log.d("HONORAR--",result)
+            UtilsDML.resultQueryHonorarios(activity.application, result, honorariosList)
             setUpRecyclerView()
+
             var iTotal = 0.0
-            for (x in nominaList.indices) {
-                iTotal = iTotal + nominaList.get(x).monto
+            for (x in honorariosList.indices) {
+                iTotal = iTotal + honorariosList.get(x).monto
             }
-            labelTotal_ingreso.text = getString(R.string.monto,Utils.parseToString(iTotal))
+            tv_honorarios_total.text = getString(R.string.monto,Utils.parseToString(iTotal))
             progressBar.cancel()
         }
     }
+
 
 }// Required empty public constructor

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.v4.widget.NestedScrollView
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="0dp">
+
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/custom_background_alert">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/sizeTextTitle"
+                android:textStyle="bold"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+                android:text="@string/addHonorario"
+                android:maxLines="1"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="8dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginRight="8dp"
+                app:layout_constraintRight_toRightOf="parent"
+                android:id="@+id/textView2" />
+            <Spinner
+                android:id="@+id/cliente_nombre"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:maxLines="1"
+                android:layout_marginRight="16dp"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginLeft="16dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+            <Spinner
+                android:id="@+id/h_mes"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:maxLines="1"
+                android:layout_marginRight="16dp"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/cliente_nombre"
+                android:layout_marginLeft="16dp"
+                app:layout_constraintLeft_toLeftOf="parent" />
+
+            <Spinner
+                android:id="@+id/h_ano"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:maxLines="1"
+                android:layout_marginRight="16dp"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginLeft="16dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/h_mes" />
+
+            <EditText
+                android:id="@+id/h_monto"
+                android:inputType="numberDecimal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:hint="@string/mensulidad"
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/h_ano"
+                android:layout_marginRight="16dp"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginLeft="16dp"
+                app:layout_constraintLeft_toLeftOf="parent" />
+
+            <Spinner
+                android:id="@+id/h_status"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="16dp"
+                android:maxLines="1"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginRight="16dp"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/h_monto" />
+
+
+            <Button
+                android:id="@+id/btn_honorario_guardar"
+                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_guardar"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintRight_toLeftOf="@+id/btn_honorario_cancelar"
+                app:layout_constraintBaseline_toBaselineOf="@+id/btn_honorario_cancelar" />
+
+            <Button
+                android:id="@+id/btn_honorario_cancelar"
+                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_cancelar"
+                android:layout_marginEnd="7dp"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginTop="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintVertical_bias="1.0"
+                app:layout_constraintTop_toBottomOf="@+id/h_status" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+</android.support.constraint.ConstraintLayout>

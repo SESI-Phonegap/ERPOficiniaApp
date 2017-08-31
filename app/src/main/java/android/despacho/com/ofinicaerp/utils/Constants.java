@@ -17,6 +17,7 @@ public class Constants {
     public static String URL_UPDATE_CAJA = "http://despachogonzalez.com.mx/erpoficina/updatecaja.php";
     public static String URL_ADD_COMPROBANTE = "http://despachogonzalez.com.mx/erpoficina/newcomprobante.php";
     public static String URL_ADD_NOMINA = "http://despachogonzalez.com.mx/erpoficina/newnomina.php";
+    public static String URL_ADD_HONORARIO = "http://despachogonzalez.com.mx/erpoficina/newhonorario.php";
 
 
     public static String URL_QUERY_EMPLEADO = "http://despachogonzalez.com.mx/erpoficina/queryempleado.php";
@@ -34,6 +35,7 @@ public class Constants {
     public static String URL_QUERY_COMPROBANTES_GASTOS = "http://despachogonzalez.com.mx/erpoficina/query_comprobantes.php";
     public static String URL_QUERY_GASTOS_DETAILS_BY_ID = "http://despachogonzalez.com.mx/erpoficina/query_gastos_details.php";
     public static String URL_QUERY_NOMINA = "http://despachogonzalez.com.mx/erpoficina/query_nomina.php";
+    public static String URL_QUERY_HONORARIOS = "http://despachogonzalez.com.mx/erpoficina/query_honorarios.php";
 
     public static String POST_GASOLINA = "gasolina";
     public static String POST_VEHICULO = "vehiculo";
@@ -48,6 +50,7 @@ public class Constants {
     public static String POST_CAJA = "caja";
     public static String POST_COMPROBANTE = "comprobante";
     public static String POST_NOMINA = "nomina";
+    public static String POST_HONORARIOS = "honorarios";
 
 
     public static String PUTEXTRA_ID_EMPLEADO = "id_empleado";

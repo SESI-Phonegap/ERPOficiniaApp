@@ -70,6 +70,7 @@
     <string name="btn_guardar">Guardar</string>
     <string name="btn_cancelar">Cancelar</string>
     <string name="btn_buscar">Buscar</string>
+    <string name="btn_update">Actualizar</string>
 
     <!-- Dialog Empleado -->
     <string name="nombre">* Nombre</string>
@@ -78,6 +79,8 @@
     <string name="empresa">* Empresa</string>
     <string name="telefono">* Telefono</string>
 
+    <!-- Dialog Honorario -->
+    <string name="addHonorario">Registro</string>
     <!-- Dialog Cliente-->
     <string name="addCliente">Nuevo cliente</string>
     <string name="rfc">* RFC</string>
@@ -86,7 +89,8 @@
     <string name="passSat">Contraseña SAT</string>
     <string name="passFiel">Contraseña FIEL</string>
     <string name="passCertificado">Contraseña Certificado</string>
-
+    <string name="updateHono">Actualiza</string>
+    <string name="numRegistro">Num. de Registro: %s</string>
 
     <!-- Fragment Gastos Gasolido-->
     <string name="gasolinaTitle">Gastos en Gasolina</string>
@@ -114,6 +118,10 @@
 
     <string name="si">Si</string>
     <string name="no">No</string>
+
+    <string name="estadoHonorario">Estatus:</string>
+    <string name="pagado">Pagado</string>
+    <string name="noPagado">No Pagado</string>
 
     <string name="cobraOxxo">¿Por cobrar a oxxo?</string>
 

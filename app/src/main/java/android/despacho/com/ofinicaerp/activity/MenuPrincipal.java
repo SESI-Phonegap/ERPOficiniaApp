@@ -11,6 +11,7 @@ import android.despacho.com.ofinicaerp.fragments.EmpleadoFragment;
 import android.despacho.com.ofinicaerp.fragments.GastoGasolinaFragment;
 import android.despacho.com.ofinicaerp.fragments.GastosFragment;
 import android.despacho.com.ofinicaerp.fragments.HomeFragment;
+import android.despacho.com.ofinicaerp.fragments.HonorariosFragment;
 import android.despacho.com.ofinicaerp.fragments.IngresosFragment;
 import android.despacho.com.ofinicaerp.fragments.MantenimientoVehiculoFragment;
 import android.despacho.com.ofinicaerp.fragments.NominaFragment;
@@ -19,6 +20,7 @@ import android.despacho.com.ofinicaerp.fragments.TiendasFragment;
 import android.despacho.com.ofinicaerp.fragments.VehiculoFragment;
 import android.despacho.com.ofinicaerp.models.ModelCaja;
 import android.despacho.com.ofinicaerp.models.ModelDespacho_Clientes;
+import android.despacho.com.ofinicaerp.models.ModelDespacho_Honorarios;
 import android.despacho.com.ofinicaerp.models.ModelEmpleado;
 import android.despacho.com.ofinicaerp.models.ModelGastos;
 import android.despacho.com.ofinicaerp.models.ModelGastosGasolina;
@@ -63,6 +65,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -75,9 +78,11 @@ import static android.despacho.com.ofinicaerp.utils.Constants.PUTEXTRA_TIPO_USER
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_CLIENTE;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_GASTO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_GASTO_GASOLINA;
+import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_HONORARIO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_RUTA;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_TIENDA;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_CAJA;
+import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_CLIENTE;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_EMPLEADO;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_RUTAS;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_VEHICULO;
@@ -96,9 +101,14 @@ public class MenuPrincipal extends ActivityBase
     private List<ModelEmpleado> listEmpleados;
     public static List<ModelVehiculo> listVehiculos;
     public static List<ModelRutas> listRutas;
+    private List<ModelDespacho_Clientes> listClientes;
     private String idVehiculo;
     private String idRuta;
     private String idEmpleado;
+    private String idStatus;
+    private String idMes;
+    private String ano;
+    private String idCliente;
     private String photoPathSelected;
     private CameraPhoto cameraPhoto;
     private GalleryPhoto galleryPhoto;
@@ -134,6 +144,7 @@ public class MenuPrincipal extends ActivityBase
         listEmpleados = new ArrayList<>();
         listVehiculos = new ArrayList<>();
         listRutas = new ArrayList<>();
+        listClientes = new ArrayList<>();
         caja = new ArrayList<>();
         montoActual_Gasto = 0;
 
@@ -141,6 +152,7 @@ public class MenuPrincipal extends ActivityBase
         new QueryRutaTask().execute(URL_QUERY_RUTAS);
         new QueryEmpleadoTask().execute(URL_QUERY_EMPLEADO);
         new QueryCajaTask().execute(URL_QUERY_CAJA);
+        new QueryClienteTask().execute(URL_QUERY_CLIENTE);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -263,7 +275,9 @@ public class MenuPrincipal extends ActivityBase
                 break;
 
             case R.id._nav_honorarios:
-                Toast.makeText(this, "Honorarios", Toast.LENGTH_LONG).show();
+                Fragment honorarioFragment = Fragment.instantiate(MenuPrincipal.this,HonorariosFragment.class.getName());
+                changeFragment(honorarioFragment, R.id.mainFrame, false, false);
+                fab.setOnClickListener(onClickHonorario);
                 break;
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -359,6 +373,13 @@ public class MenuPrincipal extends ActivityBase
         @Override
         public void onClick(View v) {
             createDialogNewCliente();
+        }
+    };
+
+    View.OnClickListener onClickHonorario = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            createDialogNewHonorario();
         }
     };
 
@@ -824,6 +845,123 @@ public class MenuPrincipal extends ActivityBase
         dialog.show();
     }
 
+    public void createDialogNewHonorario() {
+        if (dialog != null) {
+            dialog.cancel();
+        }
+        final AlertDialog.Builder builder = new AlertDialog.Builder(MenuPrincipal.this);
+        LayoutInflater inflater = MenuPrincipal.this.getLayoutInflater();
+        final View view = inflater.inflate(R.layout.dialog_add_honorario, null);
+        builder.setView(view);
+
+        idStatus = "";
+        idMes = "";
+        idCliente = "";
+        ano = "";
+
+        Spinner spinner_nombCliente = (Spinner) view.findViewById(R.id.cliente_nombre);
+        Spinner spinner_mes = (Spinner) view.findViewById(R.id.h_mes);
+        Spinner spinner_ano = (Spinner) view.findViewById(R.id.h_ano);
+        Spinner spinner_status = (Spinner) view.findViewById(R.id.h_status);
+        et_monto = (EditText) view.findViewById(R.id.h_monto);
+        et_monto.addTextChangedListener(textWatcherMontoCaja);
+        Button btn_agregar = (Button) view.findViewById(R.id.btn_honorario_guardar);
+        Button btn_cancelar = (Button) view.findViewById(R.id.btn_honorario_cancelar);
+
+        String[] arrayMes = getResources().getStringArray(R.array.meses);
+        spinner_mes.setAdapter(new ArrayAdapter<>(getApplication(),R.layout.row_spinner_item,arrayMes));
+
+        Calendar calendarAno = Calendar.getInstance();
+        String anoActual = String.valueOf(calendarAno.get(Calendar.YEAR));
+        int iAnoAtual = Integer.parseInt(anoActual);
+        int iMinAno = iAnoAtual - 5;
+        String[] arrayAno = {String.valueOf(iAnoAtual), String.valueOf(iMinAno + 4), String.valueOf(iMinAno + 3), String.valueOf(iMinAno + 2), String.valueOf(iMinAno + 1)};
+        spinner_ano.setAdapter(new ArrayAdapter<>(getApplication(),R.layout.row_spinner_item,arrayAno));
+        String[] cliente = new String[listClientes.size()];
+        for (int x = 0; x < listClientes.size(); x++){
+            cliente[x] = listClientes.get(x).getId_cliente() + "-" + listClientes.get(x).getNombre();
+        }
+        spinner_nombCliente.setAdapter(new ArrayAdapter<>(getApplication(),R.layout.row_spinner_item,cliente));
+        String[] status = {"1-Pagado","2-No Pagado","3-Abono"};
+        spinner_status.setAdapter(new ArrayAdapter<>(getApplication(),R.layout.row_spinner_item,status));
+        spinner_status.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String[] parts = parent.getItemAtPosition(position).toString().split("-");
+                idStatus = parts[0];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        spinner_mes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String[] parts = parent.getItemAtPosition(position).toString().split("-");
+                idMes = parts[0];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        spinner_nombCliente.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String[] parts = parent.getItemAtPosition(position).toString().split("-");
+                idCliente = parts[0];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        spinner_ano.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+               ano = parent.getItemAtPosition(position).toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        btn_cancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        btn_agregar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String monto = et_monto.getText().toString().replaceAll(Constants.PAYMENT_NUMBER_FORMAT_REGEX_POINT, Constants.STRING_EMPTY);
+
+                if (monto.equals("")){
+                    Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
+                } else {
+                    ModelDespacho_Honorarios honorarios = new ModelDespacho_Honorarios(Integer.parseInt(idMes),ano,Integer.parseInt(idStatus),Integer.parseInt(idCliente),Double.parseDouble(monto));
+                    String strJSON = honorarios.toJSONAddHono();
+                    new AddHonorarioTask().execute(URL_ADD_HONORARIO,strJSON);
+                }
+            }
+        });
+
+        dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(false);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+        dialog.show();
+    }
+
     TextWatcher textWatcherMontoCaja = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -1013,6 +1151,7 @@ public class MenuPrincipal extends ActivityBase
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             proccessResult(result);
+            changeFragment(ClientesDespachoFragment.newInstance(), R.id.mainFrame, false, false);
             progressBar.cancel();
         }
 
@@ -1081,6 +1220,31 @@ public class MenuPrincipal extends ActivityBase
 
         }
     }
+
+    private class AddHonorarioTask extends AsyncTask<String, Integer, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String baseUrl = params[0];
+            String jsonData = params[1];
+            return UtilsDML.addData(Constants.POST_HONORARIOS, baseUrl, jsonData);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            proccessResult(result);
+            progressBar.cancel();
+        }
+
+    }
+
 
     private class UpdateCajaTask extends AsyncTask<String, Integer, String> {
 
@@ -1219,6 +1383,31 @@ public class MenuPrincipal extends ActivityBase
             montoActual_Gasto = caja.get(0).getMonto();
         }
 
+    }
+
+    private class QueryClienteTask extends AsyncTask<String, Integer, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            return UtilsDML.queryAllData(params[0]);
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            UtilsDML.resultQueryCliente(result,listClientes);
+            progressBar.cancel();
+        }
     }
 
     public void proccessResult(String result) {
