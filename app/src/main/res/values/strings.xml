@@ -122,6 +122,7 @@
     <string name="estadoHonorario">Estatus:</string>
     <string name="pagado">Pagado</string>
     <string name="noPagado">No Pagado</string>
+    <string name="abonado">Abono</string>
 
     <string name="cobraOxxo">¿Por cobrar a oxxo?</string>
 

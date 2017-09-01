@@ -7,6 +7,16 @@
     android:layout_height="match_parent"
     tools:context="android.despacho.com.ofinicaerp.activity.FormHonorario">
 
+    <ImageView
+        android:id="@+id/img_back"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:src="@drawable/arrow_left"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/textView23"
         android:layout_width="wrap_content"
@@ -15,11 +25,11 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="@string/updateHono"
+        android:textColor="@android:color/black"
         android:textSize="20dp"
         android:textStyle="bold"
-        android:textColor="@android:color/black"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/img_back"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -88,17 +98,37 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spinner_ano" />
 
-    <Spinner
-        android:id="@+id/spinner_status"
-        android:layout_width="0dp"
-        android:layout_height="35dp"
+    <RadioGroup
+        android:id="@+id/radioGroup_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
+        android:orientation="horizontal"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_monto" />
+        app:layout_constraintTop_toBottomOf="@+id/et_monto">
+
+        <RadioButton
+            android:id="@+id/radioButton_pagado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/pagado" />
+
+        <RadioButton
+            android:id="@+id/radioButton_abono"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/abonado" />
+
+        <RadioButton
+            android:id="@+id/radioButton_noPagado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/noPagado" />
+    </RadioGroup>
 
     <Button
         android:id="@+id/btn_guardar"
