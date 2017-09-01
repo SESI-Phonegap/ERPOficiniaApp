@@ -129,8 +129,6 @@ class FormNomina : AppCompatActivity() {
             Selection.setSelection(et_cantidad.editableText, et_cantidad.editableText.length)
             et_cantidad.addTextChangedListener(this)
         }
-
-
     }
 
     override fun onBackPressed() {

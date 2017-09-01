@@ -262,11 +262,9 @@ public class ComprobanteFragment extends Fragment implements RadioGroup.OnChecke
         public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
             TestViewHolder viewHolder = (TestViewHolder) holder;
             final ModelComprobanteGastos item = items.get(position);
-            total += item.getMonto();
-            tv_total.setText(getString(R.string.total,String.valueOf(total)));
             viewHolder.et_fecha.setText(item.getFecha());
             viewHolder.et_concepto.setText(item.getConcepto());
-            viewHolder.et_monto.setText(getString(R.string.monto,String.valueOf(item.getMonto())));
+            viewHolder.et_monto.setText(getString(R.string.monto,Utils.parseToString(item.getMonto())));
             viewHolder.et_categoria.setText(item.getCategoria());
             viewHolder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -373,15 +371,15 @@ public class ComprobanteFragment extends Fragment implements RadioGroup.OnChecke
         }
 
         @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-        }
-
-        @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             UtilsDML.resultQueryComprobantes(getActivity().getApplication(),result,comprobanteGastosList);
             setUpRecyclerView();
+            total = 0.0;
+            for(int y = 0; y < comprobanteGastosList.size(); y++){
+                total += comprobanteGastosList.get(y).getMonto();
+            }
+            tv_total.setText(getString(R.string.monto,Utils.parseToString(total)));
             progressBar.cancel();
         }
     }

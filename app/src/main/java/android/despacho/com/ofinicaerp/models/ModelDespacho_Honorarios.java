@@ -35,6 +35,15 @@ public class ModelDespacho_Honorarios {
     }
 
     public ModelDespacho_Honorarios(int id_honorario, int id_mes, String ano,
+                                    int status, double monto){
+        this.id_honorario = id_honorario;
+        this.id_mes = id_mes;
+        this.ano = ano;
+        this.status = status;
+        this.monto = monto;
+    }
+
+    public ModelDespacho_Honorarios(int id_honorario, int id_mes, String ano,
                                     int status, String clienteNombre, double monto){
         this.id_honorario = id_honorario;
         this.id_mes = id_mes;
@@ -102,6 +111,23 @@ public class ModelDespacho_Honorarios {
             jsonObject.put("ano", getAno());
             jsonObject.put("status", getStatus());
             jsonObject.put("idCliente", getId_cliente());
+            jsonObject.put("monto", getMonto());
+
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public String toJSONUpdateHono(){
+        JSONObject jsonObject= new JSONObject();
+        try {
+            jsonObject.put("idHonorario", getId_honorario());
+            jsonObject.put("mes", getId_mes());
+            jsonObject.put("ano", getAno());
+            jsonObject.put("status", getStatus());
             jsonObject.put("monto", getMonto());
 
             return jsonObject.toString();

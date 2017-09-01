@@ -37,6 +37,8 @@ public class Constants {
     public static String URL_QUERY_NOMINA = "http://despachogonzalez.com.mx/erpoficina/query_nomina.php";
     public static String URL_QUERY_HONORARIOS = "http://despachogonzalez.com.mx/erpoficina/query_honorarios.php";
 
+    public static String URL_UPDATE_HONORARIOS = "http://despachogonzalez.com.mx/erpoficina/update_honorarios.php";
+
     public static String POST_GASOLINA = "gasolina";
     public static String POST_VEHICULO = "vehiculo";
     public static String POST_EMPLEADO = "empleado";

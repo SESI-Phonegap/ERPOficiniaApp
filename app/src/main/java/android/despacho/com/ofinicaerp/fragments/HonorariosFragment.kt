@@ -9,17 +9,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
-import kotlinx.android.synthetic.main.fragment_honorarios.spinner_ano
-import kotlinx.android.synthetic.main.fragment_honorarios.spinner_mes
-import kotlinx.android.synthetic.main.fragment_honorarios.radioGroup2
-import kotlinx.android.synthetic.main.fragment_honorarios.radioButton_todos
-import kotlinx.android.synthetic.main.fragment_honorarios.recycler_view_honorarios
-import kotlinx.android.synthetic.main.fragment_honorarios.tv_honorarios_total
-import kotlinx.android.synthetic.main.fragment_honorarios.btn_buscar
-
+import kotlinx.android.synthetic.main.fragment_honorarios.*
 import android.despacho.com.ofinicaerp.R
 import android.despacho.com.ofinicaerp.activity.FormHonorario
-import android.despacho.com.ofinicaerp.models.ModelDespacho_Clientes
 import android.despacho.com.ofinicaerp.models.ModelDespacho_Honorarios
 import android.despacho.com.ofinicaerp.utils.Constants
 import android.despacho.com.ofinicaerp.utils.Utils
