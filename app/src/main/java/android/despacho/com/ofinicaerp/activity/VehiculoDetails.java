@@ -1,5 +1,6 @@
 package android.despacho.com.ofinicaerp.activity;
 
+import android.content.Intent;
 import android.despacho.com.ofinicaerp.ActivityBase;
 import android.despacho.com.ofinicaerp.fragments.VehiculoFragment;
 import android.despacho.com.ofinicaerp.models.ModelVehiculo;
@@ -84,6 +85,19 @@ public class VehiculoDetails extends ActivityBase implements View.OnClickListene
                 break;
 
             case R.id.vehiculo_img_btn_edit:
+                Intent intent = new Intent(this, FormVehiculo.class);
+                intent.putExtra("FROM","update");
+                intent.putExtra("ID_VEHI",String.valueOf(vehiculo.getId_vehiculo()));
+                intent.putExtra("NOMB",vehiculo.getNombre());
+                intent.putExtra("MOD",vehiculo.getModelo());
+                intent.putExtra("COLOR",vehiculo.getColor());
+                intent.putExtra("MARCA",vehiculo.getMarca());
+                intent.putExtra("PLAC",vehiculo.getPlacas());
+                intent.putExtra("SERIE",vehiculo.getSerie());
+                intent.putExtra("FOTO",vehiculo.getPhotoBase64());
+                intent.putExtra("ID_EMP",String.valueOf(vehiculo.getId_empleado()));
+                intent.putExtra("NOMB_EMP",vehiculo.getNombre_empleado());
+                startActivity(intent);
                 break;
 
             case R.id.btn_vehiculo_previous_details:

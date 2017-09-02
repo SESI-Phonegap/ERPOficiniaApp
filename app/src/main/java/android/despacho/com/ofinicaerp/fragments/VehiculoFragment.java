@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -138,6 +139,7 @@ public class VehiculoFragment extends Fragment {
                     viewHolder.photoVehiculo.setImageResource(R.drawable.ni_image);
                 } else {
                     String UrlImage = Constants.URL_BASE + item.getPhotoBase64();
+                    Log.d("IMAGE--",UrlImage);
                     Picasso.with(getContext()).load(UrlImage).fit().into(viewHolder.photoVehiculo);
                 }
 

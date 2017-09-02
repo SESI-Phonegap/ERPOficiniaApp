@@ -2,6 +2,7 @@ package android.despacho.com.ofinicaerp.activity;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.despacho.com.ofinicaerp.ActivityBase;
@@ -25,6 +26,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.despacho.com.ofinicaerp.R;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -33,8 +35,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -72,6 +78,10 @@ public class FormVehiculo extends ActivityBase implements View.OnClickListener {
 
     private ProgressDialog progressBar;
     private List<ModelEmpleado> listEmpleados;
+    private String from;
+    private String _idVehi;
+    private TextView tv_empleado_actual;
+    private boolean bandUpdatePhoto;
 
 
     @Override
@@ -82,6 +92,10 @@ public class FormVehiculo extends ActivityBase implements View.OnClickListener {
     }
 
     public void init() {
+        bandUpdatePhoto = false;
+        tv_empleado_actual = (TextView) findViewById(R.id.update_empleado);
+        from = getIntent().getStringExtra("FROM");
+
         cameraPhoto = new CameraPhoto(getApplicationContext());
         galleryPhoto = new GalleryPhoto(getApplicationContext());
         progressBar = new ProgressDialog(FormVehiculo.this);
@@ -108,7 +122,10 @@ public class FormVehiculo extends ActivityBase implements View.OnClickListener {
         spinnerEmpleado.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                id_empleado = parent.getItemAtPosition(position).toString().substring(0, 1);
+                String[] _id = parent.getItemAtPosition(position).toString().split("-");
+                id_empleado = _id[0];
+                String nombEmpSelect = id_empleado +"-"+_id[1];
+                tv_empleado_actual.setText(nombEmpSelect);
             }
 
             @Override
@@ -123,7 +140,35 @@ public class FormVehiculo extends ActivityBase implements View.OnClickListener {
 
         new QueryEmpleadoTask().execute(URL_QUERY_EMPLEADO);
 
+        if (!from.equals("new")){
 
+            tv_empleado_actual.setVisibility(View.VISIBLE);
+            _idVehi = getIntent().getStringExtra("ID_VEHI");
+            String _nombVehi = getIntent().getStringExtra("NOMB");
+            String _modVehi = getIntent().getStringExtra("MOD");
+            String _colorVehi = getIntent().getStringExtra("COLOR");
+            String _marcaVehi = getIntent().getStringExtra("MARCA");
+            String _placVehi = getIntent().getStringExtra("PLAC");
+            String _serieVehi = getIntent().getStringExtra("SERIE");
+            String _fotoVehi = getIntent().getStringExtra("FOTO");
+            String _idEmp = getIntent().getStringExtra("ID_EMP");
+            String _nombEmp = getIntent().getStringExtra("NOMB_EMP");
+            et_nombre.setText(_nombVehi);
+            et_marca.setText(_marcaVehi);
+            et_modelo.setText(_modVehi);
+            et_placas.setText(_placVehi);
+            et_serie.setText(_serieVehi);
+            et_color.setText(_colorVehi);
+            String urlImage = Constants.URL_BASE + _fotoVehi;
+            Picasso.with(this).load(urlImage).fit().into(imgVehiculo);
+
+            //Asignas al empleado actual
+            id_empleado = _idEmp;
+            Log.d("ID--",id_empleado);
+            String empleadoSelected = id_empleado +"-"+ _nombEmp;
+            tv_empleado_actual.setText(empleadoSelected);
+
+        }
     }
 
     @Override
@@ -146,16 +191,64 @@ public class FormVehiculo extends ActivityBase implements View.OnClickListener {
                 String serie = et_serie.getText().toString();
                 String placas = et_placas.getText().toString();
                 String color = et_color.getText().toString();
-                // String empleado = spinnerEmpleado.
-                if (nombre.equals("") || modelo.equals("") || marca.equals("") || serie.equals("") ||
-                        placas.equals("") || color.equals("") || id_empleado.equals("") || photoPathSelected.equals("")) {
-                    Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
+
+                if (from.equals("new")) {
+
+                    if (nombre.equals("") || modelo.equals("") || marca.equals("") || serie.equals("") ||
+                            placas.equals("") || color.equals("") || id_empleado.equals("") || photoPathSelected.equals("")) {
+                        Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
+                    } else {
+                        ModelVehiculo modelVehiculo = new ModelVehiculo(nombre, modelo, marca, serie, Integer.parseInt(id_empleado), imageBase64, placas, color);
+                        String strJson = modelVehiculo.toJsonAddVehiculo();
+                        new AddVehiculoTask().execute(URL_ADD_VEHICULO, strJson);
+                    }
                 } else {
-                    ModelVehiculo modelVehiculo = new ModelVehiculo(nombre, modelo, marca, serie, Integer.parseInt(id_empleado), imageBase64, placas, color);
-                    String strJson = modelVehiculo.toJsonAddVehiculo();
-                    new AddVehiculoTask().execute(URL_ADD_VEHICULO, strJson);
+                    if (bandUpdatePhoto) {
+                        if (nombre.equals("") || modelo.equals("") || marca.equals("") || serie.equals("") ||
+                                placas.equals("") || color.equals("") || id_empleado.equals("") || photoPathSelected.equals("")) {
+                            Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
+                        } else {
+                            ModelVehiculo modelVehiculo = new ModelVehiculo(Integer.parseInt(_idVehi),nombre, modelo, marca, serie, Integer.parseInt(id_empleado), imageBase64, placas, color);
+                            String strJson = modelVehiculo.toJsonUpdateVehiculo();
+                            new UpdateVehiculoTask().execute(Constants.URL_UPDATE_VEHICULO, strJson);
+                            deleteCache(getApplicationContext());
+                        }
+                    } else {
+                        if (nombre.equals("") || modelo.equals("") || marca.equals("") || serie.equals("") ||
+                                placas.equals("") || color.equals("") || id_empleado.equals("")) {
+                            Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
+                        } else {
+                            ModelVehiculo modelVehiculo = new ModelVehiculo(Integer.parseInt(_idVehi),nombre, modelo, marca, serie, Integer.parseInt(id_empleado),null, placas, color);
+                            String strJson = modelVehiculo.toJsonUpdateVehiculo();
+                            new UpdateVehiculoTask().execute(Constants.URL_UPDATE_VEHICULO, strJson);
+                        }
+                    }
                 }
                 break;
+        }
+    }
+
+    public static void deleteCache(Context context) {
+        try {
+            File dir = context.getCacheDir();
+            deleteDir(dir);
+        } catch (Exception e) {}
+    }
+
+    public static boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+            return dir.delete();
+        } else if(dir!= null && dir.isFile()) {
+            return dir.delete();
+        } else {
+            return false;
         }
     }
 
@@ -218,7 +311,7 @@ public class FormVehiculo extends ActivityBase implements View.OnClickListener {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-
+            bandUpdatePhoto = true;
                 if (requestCode == PICK_IMAGE_VEHICULO) {
                     Uri uri = data.getData();
                     galleryPhoto.setPhotoUri(uri);
@@ -278,7 +371,7 @@ public class FormVehiculo extends ActivityBase implements View.OnClickListener {
             UtilsDML.resultQueryEmpleado(result, listEmpleados);
             String[] idNomEmpleado = new String[listEmpleados.size()];
             for (int i = 0; i < listEmpleados.size(); i++) {
-                idNomEmpleado[i] = listEmpleados.get(i).getId_empleado() + " " + listEmpleados.get(i).getNombre();
+                idNomEmpleado[i] = listEmpleados.get(i).getId_empleado() + "-" + listEmpleados.get(i).getNombre();
             }
             spinnerEmpleado.setAdapter(new ArrayAdapter<>(getApplication(), R.layout.row_spinner_item, idNomEmpleado));
             // setUpRecyclerView();
@@ -320,6 +413,39 @@ public class FormVehiculo extends ActivityBase implements View.OnClickListener {
 
     }
 
+    private class UpdateVehiculoTask extends AsyncTask<String, Integer, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String baseUrl = params[0];
+            String jsonData = params[1];
+            return UtilsDML.addData(Constants.POST_VEHICULO, baseUrl, jsonData);
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            Utils.proccessResult(FormVehiculo.this,result);
+            progressBar.cancel();
+            Intent intent = new Intent();
+            intent.putExtra(Constants.REFRESH, Constants.REFRESH_FRAGMENT_VEHICULO);
+            setResult(RESULT_OK,intent);
+            finish();
+        }
+
+    }
     @Override
     public void onBackPressed() {
         super.onBackPressed();

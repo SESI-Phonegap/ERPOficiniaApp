@@ -8,17 +8,22 @@ import android.content.pm.PackageManager;
 import android.despacho.com.ofinicaerp.activity.MenuPrincipal;
 import android.despacho.com.ofinicaerp.models.ModelDespacho_Clientes;
 import android.despacho.com.ofinicaerp.models.ModelEmpleado;
+import android.despacho.com.ofinicaerp.utils.Constants;
+import android.despacho.com.ofinicaerp.utils.Utils;
 import android.despacho.com.ofinicaerp.utils.UtilsDML;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
@@ -27,6 +32,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.despacho.com.ofinicaerp.R;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -34,7 +42,9 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static android.despacho.com.ofinicaerp.utils.Constants.URL_ADD_CLIENTE;
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_QUERY_CLIENTE;
+import static android.despacho.com.ofinicaerp.utils.Constants.URL_UPDATE_CLIENTE;
 
 
 public class ClientesDespachoFragment extends Fragment {
@@ -43,6 +53,7 @@ public class ClientesDespachoFragment extends Fragment {
     private ClienteAdapter testAdapter;
     private List<ModelDespacho_Clientes> listClientes;
     private ProgressDialog progressBar;
+    private AlertDialog dialog;
 
 
     public ClientesDespachoFragment() {
@@ -119,7 +130,7 @@ public class ClientesDespachoFragment extends Fragment {
 
             items = item;
             mContext = context;
-            itemsPendingRemoval = new ArrayList<>();
+            itemsPendingRemoval = item;
             // let's generate some items
             lastInsertedIndex = 15;
 
@@ -136,6 +147,14 @@ public class ClientesDespachoFragment extends Fragment {
             final ModelDespacho_Clientes item = items.get(position);
             viewHolder.et_nombre.setText(item.getNombre());
             viewHolder.et_rfc.setText(item.getRfc());
+            viewHolder.mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    createDialogUpdateCliente(item.getId_cliente(),item.getNombre(),item.getRfc(),
+                            item.getCurp(),String.valueOf(item.getMonto_mensualidad()),item.getPass_sat(),item.getPass_fiel(),
+                            item.getPass_certificado());
+                }
+            });
 
         }
 
@@ -163,6 +182,11 @@ public class ClientesDespachoFragment extends Fragment {
                 items.remove(position);
                 notifyItemRemoved(position);
             }
+        }
+
+        public void removeAll(){
+            items.removeAll(itemsPendingRemoval);
+            notifyDataSetChanged();
         }
 
         public boolean isPendingRemoval(int position) {
@@ -209,5 +233,112 @@ public class ClientesDespachoFragment extends Fragment {
             setUpRecyclerView();
             progressBar.cancel();
         }
+    }
+
+    public void createDialogUpdateCliente(final int idCliente, String nombre, String rfc, String curp,
+                                       String honorario, String passSat, String passFiel, String passCertificado ) {
+        if (dialog != null){
+            dialog.cancel();
+        }
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        final View view = inflater.inflate(R.layout.dialog_add_cliente, null);
+
+        builder.setView(view);
+
+        Button btn_guardar = (Button) view.findViewById(R.id.btn_cliente_guardar);
+        Button btn_cancelar = (Button) view.findViewById(R.id.btn_cliente_cancelar);
+        final EditText et_nombre = (EditText) view.findViewById(R.id.cliente_nombre);
+        final EditText et_rfc = (EditText) view.findViewById(R.id.cliente_rfc);
+        final EditText et_curp = (EditText) view.findViewById(R.id.cliente_curp);
+        final EditText et_honorario = (EditText) view.findViewById(R.id.cliente_honorario);
+        final EditText et_passSat = (EditText) view.findViewById(R.id.cliente_passSat);
+        final EditText et_passFiel = (EditText) view.findViewById(R.id.cliente_passFiel);
+        final EditText et_passCertificado = (EditText) view.findViewById(R.id.cliente_passCertificado);
+        TextView title = (TextView) view.findViewById(R.id.textView2);
+        title.setText("Actualiza");
+
+        et_nombre.setText(nombre);
+        et_rfc.setText(rfc);
+        et_curp.setText(curp);
+        et_honorario.setText(honorario);
+        et_passSat.setText(passSat);
+        et_passFiel.setText(passFiel);
+        et_passCertificado.setText(passCertificado);
+
+        dialog = builder.create();
+
+        btn_cancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        btn_guardar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String nombre = et_nombre.getText().toString();
+                String rfc = et_rfc.getText().toString();
+                String curp = et_curp.getText().toString();
+                String honorario = et_honorario.getText().toString();
+
+                // String empleado = spinnerEmpleado.
+                if (nombre.equals("") || rfc.equals("") || curp.equals("") || honorario.equals("")) {
+                    Snackbar.make(v, getResources().getString(R.string.msg_campos_vacios), Snackbar.LENGTH_LONG).show();
+                } else {
+                    ModelDespacho_Clientes cliente = new ModelDespacho_Clientes(
+                            idCliente,
+                            nombre,
+                            rfc,
+                            curp,
+                            et_passSat.getText().toString(),
+                            et_passFiel.getText().toString(),
+                            et_passCertificado.getText().toString(),
+                            Double.parseDouble(honorario));
+
+                    String strJson = cliente.toJsonUpdateCliente();
+                    new UpdateClienteTask().execute(URL_UPDATE_CLIENTE, strJson);
+                }
+
+            }
+        });
+
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(false);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+        dialog.show();
+    }
+
+    private class UpdateClienteTask extends AsyncTask<String, Integer, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String baseUrl = params[0];
+            String jsonData = params[1];
+            return UtilsDML.addData(Constants.POST_CLIENTE, baseUrl, jsonData);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            Utils.proccessResult(getActivity(),result);
+            dialog.dismiss();
+            progressBar.cancel();
+            if (testAdapter != null){
+                testAdapter.removeAll();
+            }
+            new QueryClienteTask().execute(URL_QUERY_CLIENTE);
+        }
+
+
     }
 }

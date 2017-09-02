@@ -196,6 +196,7 @@ public class UtilsDML {
 
             //Se ejecuta el envio de la peticion y se espera la respuesta de la misma.
             HttpResponse response = httpClient.execute(post);
+            Log.d("POST--",post.toString());
             Log.w(APP_TAG, response.getStatusLine().toString());
 
 
@@ -279,7 +280,6 @@ public class UtilsDML {
                         jsonObject.getString("passCert"),
                         Double.parseDouble(jsonObject.getString("honorarios"))));
 
-                //adapter.add("Clave : "+clave+" Nombre : "+ nombre);
             } catch (JSONException e) {
                 Log.e("JSON", e.toString());
             }

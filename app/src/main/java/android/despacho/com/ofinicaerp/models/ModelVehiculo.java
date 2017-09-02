@@ -119,4 +119,26 @@ public class ModelVehiculo {
             return null;
         }
     }
+
+    public String toJsonUpdateVehiculo() {
+        JSONObject jsonObject= new JSONObject();
+        try {
+            jsonObject.put("idVehiculo", getId_vehiculo());
+            jsonObject.put("nombre", getNombre());
+            jsonObject.put("modelo", getModelo());
+            jsonObject.put("marca", getMarca());
+            jsonObject.put("serie", getSerie());
+            jsonObject.put("idEmpleado", getId_empleado());
+            jsonObject.put("photoBase64", getPhotoBase64());
+            jsonObject.put("placas", getPlacas());
+            jsonObject.put("color", getColor());
+
+
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

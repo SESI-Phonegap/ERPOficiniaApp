@@ -38,6 +38,8 @@ public class Constants {
     public static String URL_QUERY_HONORARIOS = "http://despachogonzalez.com.mx/erpoficina/query_honorarios.php";
 
     public static String URL_UPDATE_HONORARIOS = "http://despachogonzalez.com.mx/erpoficina/update_honorarios.php";
+    public static String URL_UPDATE_CLIENTE = "http://despachogonzalez.com.mx/erpoficina/update_cliente.php";
+    public static String URL_UPDATE_VEHICULO = "http://despachogonzalez.com.mx/erpoficina/update_vehiculo.php";
 
     public static String POST_GASOLINA = "gasolina";
     public static String POST_VEHICULO = "vehiculo";

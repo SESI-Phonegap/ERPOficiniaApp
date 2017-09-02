@@ -89,4 +89,24 @@ public class ModelDespacho_Clientes {
             return null;
         }
     }
+
+    public String toJsonUpdateCliente() {
+        JSONObject jsonObject= new JSONObject();
+        try {
+            jsonObject.put("idCliente", getId_cliente());
+            jsonObject.put("nombre", getNombre());
+            jsonObject.put("rfc", getRfc());
+            jsonObject.put("curp", getCurp());
+            jsonObject.put("honorario", getMonto_mensualidad());
+            jsonObject.put("passSat", getPass_sat());
+            jsonObject.put("passFiel", getPass_fiel());
+            jsonObject.put("passCert", getPass_certificado());
+
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

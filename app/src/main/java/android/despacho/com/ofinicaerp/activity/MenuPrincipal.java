@@ -341,6 +341,7 @@ public class MenuPrincipal extends ActivityBase
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(MenuPrincipal.this, FormVehiculo.class);
+            intent.putExtra("FROM","new");
             startActivityForResult(intent, 9999);
         }
     };
