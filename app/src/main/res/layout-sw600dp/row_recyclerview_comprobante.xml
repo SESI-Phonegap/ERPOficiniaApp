@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="50dp">
+    android:layout_height="80dp">
 
     <TextView
         android:layout_width="65dp"
@@ -25,7 +25,7 @@
 
     <TextView
         android:id="@+id/row_comprobante_concepto"
-        android:layout_width="115dp"
+        android:layout_width="200dp"
         android:textAlignment="center"
         android:gravity="center"
         android:layout_height="0dp"
@@ -35,7 +35,7 @@
         android:maxLines="2"
         android:ellipsize="end"
         app:layout_constraintLeft_toRightOf="@+id/row_comprobante_fecha"
-        android:layout_marginStart="0dp"
+        android:layout_marginStart="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="0dp"
         app:layout_constraintTop_toTopOf="parent"
@@ -44,10 +44,10 @@
 
     <TextView
         android:id="@+id/row_comprobante_monto"
-        android:layout_width="78dp"
+        android:layout_width="150dp"
         android:layout_height="0dp"
         android:layout_marginBottom="0dp"
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="0dp"
         android:ellipsize="end"
         android:gravity="center"
@@ -63,7 +63,7 @@
 
     <TextView
         android:id="@+id/row_comprobante_categoria"
-        android:layout_width="80dp"
+        android:layout_width="120dp"
         android:layout_height="0dp"
         android:layout_marginBottom="0dp"
         android:layout_marginEnd="4dp"
