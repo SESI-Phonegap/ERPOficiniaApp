@@ -2,6 +2,7 @@ package android.despacho.com.ofinicaerp.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.despacho.com.ofinicaerp.ActivityBase;
 import android.despacho.com.ofinicaerp.R;
 import android.despacho.com.ofinicaerp.models.ModelUser;
 import android.despacho.com.ofinicaerp.utils.UtilsDML;
@@ -24,7 +25,7 @@ import static android.despacho.com.ofinicaerp.utils.Constants.PUTEXTRA_TIPO_USER
 import static android.despacho.com.ofinicaerp.utils.Constants.URL_LOGIN;
 import static android.despacho.com.ofinicaerp.utils.UtilsDML.APP_TAG;
 
-public class Login extends AppCompatActivity {
+public class Login extends ActivityBase {
 
     private List<ModelUser> modelUser;
     private ProgressDialog progressBar;
@@ -38,6 +39,7 @@ public class Login extends AppCompatActivity {
     }
 
     public void init(){
+
         progressBar = new ProgressDialog(Login.this);
         progressBar.setMessage("Cargando...");
         progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -51,7 +53,6 @@ public class Login extends AppCompatActivity {
 
         et_email.setText("marco.gonzalez.cp@gmail.com");
         et_pass.setText("100Marco100");
-
         /*et_email.setText("christian.glez.100@gmail.com");
         et_pass.setText("Mexico-17");*/
 
