@@ -1,7 +1,9 @@
 package android.despacho.com.ofinicaerp.fragments;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.despacho.com.ofinicaerp.activity.MenuPrincipal;
 import android.despacho.com.ofinicaerp.models.ModelGastos;
 import android.despacho.com.ofinicaerp.models.ModelGastosGasolina;
 import android.despacho.com.ofinicaerp.models.ModelIngresos;
@@ -130,6 +132,7 @@ public class HomeFragment extends Fragment {
         progressBar.setCanceledOnTouchOutside(false);
         progressBar.setIndeterminate(true);
 
+
         String typeUser = getActivity().getIntent().getStringExtra(PUTEXTRA_TIPO_USER);
         if (!typeUser.equals(ADMIN)) {
             cardViewTotales.setVisibility(View.INVISIBLE);
@@ -188,21 +191,25 @@ public class HomeFragment extends Fragment {
         String fechaInicial = anoActual + "-" + mesActual + "-" + "01";
         String fechaActual = anoActual + "-" + mesActual + "-" + diaActual;
 
-        String strJSON = Utils.toJsonIngresoFecha(ALL,fechaInicial,fechaActual);
-        new QueryGastosTask().execute(POST_GASTO,URL_QUERY_GASTOS,strJSON);
+        Activity activity = getActivity();
+        if (null != activity) {
+            String strJSON = Utils.toJsonIngresoFecha(ALL, fechaInicial, fechaActual);
+            new QueryGastosTask().execute(POST_GASTO, URL_QUERY_GASTOS, strJSON);
 
-        String strJSONGasolina = Utils.toJsonRangoFecha(fechaInicial,fechaActual);
-        new QueryGatoGasolinaTask().execute(POST_FECHA,URL_QUERY_GASTO_GASOLINA,strJSONGasolina);
+            String strJSONGasolina = Utils.toJsonRangoFecha(fechaInicial, fechaActual);
+            new QueryGatoGasolinaTask().execute(POST_FECHA, URL_QUERY_GASTO_GASOLINA, strJSONGasolina);
 
-        String strJSONManteni = Utils.toJsonMantenimientoFecha(ALL,fechaInicial,fechaActual);
-        new QueryMantenimientoTask().execute(POST_MANTENIMIENTO,URL_QUERY_MANTENIMIENTO,strJSONManteni);
+            String strJSONManteni = Utils.toJsonMantenimientoFecha(ALL, fechaInicial, fechaActual);
+            new QueryMantenimientoTask().execute(POST_MANTENIMIENTO, URL_QUERY_MANTENIMIENTO, strJSONManteni);
 
-        ModelPagoEmpleado modelNomina = new ModelPagoEmpleado(calendar.get(Calendar.MONTH) + 1, anoActual);
-        String strJSONNomina = modelNomina.toJSONQueryNomina();
-        new nominaTask().execute(Constants.URL_QUERY_NOMINA,strJSONNomina);
+            ModelPagoEmpleado modelNomina = new ModelPagoEmpleado(calendar.get(Calendar.MONTH) + 1, anoActual);
+            String strJSONNomina = modelNomina.toJSONQueryNomina();
+            new nominaTask().execute(Constants.URL_QUERY_NOMINA, strJSONNomina);
 
-        String strJSONIngreso = Utils.toJsonIngresoFecha(ALL, fechaInicial, fechaActual);
-        new QueryIngresoTask().execute(POST_INGRESO, URL_QUERY_INGRESO, strJSONIngreso);
+            String strJSONIngreso = Utils.toJsonIngresoFecha(ALL, fechaInicial, fechaActual);
+            new QueryIngresoTask().execute(POST_INGRESO, URL_QUERY_INGRESO, strJSONIngreso);
+        }
+
     }
 
     @Override
@@ -215,11 +222,21 @@ public class HomeFragment extends Fragment {
         super.onDetach();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        progressBar.cancel();
+    }
+
     private class QueryGastosTask extends AsyncTask<String, Integer, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar.show();
+            if(progressBar.isShowing()) {
+                progressBar.cancel();
+            } else {
+                progressBar.show();
+            }
         }
 
         @Override
@@ -236,13 +253,13 @@ public class HomeFragment extends Fragment {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             Log.d("OTROS GASTOS--",result);
-            UtilsDML.resultQueryGastos(getActivity().getApplication(), result, listGastos);
+            UtilsDML.resultQueryGastos(getContext(), result, listGastos);
             for (int x = 0 ; x < listGastos.size() ; x++ ){
                 iOtrosGastos += listGastos.get(x).getMonto();
             }
             iGatosTotales += iOtrosGastos;
-            tv_gastosTotales.setText(getString(R.string.pesoscaja, Utils.parseToString(iGatosTotales)));
-            tv_otrosGastos.setText(getString(R.string.pesoscaja, Utils.parseToString(iOtrosGastos)));
+            tv_gastosTotales.setText(MenuPrincipal.getInstance().getString(R.string.pesoscaja, Utils.parseToString(iGatosTotales)));
+            tv_otrosGastos.setText(MenuPrincipal.getInstance().getString(R.string.pesoscaja, Utils.parseToString(iOtrosGastos)));
             progressBar.cancel();
         }
     }
@@ -251,7 +268,11 @@ public class HomeFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar.show();
+            if(progressBar.isShowing()) {
+                progressBar.cancel();
+            } else {
+                progressBar.show();
+            }
         }
 
         @Override
@@ -282,7 +303,11 @@ public class HomeFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar.show();
+            if(progressBar.isShowing()) {
+                progressBar.cancel();
+            } else {
+                progressBar.show();
+            }
         }
 
         @Override
@@ -313,7 +338,11 @@ public class HomeFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar.show();
+            if(progressBar.isShowing()) {
+                progressBar.cancel();
+            } else {
+                progressBar.show();
+            }
         }
 
         @Override
@@ -345,7 +374,11 @@ public class HomeFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar.show();
+            if(progressBar.isShowing()) {
+                progressBar.cancel();
+            } else {
+                progressBar.show();
+            }
         }
 
         @Override

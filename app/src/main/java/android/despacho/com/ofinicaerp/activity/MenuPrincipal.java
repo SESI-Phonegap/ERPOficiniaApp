@@ -116,6 +116,7 @@ public class MenuPrincipal extends ActivityBase
     public static double montoActual_Gasto;
     private EditText et_monto;
     private NavigationView navigationView;
+    private static volatile MenuPrincipal instance = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -190,6 +191,17 @@ public class MenuPrincipal extends ActivityBase
         miMenu.findItem(R.id._nav_caja).setVisible(false);
         miMenu.findItem(R.id._nav_tienda).setVisible(false);
         miMenu.findItem(R.id._nav_ruta).setVisible(false);
+    }
+
+    public static synchronized MenuPrincipal getInstance() {
+        if (instance == null) {
+            synchronized (MenuPrincipal.class) {
+                if (instance == null) {
+                    instance = new MenuPrincipal();
+                }
+            }
+        }
+        return instance;
     }
 
     @Override
@@ -1078,7 +1090,11 @@ public class MenuPrincipal extends ActivityBase
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar.show();
+            if(progressBar.isShowing()) {
+                progressBar.cancel();
+            } else {
+                progressBar.show();
+            }
         }
 
         @Override
@@ -1108,7 +1124,11 @@ public class MenuPrincipal extends ActivityBase
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar.show();
+            if(progressBar.isShowing()) {
+                progressBar.cancel();
+            } else {
+                progressBar.show();
+            }
         }
 
         @Override
@@ -1138,7 +1158,11 @@ public class MenuPrincipal extends ActivityBase
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar.show();
+            if(progressBar.isShowing()) {
+                progressBar.cancel();
+            } else {
+                progressBar.show();
+            }
         }
 
         @Override
@@ -1167,7 +1191,11 @@ public class MenuPrincipal extends ActivityBase
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar.show();
+            if(progressBar.isShowing()) {
+                progressBar.cancel();
+            } else {
+                progressBar.show();
+            }
         }
 
         @Override
@@ -1196,7 +1224,11 @@ public class MenuPrincipal extends ActivityBase
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar.show();
+            if(progressBar.isShowing()) {
+                progressBar.cancel();
+            } else {
+                progressBar.show();
+            }
         }
 
         @Override
@@ -1227,7 +1259,11 @@ public class MenuPrincipal extends ActivityBase
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar.show();
+            if(progressBar.isShowing()) {
+                progressBar.cancel();
+            } else {
+                progressBar.show();
+            }
         }
 
         @Override
@@ -1252,7 +1288,11 @@ public class MenuPrincipal extends ActivityBase
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar.show();
+            if(progressBar.isShowing()) {
+                progressBar.cancel();
+            } else {
+                progressBar.show();
+            }
         }
 
         @Override
@@ -1282,7 +1322,11 @@ public class MenuPrincipal extends ActivityBase
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar.show();
+            if(progressBar.isShowing()) {
+                progressBar.cancel();
+            } else {
+                progressBar.show();
+            }
         }
 
         @Override
@@ -1309,7 +1353,11 @@ public class MenuPrincipal extends ActivityBase
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar.show();
+            if(progressBar.isShowing()) {
+                progressBar.cancel();
+            } else {
+                progressBar.show();
+            }
         }
 
         @Override
@@ -1336,7 +1384,11 @@ public class MenuPrincipal extends ActivityBase
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar.show();
+            if(progressBar.isShowing()) {
+                progressBar.cancel();
+            } else {
+                progressBar.show();
+            }
         }
 
         @Override
@@ -1361,7 +1413,11 @@ public class MenuPrincipal extends ActivityBase
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar.show();
+            if(progressBar.isShowing()) {
+                progressBar.cancel();
+            } else {
+                progressBar.show();
+            }
         }
 
         @Override
@@ -1390,7 +1446,11 @@ public class MenuPrincipal extends ActivityBase
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar.show();
+            if(progressBar.isShowing()) {
+                progressBar.cancel();
+            } else {
+                progressBar.show();
+            }
         }
 
         @Override

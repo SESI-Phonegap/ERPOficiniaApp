@@ -2,6 +2,7 @@ package android.despacho.com.ofinicaerp.utils;
 
 
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.despacho.com.ofinicaerp.R;
@@ -570,7 +571,7 @@ public class UtilsDML {
         return result;
     }
 
-    public static String resultQueryGastos(Application context,String resultTask, List<ModelGastos> resultGasto) {
+    public static String resultQueryGastos(Context context, String resultTask, List<ModelGastos> resultGasto) {
         JSONArray jsonArray = null;
         String result = "";
 
@@ -607,7 +608,7 @@ public class UtilsDML {
 
             } else {
 
-                result = context.getString(R.string.msg_usiarioIncorrecto);
+                //result = context.getString(R.string.msg_usiarioIncorrecto);
             }
         } catch (JSONException e) {
             return result = "Ocurrio un error al conectarse al servidor, intentelo de nuevo.";
